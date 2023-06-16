@@ -2,6 +2,11 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
+import { Session } from 'express-session'
+
+interface CustomSession extends Session {
+    token: string
+}
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
@@ -27,6 +32,9 @@ class AuthController {
                 { userId: user.user_id },
                 process.env.SECRET_KEY as string
             )
+
+            // Store the token in the session
+            ;(req.session as CustomSession).token = token // Use explicit casting to Session
 
             // Return the token and user details
             res.json({ token, user })
@@ -63,13 +71,28 @@ class AuthController {
             })
 
             // Generate JWT token
-            const token = jwt.sign({ userId: newUser.user_id }, SECRET_KEY)
+            const token = jwt.sign(
+                { userId: newUser.user_id },
+                process.env.SECRET_KEY as string
+            )
 
             // Return the token and user details
             res.status(201).json({ token, user: newUser })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
         }
+    }
+
+    static async logout(req: Request, res: Response): Promise<void> {
+        // Destroy the session
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error destroying session:', err)
+            }
+        })
+
+        // Return a success message
+        res.status(200).json({ message: 'Logout successful' })
     }
 }
 

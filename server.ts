@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import express from 'express'
 import jwt from 'jsonwebtoken'
-
+import session from 'express-session'
 import userRoutes from './routes/userRoutes'
 import chatroomRoutes from './routes/chatroomRoutes'
 import chatMessageRoutes from './routes/chatMessageRoutes'
@@ -16,7 +16,13 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
-
+app.use(
+    session({
+        secret: process.env.SECRET_KEY as string,
+        resave: false,
+        saveUninitialized: false,
+    })
+)
 // Middleware for verifying JWT tokens
 app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1]
