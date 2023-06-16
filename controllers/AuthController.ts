@@ -3,8 +3,6 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 
-const SECRET_KEY = 'your-secret-key'
-
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body
@@ -25,7 +23,10 @@ class AuthController {
             }
 
             // Generate JWT token
-            const token = jwt.sign({ userId: user.user_id }, SECRET_KEY)
+            const token = jwt.sign(
+                { userId: user.user_id },
+                process.env.SECRET_KEY as string
+            )
 
             // Return the token and user details
             res.json({ token, user })
