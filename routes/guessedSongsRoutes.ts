@@ -5,7 +5,7 @@ import GuessedSongController from '../controllers/GuessedSongController'
 
 const router = Router()
 
-router.get('/guessed_songs', GuessedSongController.getGuessedSongs)
-router.get('/guessed_songs/:id', GuessedSongController.getGuessedSong)
+router.get('/api/v1/guessed_songs', GuessedSongController.getGuessedSongs)
+router.get('/api/v1/guessed_songs/:id', GuessedSongController.getGuessedSong)
 
 export default router

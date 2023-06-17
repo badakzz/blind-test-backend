@@ -3,7 +3,7 @@ import PlaylistController from '../controllers/PlaylistController'
 
 const router = Router()
 
-router.get('/playlists', PlaylistController.getPlaylists)
-router.get('/playlists/:id', PlaylistController.getPlaylist)
+router.get('/api/v1/playlists', PlaylistController.getPlaylists)
+router.get('/api/v1/playlists/:id', PlaylistController.getPlaylist)
 
 export default router
