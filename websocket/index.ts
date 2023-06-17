@@ -28,7 +28,7 @@
 //     },
 // })
 
-// const PORT = process.env.NODE_SERVER_PORT || 3001
+// const PORT = process.env.NODE_WEBSOCKET_PORT || 3001
 
 // const connectedUsers: { id: string; username: string; chatroomId: string }[] =
 //     []
