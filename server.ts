@@ -31,7 +31,11 @@ app.use(
 // Middleware for verifying JWT tokens
 app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1]
-    if (req.path === '/api/auth/signup' || req.path === '/api/auth/login') {
+    if (
+        req.path === '/api/auth/signup' ||
+        req.path === '/api/auth/login' ||
+        req.path === '/api/auth/csrf'
+    ) {
         next()
         return
     }
