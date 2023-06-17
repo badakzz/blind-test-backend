@@ -60,8 +60,7 @@ process.on('uncaughtException', (err) => {
     process.exit(1)
 })
 
-const PORT = process.env.SERVER_PORT || 3002
-
+const PORT = process.env.NODE_SERVER_PORT || 3002
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`)
 })

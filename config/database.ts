@@ -1,8 +1,10 @@
 import { Sequelize } from 'sequelize'
-import { resolve } from 'path'
-import { config } from 'dotenv'
 
-config({ path: resolve(__dirname, '../local.env') })
+// for dev
+// import { resolve } from 'path'
+// import { config } from 'dotenv'
+
+// config({ path: resolve(__dirname, '../local.env') })
 
 const {
     POSTGRES_HOST,
