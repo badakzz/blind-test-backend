@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import { Session } from 'express-session'
+import { createDTOOmittingPassword } from '../utils/helpers'
 
 interface CustomSession extends Session {
     token: string
@@ -37,7 +38,8 @@ class AuthController {
             ;(req.session as CustomSession).token = token // Use explicit casting to Session
 
             // Return the token and user details
-            res.json({ token, user })
+            const userDTO = createDTOOmittingPassword(user)
+            res.json({ token, user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
         }
@@ -76,7 +78,9 @@ class AuthController {
             )
 
             // Return the token and user details
-            res.status(201).json({ token, user: newUser })
+            const userDTO = createDTOOmittingPassword(newUser)
+            res.json({ token, userDTO })
+            res.status(201).json({ token, user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
         }
