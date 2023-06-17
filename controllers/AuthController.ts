@@ -49,7 +49,6 @@ class AuthController {
             email,
             password,
         }: { user_name: string; email: string; password: string } = req.body
-
         try {
             // Check if the email is already registered
             const existingUser = await User.findOne({ where: { email } })

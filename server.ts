@@ -14,7 +14,12 @@ interface AuthRequest extends Request {
 
 const app = express()
 
-app.use(cors())
+app.use(
+    cors({
+        origin: 'http://localhost:3000',
+        credentials: true,
+    })
+)
 app.use(express.json())
 app.use(
     session({
@@ -26,6 +31,10 @@ app.use(
 // Middleware for verifying JWT tokens
 app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1]
+    if (req.path === '/api/auth/signup') {
+        next()
+        return
+    }
     if (token) {
         jwt.verify(
             token,
