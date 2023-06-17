@@ -24,12 +24,8 @@ router.delete(
     CSRFController.verifyCSRF,
     UserController.deleteUser
 )
-router.post('/api/auth/login', CSRFController.verifyCSRF, AuthController.login)
-router.post(
-    '/api/auth/signup',
-    CSRFController.verifyCSRF,
-    AuthController.signup
-)
+router.post('/api/auth/login', AuthController.login)
+router.post('/api/auth/signup', AuthController.signup)
 router.post(
     '/api/auth/logout',
     CSRFController.verifyCSRF,
