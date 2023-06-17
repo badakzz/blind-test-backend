@@ -38,7 +38,7 @@ app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     if (token) {
         jwt.verify(
             token,
-            process.env.JWT_TOKEN as string,
+            process.env.JWT_SECRET_KEY as string,
             (err: any, decoded: any) => {
                 if (err) {
                     return res.status(401).json({ error: 'Invalid token' })
