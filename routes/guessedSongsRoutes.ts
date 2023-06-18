@@ -1,5 +1,3 @@
-// src/routes/guessed_song.ts
-
 import { Router } from 'express'
 import GuessedSongController from '../controllers/GuessedSongController'
 

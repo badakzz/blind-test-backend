@@ -17,6 +17,6 @@ export const requireAuth = (
         next()
     } else {
         // Session is not valid, redirect to the login page
-        res.redirect('/login') // Replace '/login' with the actual login page route
+        res.redirect('/login')
     }
 }

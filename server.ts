@@ -3,9 +3,12 @@ import cors from 'cors'
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import session from 'express-session'
+import cookieParser from 'cookie-parser'
 import userRoutes from './routes/userRoutes'
 import chatroomRoutes from './routes/chatroomRoutes'
 import chatMessageRoutes from './routes/chatMessageRoutes'
+import csrfRoute from './routes/csrfRoute'
+import guessedSongRoutes from './routes/guessedSongsRoutes'
 import scoreboardRoutes from './routes/scoreboardRoutes'
 
 interface AuthRequest extends Request {
@@ -23,7 +26,7 @@ app.use(
 app.use(express.json())
 app.use(
     session({
-        secret: process.env.SECRET_KEY as string,
+        secret: process.env.EXPRESS_SESSION_SECRET_KEY as string,
         resave: false,
         saveUninitialized: false,
     })
@@ -31,7 +34,11 @@ app.use(
 // Middleware for verifying JWT tokens
 app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1]
-    if (req.path === '/api/auth/signup' || req.path === '/api/auth/login') {
+    if (
+        req.path === '/api/auth/signup' ||
+        req.path === '/api/auth/login' ||
+        req.path === '/api/auth/csrf'
+    ) {
         next()
         return
     }
@@ -53,10 +60,14 @@ app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     }
 })
 
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
+
 app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
 app.use(userRoutes)
 app.use(scoreboardRoutes)
+app.use(guessedSongRoutes)
+app.use(csrfRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack)

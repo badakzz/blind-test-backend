@@ -1,21 +1,27 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
+import { createDTOOmittingPassword } from '../utils/helpers'
 
 class UserController {
     async getUser(req: Request, res: Response): Promise<void> {
         const user = await User.findByPk(req.params.id)
-        res.json(user)
+
+        // Transform the user object to a custom DTO
+        const userDTO = createDTOOmittingPassword(user)
+        res.json(userDTO)
     }
 
     async createUser(req: Request, res: Response): Promise<void> {
         const newUser = await User.create(req.body)
-        res.json(newUser)
+        const userDTO = createDTOOmittingPassword(newUser)
+        res.json(userDTO)
     }
 
     async updateUser(req: Request, res: Response): Promise<void> {
         await User.update(req.body, { where: { user_id: req.params.id } })
         const updatedUser = await User.findByPk(req.params.id)
-        res.json(updatedUser)
+        const userDTO = createDTOOmittingPassword(updatedUser)
+        res.json(userDTO)
     }
 
     async deleteUser(req: Request, res: Response): Promise<void> {
