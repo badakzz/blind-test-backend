@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
-import { classToPlain } from 'class-transformer'
 import { createDTOOmittingPassword } from '../utils/helpers'
 
 class UserController {

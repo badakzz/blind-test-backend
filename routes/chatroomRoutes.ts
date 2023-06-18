@@ -1,21 +1,17 @@
 import { requireAuth } from './../middlewares/authMiddleware'
 import { Router } from 'express'
 import ChatroomController from '../controllers/ChatroomController'
-import CSRFController from '../controllers/CSRFController'
+import { requireCsrf } from '../middlewares/csrfMiddleware'
 
 const router = Router()
 
 router.get('/api/v1/chatrooms', ChatroomController.getChatrooms)
 router.get('/api/v1/chatrooms/:id', ChatroomController.getChatroom)
-router.post(
-    '/api/v1/chatrooms',
-    CSRFController.verifyCSRF,
-    ChatroomController.createChatroom
-)
+router.post('/api/v1/chatrooms', requireCsrf, ChatroomController.createChatroom)
 router.delete(
     '/api/v1/chatrooms/:id',
+    requireCsrf,
     requireAuth,
-    CSRFController.verifyCSRF,
     ChatroomController.deleteChatroom
 )
 

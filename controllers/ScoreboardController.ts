@@ -1,5 +1,3 @@
-// src/controllers/scoreboard.ts
-
 import { Request, Response } from 'express'
 import Scoreboard from '../models/Scoreboard'
 
@@ -29,6 +27,27 @@ class ScoreboardController {
         } catch (error: any) {
             console.log(error)
             res.status(500).send(error.message)
+        }
+    }
+
+    static async updateScoreboard(req: Request, res: Response): Promise<void> {
+        const { user_id, chatroom_id, points } = req.body
+
+        try {
+            const existingScoreboard = await Scoreboard.findOne({
+                where: { user_id, chatroom_id },
+            })
+
+            if (existingScoreboard) {
+                existingScoreboard.points = points
+                await existingScoreboard.save()
+                res.json({ message: 'Scoreboard updated successfully' })
+            } else {
+                res.status(404).json({ error: 'Scoreboard not found' })
+            }
+        } catch (error: any) {
+            console.error(error)
+            res.status(500).json({ error: 'Something went wrong' })
         }
     }
 }
