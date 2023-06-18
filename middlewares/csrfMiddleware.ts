@@ -4,7 +4,11 @@ import {
     invalidCsrfTokenError,
 } from '../controllers/CSRFController'
 
-export const withCsrf = (req: Request, res: Response, next: NextFunction) => {
+export const requireCsrf = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     doubleCsrfProtection(req, res, (error) => {
         if (error === invalidCsrfTokenError) {
             res.status(403).json({ error: 'CSRF validation error' })
@@ -13,5 +17,3 @@ export const withCsrf = (req: Request, res: Response, next: NextFunction) => {
         }
     })
 }
-
-export default withCsrf
