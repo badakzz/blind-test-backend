@@ -1,5 +1,6 @@
 {
     "name": "blindtest-backend",
+    "license": "MIT",
     "version": "1.0.0",
     "description": "Backend for blind test app",
     "main": "index.js",

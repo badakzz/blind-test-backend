@@ -10,6 +10,7 @@ import chatMessageRoutes from './routes/chatMessageRoutes'
 import csrfRoute from './routes/csrfRoute'
 import guessedSongRoutes from './routes/guessedSongsRoutes'
 import scoreboardRoutes from './routes/scoreboardRoutes'
+import { csrfSync } from 'csrf-sync'
 
 interface AuthRequest extends Request {
     userId?: string
@@ -19,11 +20,14 @@ const app = express()
 
 app.use(
     cors({
+        // origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
         origin: 'http://localhost:3000',
         credentials: true,
     })
 )
+
 app.use(express.json())
+
 app.use(
     session({
         secret: process.env.EXPRESS_SESSION_SECRET_KEY as string,
@@ -31,6 +35,16 @@ app.use(
         saveUninitialized: false,
     })
 )
+
+app.use(cookieParser(process.env.CSRF_COOKIE_NAME))
+
+app.use(chatroomRoutes)
+app.use(chatMessageRoutes)
+app.use(userRoutes)
+app.use(scoreboardRoutes)
+app.use(guessedSongRoutes)
+app.use(csrfRoute)
+
 // Middleware for verifying JWT tokens
 app.use((req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1]
@@ -59,15 +73,6 @@ app.use((req: AuthRequest, res: Response, next: NextFunction) => {
         res.status(401).json({ error: 'Missing token' })
     }
 })
-
-app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
-
-app.use(chatroomRoutes)
-app.use(chatMessageRoutes)
-app.use(userRoutes)
-app.use(scoreboardRoutes)
-app.use(guessedSongRoutes)
-app.use(csrfRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack)

@@ -39,6 +39,7 @@ class AuthController {
 
             // Return the token and user details
             const userDTO = createDTOOmittingPassword(user)
+
             res.json({ token, user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
@@ -79,6 +80,7 @@ class AuthController {
 
             // Return the token and user details
             const userDTO = createDTOOmittingPassword(newUser)
+
             res.json({ token, userDTO })
             res.status(201).json({ token, user: userDTO })
         } catch (error: any) {
