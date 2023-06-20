@@ -1,0 +1,458 @@
+_type: export
+__export_format: 4
+__export_date: 2023-06-20T11:18:21.559Z
+__export_source: insomnia.desktop.app:v2023.2.2
+resources:
+  - _id: req_4c5a875c148441ddb8643e4e874722dc
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687259547689
+    created: 1687250882203
+    url: http://localhost:3002/api/v1/chat_messages/3http://localhost:3002/api/v1/chat_messages/3
+    name: Edit message (auth and csrf)
+    description: ""
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "chatroom_id": "liunu2qx0.8ac6pz8ylwh",
+            "user_id": "1",
+            "content": "MOCKUP_MESSAGE_CONTENT"
+        }
+    parameters: []
+    headers:
+      - id: pair_406cce853a5c4885ac8c930fe54592d6
+        name: Content-Type
+        value: application/json
+        description: ""
+      - id: pair_cdc9612d8bd7423b8e4e2607b70d2a26
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzI1MDk0NH0.XqvbIZAXF2dQfXcwRaPLpNag7lnFHln9AK5RUqGg4Tk
+        description: ""
+      - id: pair_822f6b5604724f5d98bc2e2e0da740c6
+        name: X-CSRF-TOKEN
+        value: c36cf0ee9c8930094bfc601ea6f536742b2c4ae53d4f6bc61bf5e8018de0f7beed062d42a73fe94c25ecc7a2928135f0146a1b2de675390a3b056937206c9873
+        description: ""
+    authentication: {}
+    metaSortKey: -1687250882203
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: wrk_917908e88379446eb0211eeaf123c79d
+    parentId: null
+    modified: 1686862912875
+    created: 1686862912875
+    name: Blind test
+    description: ""
+    scope: collection
+    _type: workspace
+  - _id: req_cf8df3db834144c188ceefc31c31a28d
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687259689806
+    created: 1687259563301
+    url: http://localhost:3002/api/v1/users/3
+    name: Partial edit user
+    description: ""
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "email": "xd@xd.fr"
+        }
+    parameters: []
+    headers:
+      - id: pair_406cce853a5c4885ac8c930fe54592d6
+        name: Content-Type
+        value: application/json
+        description: ""
+      - id: pair_cdc9612d8bd7423b8e4e2607b70d2a26
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzI1MDk0NH0.XqvbIZAXF2dQfXcwRaPLpNag7lnFHln9AK5RUqGg4Tk
+        description: ""
+      - id: pair_822f6b5604724f5d98bc2e2e0da740c6
+        name: X-CSRF-TOKEN
+        value: c36cf0ee9c8930094bfc601ea6f536742b2c4ae53d4f6bc61bf5e8018de0f7beed062d42a73fe94c25ecc7a2928135f0146a1b2de675390a3b056937206c9873
+        description: ""
+    authentication: {}
+    metaSortKey: -1687170822666.5
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_ff238d79c07043c89762ed26dc4f35d9
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687199500183
+    created: 1687090763130
+    url: http://localhost:3002/api/v1/scoreboards
+    name: Update scoreboard
+    description: ""
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"user_id": 1,
+        	"chatroom_id": "liunu2qx0.8ac6pz8ylwh",
+        	"points": 0.5
+        }
+    parameters: []
+    headers:
+      - id: pair_0b82d997f7ee4ef19cf63e11be41a080
+        name: Content-Type
+        value: application/json
+        description: ""
+      - id: pair_081b4855e7e84e578ed931b4b465d1ae
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        description: ""
+      - id: pair_72b81f52cddc489494fbf09ededd6c62
+        name: X-CSRF-TOKEN
+        value: 728991e7ccf481c49a666012fe7c2addee49b61a29e27a61c5765004c7b3f0fad38801500bda11c7538542c32047ab8b913418aeb79eab40bf134fd96449c325
+        description: ""
+    authentication: {}
+    metaSortKey: -1687090763130
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_a69dd19cd4764622a78d1bf4c090c1a0
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687179181014
+    created: 1687034338443
+    url: http://localhost:3002/api/auth/csrf
+    name: Get CSRF Token
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - id: pair_bf9c11ddb1034fbb83ce44b4b4400266
+        name: ""
+        value: ""
+        description: ""
+    authentication: {}
+    metaSortKey: -1687034338443
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_ded9af0cffac40e3bf094d0c41d977aa
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687252882595
+    created: 1687030248508
+    url: http://localhost:3002/api/v1/users/1
+    name: Get user by id (auth)
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - id: pair_2133dff146f24bf2a6dd28344561f9de
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        description: ""
+    authentication: {}
+    metaSortKey: -1687030248508
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_2e1a68916fe8451d835234fbc173a989
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687091202991
+    created: 1687008387498
+    url: http://localhost:3002/api/auth/login
+    name: Login
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: '{"email": "lucas.deray@greenscope.io", "password": "greenscope"}'
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_abcae0ef56c6467bb0f913c6ca39e53d
+      - id: pair_89cefa57eb1e4bb092909317aa9b9e01
+        name: X-XSRF-TOKEN
+        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        description: ""
+    authentication: {}
+    metaSortKey: -1687008387498
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_e3ef455b69ff4b469fb8510b58600dbc
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687091201226
+    created: 1687001646530
+    url: http://localhost:3002/api/auth/signup
+    name: Signup
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: '{"user_name": "test", "email": "lucas.dearay@greenscope.io", "password":
+        "greenscope"}'
+    parameters: []
+    headers:
+      - id: pair_1c17e2e331e047599485ee0d6f5ea8c3
+        name: Content-Type
+        value: application/json
+        description: ""
+      - id: pair_174ee3b72ed344b098df936a605aad26
+        name: X-XSRF-TOKEN
+        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        description: ""
+    authentication: {}
+    metaSortKey: -1687001646530
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_b9a4b9cdbd72461cbc6428963784f194
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687090464161
+    created: 1686914452568
+    url: http://localhost:3002/api/v1/scoreboards
+    name: Create scoreboard
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"user_id": 1,
+        	"chatroom_id": "liunu2qx0.8ac6pz8ylwh",
+        	"points": 0.5
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_17b24b1f4c464076b99f302d20a66c18
+      - id: pair_97bf08cd101b475eb60eef68babecefe
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        description: ""
+      - id: pair_9c9c13f069c44123a5bb61d5d075caaa
+        name: X-XSRF-TOKEN
+        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        description: ""
+    authentication: {}
+    metaSortKey: -1686914452568
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_0ba1da45edd84d71976a3234330eda61
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687259648369
+    created: 1686911918666
+    url: http://localhost:3002/api/v1/users
+    name: Create user
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: >-
+        {
+        	"user_name": "test",
+        	"email": "test@test.fr",
+        	"password": "$2a$10$ql9M86cr18nuhzO24ZHiy.QQliXs/.wDiluVG0jYxyDG9B.bsGdZi",
+        	"permissions": 1,
+        	"is_active": true
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_76b3c33ae812450fa36c6bbb93f7f43c
+      - id: pair_9389f7474bec4de9b253ee714ea7606b
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        description: ""
+      - id: pair_fbfdac855c834ce19a5d213f52571e08
+        name: X-XSRF-TOKEN
+        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        description: ""
+    authentication: {}
+    metaSortKey: -1686911918666
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_13d02880366d4ffa871f5a24d2a34bfe
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687091194684
+    created: 1686909880512
+    url: http://localhost:3002/api/v1/chatrooms
+    name: Create chatroom
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "chatroom_id": "liunu2qx0.8ac6pz8ylwx"
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_28d818cae8cf4689bebbe11bed40f352
+      - id: pair_1cfd2ce02981417c9dd32dc0f27b60d7
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        description: ""
+      - id: pair_7b055988ba2f41abafcf49a1cf0e1480
+        name: X-XSRF-TOKEN
+        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        description: ""
+    authentication: {}
+    metaSortKey: -1686909880512
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_a56d93c9319a43738783068d610ac07a
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687091196747
+    created: 1686862931572
+    url: http://localhost:3002/api/v1/chat_messages
+    name: Create message
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "chatroom_id": "liunu2qx0.8ac6pz8ylwh",
+            "user_id": "1",
+            "content": "MOCKUP_MESSAGE_CONTENT"
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_1e4ae13edb4c428783ffd6d3a1471ebf
+      - id: pair_2ec99c64fc1848c5a0213d3264dfd7f5
+        name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        description: ""
+      - id: pair_6ad699c58b06401ea4c578495059d7ba
+        name: X-XSRF-TOKEN
+        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        description: ""
+    authentication: {}
+    metaSortKey: -1686862931572
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: env_4c45071788f681093a2de1d34192a9defbdfb0b4
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1686862912879
+    created: 1686862912879
+    name: Base Environment
+    data: {}
+    dataPropertyOrder: null
+    color: null
+    isPrivate: false
+    metaSortKey: 1686862912879
+    _type: environment
+  - _id: jar_4c45071788f681093a2de1d34192a9defbdfb0b4
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1687259830714
+    created: 1686862912880
+    name: Default Jar
+    cookies:
+      - key: connect.sid
+        value: s%3AJ4zfAuNpfxDnEURDiHkfEzGRUC2FJI9C.q40W5Uig1II%2F%2FgF5wWdyHs9kdig%2FJKZb9YsH3RsztTE
+        domain: localhost
+        path: /
+        httpOnly: true
+        hostOnly: true
+        creation: 2023-06-17T13:49:02.339Z
+        lastAccessed: 2023-06-20T11:17:10.713Z
+        id: "3722421547380279"
+      - key: BlindtestCSRF
+        value: s%3Ae58366e8d3cb4e6073714a652c560ad41430fe330d19ed8e6350aa82498ed2a2.qgFREWuV3L%2BdobohU85kp1gY8KyUq3x941li5pzk7BY
+        domain: localhost
+        path: /
+        secure: true
+        httpOnly: true
+        extensions:
+          - SameSite=Strict
+        hostOnly: true
+        creation: 2023-06-18T11:33:10.942Z
+        lastAccessed: 2023-06-20T08:50:22.201Z
+        id: "03368894126418254"
+      - key: __Host-psifi.x-csrf-token
+        value: dcc54e5b081a5d3f63a63e0e8465193a3ea04414b48792b3640e25d59c677614
+        domain: localhost
+        path: /
+        secure: true
+        httpOnly: true
+        extensions:
+          - SameSite=Lax
+        hostOnly: true
+        creation: 2023-06-19T17:23:27.742Z
+        lastAccessed: 2023-06-19T18:30:45.494Z
+        id: "7471818814882565"
+    _type: cookie_jar
+  - _id: spc_046dc67c5de2494391f94f66646d408c
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1686862912875
+    created: 1686862912875
+    fileName: Blind test
+    contents: ""
+    contentType: yaml
+    _type: api_spec

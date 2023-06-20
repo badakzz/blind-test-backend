@@ -39,6 +39,20 @@ class UserController {
         }
     }
 
+    async partialUpdateUser(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params
+            const { body } = req
+            await User.update(body, { where: { user_id: id } })
+            const updatedUser = await User.findByPk(id)
+            const userDTO = createDTOOmittingPassword(updatedUser)
+            res.json(userDTO)
+        } catch (error) {
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
+        }
+    }
+
     async deleteUser(req: Request, res: Response): Promise<void> {
         try {
             await User.destroy({ where: { user_id: req.params.id } })
