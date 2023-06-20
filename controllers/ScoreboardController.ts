@@ -1,12 +1,14 @@
 import { Request, Response } from 'express'
 import Scoreboard from '../models/Scoreboard'
+import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 
 class ScoreboardController {
     static async getScoreboards(req: Request, res: Response): Promise<void> {
         try {
             const scoreboards = await Scoreboard.findAll()
             res.send(scoreboards)
-        } catch (error: any) {
+        } catch (error) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -15,7 +17,8 @@ class ScoreboardController {
         try {
             const scoreboard = await Scoreboard.findByPk(req.params.id)
             res.send(scoreboard)
-        } catch (error: any) {
+        } catch (error) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -24,8 +27,8 @@ class ScoreboardController {
         try {
             const newScore = await Scoreboard.create(req.body)
             res.status(201).send(newScore)
-        } catch (error: any) {
-            console.log(error)
+        } catch (error) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -45,9 +48,9 @@ class ScoreboardController {
             } else {
                 res.status(404).json({ error: 'Scoreboard not found' })
             }
-        } catch (error: any) {
-            console.error(error)
-            res.status(500).json({ error: 'Something went wrong' })
+        } catch (error) {
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
         }
     }
 }
