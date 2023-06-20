@@ -10,7 +10,6 @@ import chatMessageRoutes from './routes/chatMessageRoutes'
 import csrfRoute from './routes/csrfRoute'
 import guessedSongRoutes from './routes/guessedSongsRoutes'
 import scoreboardRoutes from './routes/scoreboardRoutes'
-import { csrfSync } from 'csrf-sync'
 
 interface AuthRequest extends Request {
     userId?: string
