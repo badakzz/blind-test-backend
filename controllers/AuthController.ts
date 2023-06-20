@@ -34,8 +34,8 @@ class AuthController {
                 process.env.SECRET_KEY as string
             )
 
-            // Store the token in the session
-            ;(req.session as CustomSession).token = token // Use explicit casting to Session
+            // Set the token as an HTTP-only cookie
+            res.cookie(process.env.JWT_COOKIE_NAME, token, { httpOnly: true })
 
             // Return the token and user details
             const userDTO = createDTOOmittingPassword(user)
@@ -98,6 +98,21 @@ class AuthController {
 
         // Return a success message
         res.status(200).json({ message: 'Logout successful' })
+    }
+
+    static async checkAuthentication(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+        try {
+            const session = req.session as CustomSession
+            const isLoggedIn = !!session.token // Check if the token exists in the session
+            const token = session.token || null // Retrieve the token from the session if it exists
+
+            res.json({ isLoggedIn, token })
+        } catch (error: any) {
+            res.status(500).json({ error: error.message })
+        }
     }
 }
 
