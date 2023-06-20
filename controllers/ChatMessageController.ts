@@ -5,9 +5,7 @@ import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 class ChatMessageController {
     async getMessage(req: Request, res: Response): Promise<void> {
         try {
-            const message = await ChatMessage.findByPk(
-                req.params.chat_message_id
-            )
+            const message = await ChatMessage.findByPk(req.params.id)
             res.json(message)
         } catch (error) {
             sequelizeErrorHandler(error)
@@ -27,12 +25,15 @@ class ChatMessageController {
 
     async updateMessage(req: Request, res: Response): Promise<void> {
         try {
+            const chatMessageId = Number(req.params.id)
+            if (isNaN(chatMessageId)) {
+                res.status(400).json({ error: 'Invalid chat_message_id' })
+                return
+            }
             await ChatMessage.update(req.body, {
-                where: { chat_message_id: Number(req.params.chat_message_id) },
+                where: { chat_message_id: chatMessageId },
             })
-            const updatedMessage = await ChatMessage.findByPk(
-                Number(req.params.chat_message_id)
-            )
+            const updatedMessage = await ChatMessage.findByPk(chatMessageId)
             res.json(updatedMessage)
         } catch (error) {
             sequelizeErrorHandler(error)
@@ -43,7 +44,7 @@ class ChatMessageController {
     async deleteMessage(req: Request, res: Response): Promise<void> {
         try {
             await ChatMessage.destroy({
-                where: { chat_message_id: Number(req.params.chat_message_id) },
+                where: { chat_message_id: Number(req.params.id) },
             })
             res.json({ message: 'Message deleted' })
         } catch (error) {
