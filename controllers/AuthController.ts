@@ -35,6 +35,7 @@ class AuthController {
             )
 
             // Set the token as an HTTP-only cookie
+            // check usage
             res.cookie(process.env.JWT_COOKIE_NAME, token, { httpOnly: true })
 
             // Return the token and user details
