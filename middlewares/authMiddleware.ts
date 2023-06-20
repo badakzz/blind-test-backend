@@ -17,6 +17,7 @@ export const requireAuth = (
         next()
     } else {
         // Session is not valid, redirect to the login page
+        res.status(401).json({ error: 'You must be logged in for that' })
         res.redirect('/login')
     }
 }
