@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import Chatroom from '../models/Chatroom'
+import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 
 class ChatroomController {
     static async getChatrooms(req: Request, res: Response): Promise<void> {
@@ -7,6 +8,7 @@ class ChatroomController {
             const chatrooms = await Chatroom.findAll()
             res.send(chatrooms)
         } catch (error: any) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -16,6 +18,7 @@ class ChatroomController {
             const chatroom = await Chatroom.findByPk(req.params.id)
             res.send(chatroom)
         } catch (error: any) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -24,7 +27,7 @@ class ChatroomController {
             const newChatroom = await Chatroom.create(req.body)
             res.status(201).send(newChatroom)
         } catch (error: any) {
-            console.log(error)
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -40,6 +43,7 @@ class ChatroomController {
                 res.status(404).send('Chatroom not found')
             }
         } catch (error: any) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }

@@ -14,6 +14,12 @@ router.put(
     requireAuth,
     UserController.updateUser
 )
+router.patch(
+    '/api/v1/users/:id',
+    requireCsrf,
+    requireAuth,
+    UserController.partialUpdateUser
+)
 router.delete(
     'api/v1/users/:id',
     requireCsrf,
@@ -23,5 +29,6 @@ router.delete(
 router.post('/api/auth/login', AuthController.login)
 router.post('/api/auth/signup', AuthController.signup)
 router.post('/api/auth/logout', requireCsrf, requireAuth, AuthController.logout)
+router.get('/api/auth/check', AuthController.checkAuthentication)
 
 export default router

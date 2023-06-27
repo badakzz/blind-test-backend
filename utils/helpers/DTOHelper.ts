@@ -1,5 +1,7 @@
-export const createDTOOmittingPassword = (obj: { password: string }) => {
-    const userWithoutPassword = { ...obj }
-    delete userWithoutPassword.password
-    return userWithoutPassword
+import User from '../../models/User'
+
+export const createDTOOmittingPassword = (obj: User) => {
+    const { dataValues, ...rest } = obj
+    const { password, ...userWithoutPassword } = dataValues
+    return { ...userWithoutPassword }
 }

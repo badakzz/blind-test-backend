@@ -1,12 +1,14 @@
 import { Request, Response } from 'express'
 import Playlist from '../models/Playlist'
+import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 
 class PlaylistController {
     static async getPlaylists(req: Request, res: Response) {
         try {
             const playlists = await Playlist.findAll()
             res.send(playlists)
-        } catch (error: any) {
+        } catch (error) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
@@ -15,7 +17,8 @@ class PlaylistController {
         try {
             const playlist = await Playlist.findByPk(req.params.id)
             res.send(playlist)
-        } catch (error: any) {
+        } catch (error) {
+            sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
