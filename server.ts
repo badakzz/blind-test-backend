@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import userRoutes from './routes/userRoutes'
 import chatroomRoutes from './routes/chatroomRoutes'
@@ -26,14 +25,6 @@ app.use(
 )
 
 app.use(express.json())
-
-app.use(
-    session({
-        secret: process.env.EXPRESS_SESSION_SECRET_KEY as string,
-        resave: false,
-        saveUninitialized: false,
-    })
-)
 
 app.use(cookieParser(process.env.CSRF_COOKIE_NAME))
 
