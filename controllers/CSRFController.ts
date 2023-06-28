@@ -6,7 +6,8 @@ export const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
         //@ts-ignore
         getSecret: (req) => req.secret,
         cookieName: process.env.CSRF_COOKIE_NAME,
-        cookieOptions: { sameSite: true, secure: true, signed: true },
+        cookieOptions: { sameSite: true, signed: true },
+        // secure: process.env.NODE_ENV === 'production' uncomment for production
         size: 64,
         ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
         getTokenFromRequest: (req) => req.headers['x-csrf-token'],
@@ -15,7 +16,11 @@ export const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
 const CSRFController = {
     getCSRF: (req, res) => {
         const csrfToken = generateToken(res, req)
-        res.json({ csrfToken })
+        res.cookie(process.env.CSRF_COOKIE_NAME, csrfToken, {
+            sameSite: true,
+            httpOnly: true,
+            // secure: process.env.NODE_ENV === 'production'
+        })
     },
 }
 

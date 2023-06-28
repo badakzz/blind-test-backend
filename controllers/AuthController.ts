@@ -3,37 +3,31 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import { createDTOOmittingPassword } from '../utils/helpers'
+import BlacklistedToken from '../models/BlacklistedToken'
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
+        console.log('login')
         const { email, password } = req.body
 
         try {
-            // Find the user by email
             const user = await User.findOne({ where: { email } })
             if (!user) {
                 res.status(401).json({ error: 'Invalid credentials' })
                 return
             }
 
-            // Compare passwords
             const passwordMatch = await bcrypt.compare(password, user.password)
             if (!passwordMatch) {
                 res.status(401).json({ error: 'Invalid credentials' })
                 return
             }
 
-            // Generate JWT token
             const token = jwt.sign(
                 { userId: user.user_id },
                 process.env.SECRET_KEY as string
             )
 
-            // Set the token as an HTTP-only cookie
-            // check usage
-            // res.cookie(process.env.JWT_COOKIE_NAME, token, { httpOnly: true })
-
-            // Return the token and user details
             const userDTO = createDTOOmittingPassword(user)
             console.log('Server response:', { token, user: userDTO })
 
@@ -57,10 +51,8 @@ class AuthController {
                 return
             }
 
-            // Hash the password
             const hashedPassword = await bcrypt.hash(password, 10)
 
-            // Create a new user
             const newUser = await User.create({
                 user_name,
                 email,
@@ -69,13 +61,11 @@ class AuthController {
                 is_active: true,
             })
 
-            // Generate JWT token
             const token = jwt.sign(
                 { userId: newUser.user_id },
                 process.env.SECRET_KEY as string
             )
 
-            // Return the token and user details
             const userDTO = createDTOOmittingPassword(newUser)
 
             res.json({ token, userDTO })
@@ -86,8 +76,33 @@ class AuthController {
     }
 
     static async logout(req: Request, res: Response): Promise<void> {
-        // Return a success message
-        res.status(200).json({ message: 'Logout successful' })
+        console.log('logout')
+        const authHeader = req.headers['authorization']
+        console.log('authHeader:', authHeader)
+
+        const token = authHeader && authHeader.split(' ')[1]
+        console.log('token:', token)
+
+        if (!token) {
+            res.status(401).json({ error: 'You must be logged in to logout' })
+            return Promise.resolve()
+        }
+
+        try {
+            const expiry = new Date()
+            expiry.setHours(expiry.getHours() + 1)
+            await BlacklistedToken.create({
+                token: token,
+                expiry: expiry,
+            })
+
+            res.status(200).json({ message: 'Logout successful' })
+        } catch (error: any) {
+            console.log('Error when blacklisting token:', error.message)
+            res.status(500).json({ error: 'Error occurred while logging out' })
+        }
+
+        return Promise.resolve()
     }
 
     static async checkAuthentication(
@@ -104,7 +119,6 @@ class AuthController {
                     .json({ error: 'No token provided' }) as any
             }
 
-            // Verify the token
             jwt.verify(
                 token,
                 process.env.SECRET_KEY as string,
@@ -123,7 +137,6 @@ class AuthController {
                                 .json({ error: 'User not found' })
                         }
 
-                        // We can send back some user details (without sensitive info) if required.
                         const userDTO = createDTOOmittingPassword(user)
                         res.status(200).json({ user: userDTO, token })
                     }
