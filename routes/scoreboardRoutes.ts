@@ -3,6 +3,18 @@ import { Router } from 'express'
 import ScoreboardController from '../controllers/ScoreboardController'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
 import { checkBlacklist } from '../middlewares/jwtBlacklistMiddleware'
+import CSRFController from '../controllers/CSRFController'
+import csrf from 'csurf'
+
+const csrfProtection = csrf({
+    cookie: {
+        key: process.env.CSRF_COOKIE_NAME,
+        sameSite: 'none',
+        httpOnly: true,
+        signed: true,
+        // secure: process.env.NODE_ENV === 'production'
+    },
+})
 
 const router = Router()
 
@@ -11,8 +23,8 @@ router.get('/api/v1/scoreboards/:id', ScoreboardController.getScoreboard)
 
 router.put(
     '/api/v1/scoreboards/',
-    requireCsrf,
-    requireAuth,
+    csrfProtection,
+    // requireAuth,
     checkBlacklist,
     ScoreboardController.updateScoreboard
 )

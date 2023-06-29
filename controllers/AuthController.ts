@@ -7,7 +7,6 @@ import BlacklistedToken from '../models/BlacklistedToken'
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
-        console.log('login')
         const { email, password } = req.body
 
         try {

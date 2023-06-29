@@ -1,37 +1,31 @@
+import express from 'express'
 import { Request, Response, NextFunction } from 'express'
-import { doubleCsrf } from 'csrf-csrf'
+import csrf from 'csurf'
+import cookieParser from 'cookie-parser'
 
-export const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
-    doubleCsrf({
-        //@ts-ignore
-        getSecret: (req) => req.secret,
-        cookieName: process.env.CSRF_COOKIE_NAME,
-        cookieOptions: { sameSite: true, signed: true },
-        // secure: process.env.NODE_ENV === 'production' uncomment for production
-        size: 64,
-        ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
-        getTokenFromRequest: (req) => req.headers['x-csrf-token'],
-    })
+const csrfProtection = csrf({
+    cookie: {
+        key: process.env.CSRF_COOKIE_NAME,
+        sameSite: 'none',
+        httpOnly: true,
+        signed: true,
+        // secure: process.env.NODE_ENV === 'production'
+    },
+})
 
 const CSRFController = {
     getCSRF: (req, res) => {
-        const csrfToken = generateToken(res, req)
+        const csrfToken = req.csrfToken()
+        console.log(`Generated CSRF token: ${csrfToken}`)
         res.cookie(process.env.CSRF_COOKIE_NAME, csrfToken, {
-            sameSite: true,
+            sameSite: 'none',
             httpOnly: true,
             // secure: process.env.NODE_ENV === 'production'
         })
+        res.status(200).send()
     },
 }
 
-export const withCsrf = (req: Request, res: Response, next: NextFunction) => {
-    doubleCsrfProtection(req, res, (error) => {
-        if (error === invalidCsrfTokenError) {
-            res.status(403).json({ error: 'CSRF validation error' })
-        } else {
-            next()
-        }
-    })
-}
+export const withCsrf = csrfProtection
 
 export default CSRFController

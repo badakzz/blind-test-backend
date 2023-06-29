@@ -26,7 +26,7 @@ app.use(
 
 app.use(express.json())
 
-app.use(cookieParser(process.env.CSRF_COOKIE_NAME))
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 
 app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
