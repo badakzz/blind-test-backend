@@ -81,7 +81,6 @@ class AuthController {
 
         if (!token) {
             res.status(401).json({ error: 'You must be logged in to logout' })
-            console.log('a')
             return Promise.resolve()
         }
 

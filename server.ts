@@ -47,6 +47,7 @@ app.use((req: AuthRequest, res: Response, next: NextFunction) => {
         return
     }
     if (token) {
+        console.log('verifying token from server')
         jwt.verify(
             token,
             process.env.JWT_SECRET_KEY as string,

@@ -1,13 +1,11 @@
-import { Request, Response, NextFunction } from 'express'
-import { withCsrf } from '../controllers/CSRFController'
 import csrf from 'csurf'
 import { Router } from 'express'
 
 const csrfProtection = csrf({
     cookie: {
         key: process.env.COOKIE_PARSER_SECRET,
-        sameSite: 'lax',
-        httpOnly: true,
+        sameSite: 'lax', // this and
+        httpOnly: true, // this config need to stay or client wont be able to validate token
         signed: false,
         // secure: process.env.NODE_ENV === 'production'
     },
