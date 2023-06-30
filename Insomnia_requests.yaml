@@ -1,6 +1,6 @@
 _type: export
 __export_format: 4
-__export_date: 2023-06-20T11:18:21.559Z
+__export_date: 2023-06-30T20:31:38.132Z
 __export_source: insomnia.desktop.app:v2023.2.2
 resources:
   - _id: req_4c5a875c148441ddb8643e4e874722dc
@@ -91,7 +91,7 @@ resources:
     _type: request
   - _id: req_ff238d79c07043c89762ed26dc4f35d9
     parentId: wrk_917908e88379446eb0211eeaf123c79d
-    modified: 1687199500183
+    modified: 1688156735943
     created: 1687090763130
     url: http://localhost:3002/api/v1/scoreboards
     name: Update scoreboard
@@ -113,12 +113,19 @@ resources:
         description: ""
       - id: pair_081b4855e7e84e578ed931b4b465d1ae
         name: "Authorization: Bearer"
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzAwOTg1Nn0.53SbTXYAzylvI2kT8MYFG3OLEilYQ6kPZ0KvvBjFV9Q
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4ODA4MTg4MX0.ayrnTYg3BMpuXM04N6z80c7hz6f8p8HMA6J2MXwHBNM
         description: ""
+        disabled: false
       - id: pair_72b81f52cddc489494fbf09ededd6c62
         name: X-CSRF-TOKEN
-        value: 728991e7ccf481c49a666012fe7c2addee49b61a29e27a61c5765004c7b3f0fad38801500bda11c7538542c32047ab8b913418aeb79eab40bf134fd96449c325
+        value: uEwZWTEx-ZceHRRF01IH1KCQSJDLecnJh4eQ
         description: ""
+        disabled: false
+      - id: pair_ec7fdbe961484c0baeddfde986c09eb9
+        name: withCredentials
+        value: "true"
+        description: ""
+        disabled: true
     authentication: {}
     metaSortKey: -1687090763130
     isPrivate: false
@@ -181,7 +188,7 @@ resources:
     _type: request
   - _id: req_2e1a68916fe8451d835234fbc173a989
     parentId: wrk_917908e88379446eb0211eeaf123c79d
-    modified: 1687091202991
+    modified: 1687989018717
     created: 1687008387498
     url: http://localhost:3002/api/auth/login
     name: Login
@@ -196,11 +203,52 @@ resources:
         value: application/json
         id: pair_abcae0ef56c6467bb0f913c6ca39e53d
       - id: pair_89cefa57eb1e4bb092909317aa9b9e01
-        name: X-XSRF-TOKEN
-        value: 231ca1e2fe4b269ab0d790205aacf45202acdaa81375956feaffcd2aef99d746987c2afbfcd144e8257fbb0562ec805b28afc32d3a7f6c57228c7a96daf15d6c
+        name: X-CSRF-TOKEN
+        value: 4b8fa2bc939c3fc7d6f12828dde87cb95097066609eded1046d84bddcb6d6fa7273f8f8a2f28da908ec652403067cb082274e693edad9d008e47ef77b9740087
         description: ""
     authentication: {}
     metaSortKey: -1687008387498
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_421bd00d606a4bd38545af4e93344310
+    parentId: wrk_917908e88379446eb0211eeaf123c79d
+    modified: 1688155879123
+    created: 1687901846374
+    url: http://localhost:3002/api/auth/logout
+    name: Logout
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: '{"email": "lucas.deray@greenscope.io"}'
+    parameters: []
+    headers:
+      - name: "Authorization: Bearer"
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4NzkwMjc3N30.ui7p6ECNJCMbmyYLhG16ERSyp2KjU9jexXHDcSlBqrI
+        id: pair_abcae0ef56c6467bb0f913c6ca39e53d
+        disabled: false
+      - id: pair_89cefa57eb1e4bb092909317aa9b9e01
+        name: X-CSRF-TOKEN
+        value: NLKyBKUt-pkCR72FEbuqsuVHvdE3c4BilDx4
+        description: ""
+        disabled: false
+      - id: pair_a1a860ee1ac1443c8c5d13fc15035b08
+        name: Content-Type
+        value: application/json
+        description: ""
+      - id: pair_c4a8c012f89c42e39708c6d056c6ecb7
+        name: withCredentials
+        value: "true"
+        description: ""
+        disabled: false
+    authentication: {}
+    metaSortKey: -1687005017014
     isPrivate: false
     settingStoreCookies: true
     settingSendCookies: true
@@ -410,43 +458,32 @@ resources:
     _type: environment
   - _id: jar_4c45071788f681093a2de1d34192a9defbdfb0b4
     parentId: wrk_917908e88379446eb0211eeaf123c79d
-    modified: 1687259830714
+    modified: 1688155720020
     created: 1686862912880
     name: Default Jar
     cookies:
-      - key: connect.sid
-        value: s%3AJ4zfAuNpfxDnEURDiHkfEzGRUC2FJI9C.q40W5Uig1II%2F%2FgF5wWdyHs9kdig%2FJKZb9YsH3RsztTE
+      - key: 9d6c8260585f06e2b302cc2cb7b827bf
+        value: rk9dsCQ8RRta0GEQhnwwxNnQ
         domain: localhost
         path: /
-        httpOnly: true
-        hostOnly: true
-        creation: 2023-06-17T13:49:02.339Z
-        lastAccessed: 2023-06-20T11:17:10.713Z
-        id: "3722421547380279"
-      - key: BlindtestCSRF
-        value: s%3Ae58366e8d3cb4e6073714a652c560ad41430fe330d19ed8e6350aa82498ed2a2.qgFREWuV3L%2BdobohU85kp1gY8KyUq3x941li5pzk7BY
-        domain: localhost
-        path: /
-        secure: true
-        httpOnly: true
-        extensions:
-          - SameSite=Strict
-        hostOnly: true
-        creation: 2023-06-18T11:33:10.942Z
-        lastAccessed: 2023-06-20T08:50:22.201Z
-        id: "03368894126418254"
-      - key: __Host-psifi.x-csrf-token
-        value: dcc54e5b081a5d3f63a63e0e8465193a3ea04414b48792b3640e25d59c677614
-        domain: localhost
-        path: /
-        secure: true
         httpOnly: true
         extensions:
           - SameSite=Lax
         hostOnly: true
-        creation: 2023-06-19T17:23:27.742Z
-        lastAccessed: 2023-06-19T18:30:45.494Z
-        id: "7471818814882565"
+        creation: 2023-06-30T00:31:30.277Z
+        lastAccessed: 2023-06-30T00:31:30.277Z
+        id: "8667860304296069"
+      - key: BlindtestCSRF
+        value: s%3AP-828qBE603Lg5vbnTNDzt9_.KMW%2BnRH6a%2F%2FzXjtGubBpfq0Sw8TKBRIQLGWZxpzYYJM
+        domain: localhost
+        path: /
+        httpOnly: true
+        extensions:
+          - SameSite=None
+        hostOnly: true
+        creation: 2023-06-30T20:08:40.020Z
+        lastAccessed: 2023-06-30T20:08:40.020Z
+        id: "3472214002676508"
     _type: cookie_jar
   - _id: spc_046dc67c5de2494391f94f66646d408c
     parentId: wrk_917908e88379446eb0211eeaf123c79d

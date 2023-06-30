@@ -26,7 +26,7 @@ app.use(
 
 app.use(express.json())
 
-app.use(cookieParser(process.env.CSRF_COOKIE_NAME))
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 
 app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
@@ -47,6 +47,7 @@ app.use((req: AuthRequest, res: Response, next: NextFunction) => {
         return
     }
     if (token) {
+        console.log('verifying token from server')
         jwt.verify(
             token,
             process.env.JWT_SECRET_KEY as string,
