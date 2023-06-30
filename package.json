@@ -4,7 +4,10 @@
     "license": "MIT",
     "scripts": {
         "all": "concurrently \"yarn run start --prefix ./http-server\" \"yarn run start --prefix ./websocket-server\"",
-        "all:dev": "concurrently \"yarn run dev --prefix ./http-server\" \"yarn run dev --prefix ./websocket-server\"",
+        "all:dev": "concurrently \"yarn --cwd http-server dev\" \"yarn --cwd websocket-server dev\"",
         "build:ts": "tsc"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.0"
     }
 }

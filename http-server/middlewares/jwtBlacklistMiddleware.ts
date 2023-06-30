@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { Op } from 'sequelize'
-import BlacklistedToken from '../../shared/models/BlacklistedToken'
+import BlacklistedToken from '../models/BlacklistedToken'
 
 export const checkBlacklist = async (
     req: Request,

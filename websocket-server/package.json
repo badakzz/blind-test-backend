@@ -9,7 +9,7 @@
     },
     "scripts": {
         "start": "ts-node ./dist/index.ts",
-        "dev": "node ./index.ts",
+        "dev": "ts-node ./index.ts",
         "build": "tsc"
     }
 }

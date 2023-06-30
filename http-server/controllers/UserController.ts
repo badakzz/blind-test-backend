@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
-import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
-import { createDTOOmittingPassword } from '../utils/helpers'
+import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
+import { createDTOOmittingPassword } from '../../http-server/utils/helpers'
 
 class UserController {
     async getUser(req: Request, res: Response): Promise<void> {
