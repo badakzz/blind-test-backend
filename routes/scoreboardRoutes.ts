@@ -8,11 +8,15 @@ import csrf from 'csurf'
 
 const csrfProtection = csrf({
     cookie: {
-        key: process.env.CSRF_COOKIE_NAME,
-        sameSite: 'none',
+        key: process.env.COOKIE_PARSER_SECRET,
+        sameSite: 'lax',
         httpOnly: true,
-        signed: true,
+        signed: false,
         // secure: process.env.NODE_ENV === 'production'
+    },
+    value: (req) => {
+        console.log('CSRF token from client:', req.headers['x-csrf-token'])
+        return req.headers['x-csrf-token']
     },
 })
 
@@ -25,7 +29,7 @@ router.put(
     '/api/v1/scoreboards/',
     csrfProtection,
     // requireAuth,
-    checkBlacklist,
+    // checkBlacklist,
     ScoreboardController.updateScoreboard
 )
 //  todo

@@ -75,15 +75,13 @@ class AuthController {
     }
 
     static async logout(req: Request, res: Response): Promise<void> {
-        console.log('logout')
         const authHeader = req.headers['authorization']
-        console.log('authHeader:', authHeader)
 
         const token = authHeader && authHeader.split(' ')[1]
-        console.log('token:', token)
 
         if (!token) {
             res.status(401).json({ error: 'You must be logged in to logout' })
+            console.log('a')
             return Promise.resolve()
         }
 

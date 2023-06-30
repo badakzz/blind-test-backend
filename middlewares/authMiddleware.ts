@@ -7,6 +7,7 @@ export const requireAuth = (
 ) => {
     const authHeader = req.headers.authorization
     const token = authHeader && authHeader.split(' ')[1] // Authorization: Bearer <token>
+    console.log('Executing middleware: requireAuth')
 
     if (token) {
         next()
