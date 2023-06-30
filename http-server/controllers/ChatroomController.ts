@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import Chatroom from '../models/Chatroom'
-import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
+import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
 
 class ChatroomController {
     static async getChatrooms(req: Request, res: Response): Promise<void> {

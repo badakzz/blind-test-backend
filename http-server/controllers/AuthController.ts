@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
-import { createDTOOmittingPassword } from '../utils/helpers'
+import { createDTOOmittingPassword } from '../../http-server/utils/helpers'
 import BlacklistedToken from '../models/BlacklistedToken'
 
 class AuthController {
