@@ -1,16 +1,38 @@
 import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+interface AuthRequest extends Request {
+    userId?: string
+}
 
 export const requireAuth = (
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
 ) => {
-    const authHeader = req.headers.authorization
-    const token = authHeader && authHeader.split(' ')[1] // Authorization: Bearer <token>
-
-    if (token) {
+    const token = req.headers.authorization?.split(' ')[1]
+    if (
+        req.path === '/api/auth/signup' ||
+        req.path === '/api/auth/login' ||
+        req.path === '/api/auth/csrf'
+    ) {
         next()
+        return
+    }
+    if (token) {
+        console.log('verifying token from server')
+        jwt.verify(
+            token,
+            process.env.JWT_SECRET_KEY as string,
+            (err: any, decoded: any) => {
+                if (err) {
+                    return res.status(401).json({ error: 'Invalid token' })
+                } else {
+                    req.userId = decoded.userId
+                    next()
+                }
+            }
+        )
     } else {
-        res.status(401).json({ error: 'You must be logged in for that' })
+        res.status(401).json({ error: 'Missing token' })
     }
 }

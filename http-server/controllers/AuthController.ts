@@ -24,7 +24,7 @@ class AuthController {
 
             const token = jwt.sign(
                 { userId: user.user_id },
-                process.env.SECRET_KEY as string
+                process.env.JWT_SECRET_KEY as string
             )
 
             const userDTO = createDTOOmittingPassword(user)
