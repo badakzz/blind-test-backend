@@ -1,6 +1,8 @@
 // csrfMiddleware.ts
 import csrf from 'csurf'
 
+console.log('auth middleware triggered')
+
 export const requireCsrf = csrf({
     cookie: {
         key: process.env.COOKIE_PARSER_SECRET,

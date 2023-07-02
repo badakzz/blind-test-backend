@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import Chatroom from '../models/Chatroom'
 import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
+import { generateUniqueId } from '../utils/helpers'
 
 class ChatroomController {
     static async getChatrooms(req: Request, res: Response): Promise<void> {
@@ -24,7 +25,12 @@ class ChatroomController {
     }
     static async createChatroom(req: Request, res: Response): Promise<void> {
         try {
-            const newChatroom = await Chatroom.create(req.body)
+            const chatroom = {
+                chatroom_id: generateUniqueId(),
+                ...req.body,
+            }
+
+            const newChatroom = await Chatroom.create(chatroom)
             res.status(201).send(newChatroom)
         } catch (error: any) {
             sequelizeErrorHandler(error)

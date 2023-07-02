@@ -3,7 +3,7 @@ import UserController from '../controllers/UserController'
 import AuthController from '../controllers/AuthController'
 import { requireAuth } from '../middlewares/authMiddleware'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
-import { checkBlacklist } from '../middlewares/jwtBlacklistMiddleware'
+import { checkJwtBlacklist } from '../middlewares/jwtBlacklistMiddleware'
 import csrf from 'csurf'
 
 const router = Router()
@@ -24,21 +24,21 @@ router.put(
     '/api/v1/users/:id',
     requireCsrf,
     requireAuth,
-    checkBlacklist,
+    checkJwtBlacklist,
     UserController.updateUser
 )
 router.patch(
     '/api/v1/users/:id',
     requireCsrf,
     requireAuth,
-    checkBlacklist,
+    checkJwtBlacklist,
     UserController.partialUpdateUser
 )
 router.delete(
     'api/v1/users/:id',
     requireCsrf,
     requireAuth,
-    checkBlacklist,
+    checkJwtBlacklist,
     UserController.deleteUser
 )
 router.post('/api/auth/login', AuthController.login)

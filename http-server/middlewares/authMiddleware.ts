@@ -10,6 +10,7 @@ export const requireAuth = (
     next: NextFunction
 ) => {
     const token = req.headers.authorization?.split(' ')[1]
+    console.log('auth middleware triggered')
     if (
         req.path === '/api/auth/signup' ||
         req.path === '/api/auth/login' ||

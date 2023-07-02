@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { Op } from 'sequelize'
 import BlacklistedToken from '../models/BlacklistedToken'
 
-export const checkBlacklist = async (
+export const checkJwtBlacklist = async (
     req: Request,
     res: Response,
     next: NextFunction

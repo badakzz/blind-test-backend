@@ -2,7 +2,7 @@ import { requireAuth } from './../middlewares/authMiddleware'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
 import { Router } from 'express'
 import ChatMessageController from '../controllers/ChatMessageController'
-import { checkBlacklist } from '../middlewares/jwtBlacklistMiddleware'
+import { checkJwtBlacklist } from '../middlewares/jwtBlacklistMiddleware'
 
 const router = Router()
 
@@ -16,7 +16,7 @@ router.put(
     '/api/v1/chat_messages/:id',
     requireCsrf,
     requireAuth,
-    checkBlacklist,
+    checkJwtBlacklist,
     ChatMessageController.updateMessage
 )
 router.delete(
