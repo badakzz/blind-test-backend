@@ -1,22 +1,7 @@
 import { Router } from 'express'
 import ScoreboardController from '../controllers/ScoreboardController'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
-import csrf from 'csurf'
 import { requireAuth } from '../middlewares/authMiddleware'
-
-// const csrfProtection = csrf({
-//     cookie: {
-//         key: process.env.COOKIE_PARSER_SECRET,
-//         sameSite: 'lax', // this and
-//         httpOnly: true, // this config need to stay or client wont be able to validate token
-//         signed: false,
-//         // secure: process.env.NODE_ENV === 'production'
-//     },
-//     value: (req) => {
-//         console.log('CSRF token from client:', req.headers['x-csrf-token'])
-//         return req.headers['x-csrf-token']
-//     },
-// })
 
 const router = Router()
 

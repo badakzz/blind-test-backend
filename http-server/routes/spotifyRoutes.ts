@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Router } from 'express'
+import Song from '../models/Song'
 
 let accessToken = ''
 
@@ -108,13 +109,18 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
                 tracksWithPreview[
                     Math.floor(Math.random() * tracksWithPreview.length)
                 ]
-            previews.push({
+            const newSong = {
+                spotify_song_id: randomTrack.track.id,
                 previewUrl: randomTrack.track.preview_url,
-                name: randomTrack.track.name,
-                artist: randomTrack.track.artists[0].name,
-            })
-        }
+                song_name: randomTrack.track.name,
+                artist_name: randomTrack.track.artists[0].name,
+            }
+            previews.push(newSong)
 
+            // Insert the new song into the database
+            await Song.upsert(newSong)
+        }
+        console.log('previews', previews)
         res.json(previews)
     } catch (error) {
         res.status(500).json({ error: error.toString() })
