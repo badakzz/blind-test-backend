@@ -39,24 +39,23 @@ io.on('connection', async (socket) => {
     })
 
     socket.on('joinRoom', (username, chatroomId) => {
-        connectedUsers.push({ id: socket.id, username, chatroomId })
         const chatroom = chatrooms.find((c) => c === chatroomId)
         if (chatroom) {
+            // Add the user to the connectedUsers array here
+            connectedUsers.push({ id: socket.id, username, chatroomId })
+
+            // Join the user to the chatroom
+            socket.join(chatroomId)
+
             io.to(chatroomId).emit('userConnected', username)
             io.to(chatroomId).emit(
                 'connectedUsers',
                 connectedUsers.filter((user) => user.chatroomId === chatroomId)
             )
-            console.log(
-                `User ${username} created and joined chatroom ${chatroom}`
-            )
+            console.log(`User ${username} joined chatroom ${chatroom}`)
         } else {
             console.log(`Chatroom with ID: ${chatroomId} not found.`)
         }
-        socket.join(chatroomId)
-        console.log(
-            `User ${username} joined the chatroom with ID: ${chatroomId}`
-        )
     })
 
     socket.on('disconnect', () => {
@@ -77,12 +76,13 @@ io.on('connection', async (socket) => {
 
     socket.on('chatMessage', (message) => {
         console.log(
-            `Received message ${message.message} from ${message.author} in chatroom ${message.chatroomId})`
+            `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
         )
         io.to(message.chatroomId).emit('chatMessage', message)
     })
 
     socket.on('startGame', (gameData) => {
+        console.log(`Received game data in room ${gameData.chatroomId}`)
         io.to(gameData.chatroomId).emit('gameStarted', gameData.trackPreviews)
     })
 
