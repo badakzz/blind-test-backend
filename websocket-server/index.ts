@@ -26,9 +26,12 @@ io.on('connection', async (socket) => {
 
     socket.on('createRoom', (username, chatroomId) => {
         socket.join(chatroomId)
-        connectedUsers.push(username)
+        connectedUsers.push({ id: socket.id, username, chatroomId })
         io.to(chatroomId).emit('userConnected', username)
-        io.to(chatroomId).emit('connectedUsers', connectedUsers)
+        io.to(chatroomId).emit(
+            'connectedUsers',
+            connectedUsers.filter((user) => user.chatroomId === chatroomId)
+        )
         chatrooms.push(chatroomId)
         console.log(
             `User ${username} created and joined chatroom ${chatroomId}`
@@ -36,13 +39,16 @@ io.on('connection', async (socket) => {
     })
 
     socket.on('joinRoom', (username, chatroomId) => {
-        connectedUsers.push(username)
+        connectedUsers.push({ id: socket.id, username, chatroomId })
         const chatroom = chatrooms.find((c) => c === chatroomId)
         if (chatroom) {
             io.to(chatroomId).emit('userConnected', username)
-            io.to(chatroomId).emit('connectedUsers', connectedUsers)
+            io.to(chatroomId).emit(
+                'connectedUsers',
+                connectedUsers.filter((user) => user.chatroomId === chatroomId)
+            )
             console.log(
-                `User ${username} created and joined chatroom ${chatroom.chatroomId}`
+                `User ${username} created and joined chatroom ${chatroom}`
             )
         } else {
             console.log(`Chatroom with ID: ${chatroomId} not found.`)
@@ -59,7 +65,12 @@ io.on('connection', async (socket) => {
         if (index !== -1) {
             const user = connectedUsers.splice(index, 1)[0]
             io.emit('userDisconnected', user)
-            io.emit('connectedUsers', connectedUsers)
+            io.to(user.chatroomId).emit(
+                'connectedUsers',
+                connectedUsers.filter(
+                    (usr) => usr.chatroomId === user.chatroomId
+                )
+            )
             console.log(`User ${user.username} left the chatroom`)
         }
     })
