@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import ChatMessage from '../models/ChatMessage'
+import User from '../models/User'
 import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 
 class ChatMessageController {
@@ -13,15 +14,58 @@ class ChatMessageController {
         }
     }
 
+    async getMessagesFromUser(req: Request, res: Response): Promise<void> {
+        try {
+            const messages = await ChatMessage.findAll({
+                include: [
+                    {
+                        model: User,
+                        as: 'user',
+                        attributes: ['username'],
+                    },
+                ],
+            })
+
+            res.json(messages)
+        } catch (error) {
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
+        }
+    }
+
     async createMessage(req: Request, res: Response): Promise<void> {
         try {
-            const newMessage = await ChatMessage.create(req.body)
+            const user = await User.findByPk(req.body.user_id)
+            if (!user) {
+                res.status(400).send('User not found')
+                return
+            }
+
+            // Create new message with author field
+            const newMessage = await ChatMessage.create({
+                ...req.body,
+                author: user.user_name, // add the author field here
+            })
+
             res.json(newMessage)
         } catch (error) {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
     }
+
+    // async createMessage(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         const newMessage = await ChatMessage.create({
+    //             ...req.body,
+    //             author: // Retrieve author (username) here. You may need another database call or middleware to get the username
+    //         })
+    //         res.json(newMessage)
+    //     } catch (error) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
     async updateMessage(req: Request, res: Response): Promise<void> {
         try {

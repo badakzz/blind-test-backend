@@ -9,6 +9,7 @@ interface ChatMessageAttributes {
     content: string
     is_flagged: boolean
     reporter_id?: string
+    author: string // New field
 }
 
 interface ChatMessageCreationAttributes
@@ -24,7 +25,7 @@ class ChatMessage
     public content!: string
     public is_flagged!: boolean
     public reporter_id?: string
-
+    public author!: string
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
 }
@@ -59,6 +60,10 @@ ChatMessage.init(
         },
         reporter_id: {
             type: DataTypes.STRING,
+        },
+        author: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
     },
     {

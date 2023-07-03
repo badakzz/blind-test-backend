@@ -3,7 +3,6 @@ import ScoreboardController from '../controllers/ScoreboardController'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
 import csrf from 'csurf'
 import { requireAuth } from '../middlewares/authMiddleware'
-import { checkJwtBlacklist } from '../middlewares/jwtBlacklistMiddleware'
 
 // const csrfProtection = csrf({
 //     cookie: {
@@ -28,7 +27,6 @@ router.put(
     '/api/v1/scoreboards/',
     requireAuth,
     requireCsrf,
-    checkJwtBlacklist,
     ScoreboardController.updateScoreboard
 )
 //  todo

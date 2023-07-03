@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import { createDTOOmittingPassword } from '../../http-server/utils/helpers'
-import BlacklistedToken from '../models/BlacklistedToken'
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
@@ -62,7 +61,8 @@ class AuthController {
 
             const token = jwt.sign(
                 { userId: newUser.user_id },
-                process.env.SECRET_KEY as string
+                process.env.SECRET_KEY as string,
+                { expiresIn: '7d' }
             )
 
             const userDTO = createDTOOmittingPassword(newUser)
@@ -84,20 +84,7 @@ class AuthController {
             return Promise.resolve()
         }
 
-        try {
-            const expiry = new Date()
-            expiry.setHours(expiry.getHours() + 1)
-            await BlacklistedToken.create({
-                token: token,
-                expiry: expiry,
-            })
-
-            res.status(200).json({ message: 'Logout successful' })
-        } catch (error: any) {
-            console.log('Error when blacklisting token:', error.message)
-            res.status(500).json({ error: 'Error occurred while logging out' })
-        }
-
+        res.status(200).json({ message: 'Logout successful' })
         return Promise.resolve()
     }
 

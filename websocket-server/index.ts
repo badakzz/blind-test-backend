@@ -17,25 +17,39 @@ const PORT = process.env.NODE_WEBSOCKET_PORT || 3001
 
 const connectedUsers: { id: string; username: string; chatroomId: string }[] =
     []
+const chatrooms = []
+
+console.log('userArray', connectedUsers)
 
 io.on('connection', async (socket) => {
     console.log(`User connected with ID: ${socket.id}`)
 
-    socket.on('createRoom', (user) => {
-        socket.join(user.chatroomId)
-        connectedUsers.push(user)
-        io.to(user.chatroomId).emit('userConnected', user)
-        io.to(user.chatroomId).emit('connectedUsers', connectedUsers)
+    socket.on('createRoom', (username, chatroomId) => {
+        socket.join(chatroomId)
+        connectedUsers.push(username)
+        io.to(chatroomId).emit('userConnected', username)
+        io.to(chatroomId).emit('connectedUsers', connectedUsers)
+        chatrooms.push(chatroomId)
         console.log(
-            `User ${user.username} created and joined chatroom ${user.chatroomId}`
+            `User ${username} created and joined chatroom ${chatroomId}`
         )
     })
 
-    socket.on('joinRoom', (user) => {
-        connectedUsers.push(user)
-        socket.join(user.chatroomId)
+    socket.on('joinRoom', (username, chatroomId) => {
+        connectedUsers.push(username)
+        const chatroom = chatrooms.find((c) => c === chatroomId)
+        if (chatroom) {
+            io.to(chatroomId).emit('userConnected', username)
+            io.to(chatroomId).emit('connectedUsers', connectedUsers)
+            console.log(
+                `User ${username} created and joined chatroom ${chatroom.chatroomId}`
+            )
+        } else {
+            console.log(`Chatroom with ID: ${chatroomId} not found.`)
+        }
+        socket.join(chatroomId)
         console.log(
-            `User ${user.username} joined the chatroom with ID: ${user.chatroomId}`
+            `User ${username} joined the chatroom with ID: ${chatroomId}`
         )
     })
 
@@ -51,6 +65,9 @@ io.on('connection', async (socket) => {
     })
 
     socket.on('chatMessage', (message) => {
+        console.log(
+            `Received message ${message.message} from ${message.author} in chatroom ${message.chatroomId})`
+        )
         io.to(message.chatroomId).emit('chatMessage', message)
     })
 
