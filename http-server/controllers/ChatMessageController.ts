@@ -4,7 +4,7 @@ import User from '../models/User'
 import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 
 class ChatMessageController {
-    async getMessage(req: Request, res: Response): Promise<void> {
+    static async getMessage(req: Request, res: Response): Promise<void> {
         try {
             const message = await ChatMessage.findByPk(req.params.id)
             res.json(message)
@@ -14,7 +14,10 @@ class ChatMessageController {
         }
     }
 
-    async getMessagesFromUser(req: Request, res: Response): Promise<void> {
+    static async getMessagesFromUser(
+        req: Request,
+        res: Response
+    ): Promise<void> {
         try {
             const messages = await ChatMessage.findAll({
                 include: [
@@ -33,7 +36,7 @@ class ChatMessageController {
         }
     }
 
-    async createMessage(req: Request, res: Response): Promise<void> {
+    static async createMessage(req: Request, res: Response): Promise<void> {
         try {
             const user = await User.findByPk(req.body.user_id)
             if (!user) {
@@ -67,7 +70,7 @@ class ChatMessageController {
     //     }
     // }
 
-    async updateMessage(req: Request, res: Response): Promise<void> {
+    static async updateMessage(req: Request, res: Response): Promise<void> {
         try {
             const chatMessageId = Number(req.params.id)
             if (isNaN(chatMessageId)) {
@@ -85,7 +88,7 @@ class ChatMessageController {
         }
     }
 
-    async deleteMessage(req: Request, res: Response): Promise<void> {
+    static async deleteMessage(req: Request, res: Response): Promise<void> {
         try {
             await ChatMessage.destroy({
                 where: { chat_message_id: Number(req.params.id) },
@@ -98,4 +101,4 @@ class ChatMessageController {
     }
 }
 
-export default new ChatMessageController()
+export default ChatMessageController

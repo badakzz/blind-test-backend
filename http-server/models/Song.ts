@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize'
+import { Sequelize, DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database'
 import Playlist from './Playlist'
 
@@ -21,6 +21,7 @@ Song.init(
         spotify_song_id: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
         },
         song_name: {
             type: DataTypes.STRING,
@@ -40,8 +41,8 @@ Song.init(
         },
     },
     {
-        tableName: 'songs',
         sequelize,
+        tableName: 'songs',
         timestamps: false,
     }
 )

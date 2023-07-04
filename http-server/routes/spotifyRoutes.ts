@@ -1,8 +1,12 @@
 import axios from 'axios'
 import { Router } from 'express'
+import Guess from '../models/Guess'
 import Playlist from '../models/Playlist'
 import Song from '../models/Song'
-import { createDTOOmittingArtistAndSongNames } from '../utils/helpers'
+import {
+    createDTOOmittingArtistAndSongNames,
+    tempCreateDTOOmittingArtistAndSongNames,
+} from '../utils/helpers'
 
 let accessToken = ''
 
@@ -101,6 +105,12 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
         if (!accessToken) {
             await getAccessToken()
         }
+        const chatroomId = req.query.chatroomId
+        if (!chatroomId) {
+            // Handle the error case when chatroomId is not provided
+            console.log('Chatroom id is not provided')
+        }
+        console.log('chatroomId', chatroomId)
         // Fetch the playlist
         const responsePlaylist = await axios.get(
             `https://api.spotify.com/v1/playlists/${req.params.playlistId}`,
@@ -159,23 +169,27 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
                     song_name: randomTrack.track.name,
                     artist_name: randomTrack.track.artists[0].name,
                     playlist_id: playlist.playlist_id,
+                    song_id: null,
                 }
-                previews.push(newSong)
                 // Insert the new song into the database
                 try {
                     const [song, created] = await Song.upsert(newSong)
-                    if (!song) {
-                        console.log(
-                            `Upserting the song returned null or undefined for song ID: ${newSong.spotify_song_id}`
-                        )
-                    }
+                    newSong.song_id = song.song_id
+                    previews.push(newSong)
+                    await Guess.create({
+                        chatroom_id: chatroomId,
+                        song_id: song.song_id,
+                    })
                 } catch (error) {
-                    console.log(`Error during Song.upsert operation: ${error}`)
+                    console.log(
+                        `Error during Song.upsert or Guess.create operation: ${error}`
+                    )
                     throw error
                 }
             }
         }
-        res.json(createDTOOmittingArtistAndSongNames(previews as Song[]))
+        // to change after tests
+        res.json(tempCreateDTOOmittingArtistAndSongNames(previews as Song[]))
     } catch (error) {
         console.log(`Error caught in '/api/tracks/:playlistId' route: ${error}`)
         res.status(500).json({ error: error.toString() })

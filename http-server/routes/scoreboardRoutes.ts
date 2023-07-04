@@ -8,12 +8,12 @@ const router = Router()
 router.get('/api/v1/scoreboards', ScoreboardController.getScoreboards)
 router.get('/api/v1/scoreboards/:id', ScoreboardController.getScoreboard)
 
-router.put(
-    '/api/v1/scoreboards/',
-    requireAuth,
-    requireCsrf,
-    ScoreboardController.updateScoreboard
-)
+// router.put(
+//     '/api/v1/scoreboards/',
+//     requireAuth,
+//     requireCsrf,
+//     ScoreboardController.updateScoreboard
+// )
 //  todo
 // router.put(
 //     '/api/v1/scoreboards/',

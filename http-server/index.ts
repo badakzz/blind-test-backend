@@ -7,9 +7,10 @@ import userRoutes from './routes/userRoutes'
 import chatroomRoutes from './routes/chatroomRoutes'
 import chatMessageRoutes from './routes/chatMessageRoutes'
 import csrfRoute from './routes/csrfRoute'
-import gameRoutes from './routes/gameRoutes'
+import guessRoutes from './routes/guessRoutes'
 import scoreboardRoutes from './routes/scoreboardRoutes'
 import spotifyRoutes from './routes/spotifyRoutes'
+import songRoutes from './routes/songRoutes'
 
 const app = express()
 
@@ -30,7 +31,8 @@ app.use(chatMessageRoutes)
 app.use(userRoutes)
 app.use(scoreboardRoutes)
 app.use(spotifyRoutes)
-app.use(gameRoutes)
+app.use(guessRoutes)
+app.use(songRoutes)
 app.use(csrfRoute)
 
 // Middleware for verifying JWT tokens

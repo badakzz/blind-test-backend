@@ -16,7 +16,7 @@ class SongController {
 
     static async getSong(req: Request, res: Response): Promise<void> {
         try {
-            const song = await Song.findByPk(req.params.id)
+            const song = await SongController.fetchSong(req.params.id)
             res.send(song)
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -60,6 +60,10 @@ class SongController {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
+    }
+
+    static async fetchSong(id: string): Promise<Song> {
+        return await Song.findByPk(id)
     }
 }
 

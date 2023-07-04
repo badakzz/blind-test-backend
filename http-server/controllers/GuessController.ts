@@ -1,52 +1,65 @@
 import { Request, Response } from 'express'
+import Song from '../models/Song'
 import Guess from '../models/Guess'
-import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
+import { analyzeAnswerAndAttributeScore } from '../utils/helpers'
+import ScoreboardController from './ScoreboardController'
+import { Server } from 'socket.io'
+import SongController from './SongController'
 
 class GuessController {
-    static async getGuesses(req: Request, res: Response): Promise<void> {
-        try {
-            const guesses = await Guess.findAll()
-            res.send(guesses)
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
+    static async createGuess(
+        chatroomId: string,
+        userId: number,
+        songId: string,
+        guess: string,
+        io: Server
+    ): Promise<{ userId: number; correctGuessType: string }> {
+        // Fetch the current song from the database
+        console.log(
+            'createGuess received args',
+            chatroomId,
+            userId,
+            songId,
+            guess
+        )
+        console.log('songId', songId, typeof songId)
+        const song = await SongController.fetchSong(songId)
+        console.log('createGuess song')
+        // Normalize the guess
+        const normalizedGuessWords = guess.split(' ')
+
+        // Analyze the answer and get the score
+        const scoreData = analyzeAnswerAndAttributeScore(
+            userId,
+            chatroomId,
+            song.song_name.split(' '),
+            normalizedGuessWords,
+            song.artist_name.split(' ')
+        )
+        console.log('createGuess scoreData', scoreData)
+        // Update the Scoreboard
+        const score = await ScoreboardController.updateScoreboard(
+            userId,
+            chatroomId,
+            scoreData.points,
+            io
+        )
+        console.log('createGuess score', score)
+
+        return score
+            ? {
+                  userId: scoreData.userId,
+                  correctGuessType: scoreData.correctGuessType,
+              }
+            : null
     }
 
-    static async getGuess(req: Request, res: Response): Promise<void> {
-        try {
-            const guess = await Guess.findByPk(req.params.id)
-            res.send(guess)
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
-
-    static async createGuess(req: Request, res: Response): Promise<void> {
-        try {
-            const newGuess = await Guess.create(req.body)
-            res.status(201).send(newGuess)
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
-
-    static async deleteGuess(req: Request, res: Response): Promise<void> {
-        try {
-            const guess = await Guess.findByPk(req.params.id)
-
-            if (guess) {
-                await guess.destroy()
-                res.status(204).send('Guess deleted')
-            } else {
-                res.status(404).send('Guess not found')
-            }
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
+    static async getGuess(req: Request, res: Response) {
+        const guess = await Guess.findOne({
+            where: { chatroom_id: req.params.chatroomId },
+            include: ['song', 'songGuesser', 'artistGuesser'],
+        })
+        res.json(guess)
     }
 }
 

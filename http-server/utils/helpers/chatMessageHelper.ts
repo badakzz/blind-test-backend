@@ -31,3 +31,29 @@ export const calculateAnswerSimilarity = (a, b) => {
     const longestLength = Math.max(a.length, b.length)
     return (longestLength - distance) / longestLength
 }
+
+export function normalizeAnswer(answer) {
+    // Remove all non-alphanumeric characters (except for spaces and dashes)
+    answer = answer.toLowerCase().replace(/[^\w\s-]/gi, '')
+
+    // Remove words in parentheses
+    answer = answer.replace(/ *\([^)]*\) */g, ' ')
+
+    // If there's a dash in the song name, only keep what's after the dash
+    if (answer.includes('-')) {
+        answer = answer.substring(answer.indexOf('-') + 1)
+    }
+
+    // If the answer starts with a number, remove it (and the following space)
+    answer = answer.replace(/^\d+\s/, '')
+
+    // If there's a "feat" in the song name, only keep what's before "feat"
+    if (answer.includes('feat')) {
+        answer = answer.substring(0, answer.indexOf('feat'))
+    }
+
+    // Remove multiple spaces
+    answer = answer.replace(/\s+/g, ' ').trim()
+
+    return answer
+}

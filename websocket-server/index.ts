@@ -1,6 +1,8 @@
 import express from 'express'
 import * as http from 'http'
 import { Server } from 'socket.io'
+import ChatMessage from '../http-server/models/ChatMessage'
+import GameService from '../http-server/utils/services/GameService'
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -18,6 +20,7 @@ const PORT = process.env.NODE_WEBSOCKET_PORT || 3001
 const connectedUsers: { id: string; username: string; chatroomId: string }[] =
     []
 const chatrooms = []
+const gameServices = {}
 
 console.log('userArray', connectedUsers)
 
@@ -36,6 +39,7 @@ io.on('connection', async (socket) => {
         console.log(
             `User ${username} created and joined chatroom ${chatroomId}`
         )
+        gameServices[chatroomId] = new GameService(chatroomId, io)
     })
 
     socket.on('joinRoom', (username, chatroomId) => {
@@ -79,6 +83,14 @@ io.on('connection', async (socket) => {
             `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
         )
         io.to(message.chatroomId).emit('chatMessage', message)
+        if (gameServices[message.chatroomId]) {
+            gameServices[message.chatroomId].processChatMessage({
+                chatroom_id: message.chatroomId,
+                author: message.author,
+                content: message.content,
+                user_id: message.userId,
+            } as ChatMessage)
+        }
     })
 
     socket.on('startGame', (gameData) => {

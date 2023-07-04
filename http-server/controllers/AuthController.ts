@@ -50,7 +50,7 @@ class AuthController {
             }
 
             const hashedPassword = await bcrypt.hash(password, 10)
-
+            console.log('y')
             const newUser = await User.create({
                 user_name,
                 email,
@@ -59,12 +59,13 @@ class AuthController {
                 is_active: true,
             })
 
+            console.log('yo')
             const token = jwt.sign(
                 { userId: newUser.user_id },
-                process.env.SECRET_KEY as string,
+                process.env.JWT_SECRET_KEY as string,
                 { expiresIn: '7d' }
             )
-
+            console.log('yoo')
             const userDTO = createDTOOmittingPassword(newUser)
 
             res.json({ token, userDTO })

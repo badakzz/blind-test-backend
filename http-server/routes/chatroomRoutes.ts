@@ -14,5 +14,14 @@ router.delete(
     requireAuth,
     ChatroomController.deleteChatroom
 )
+router.get(
+    '/api/v1/chatrooms/:chatroom_id/current_song_playing_id',
+    ChatroomController.getCurrentSongPlayingId
+)
+router.put(
+    '/api/v1/chatrooms/:chatroom_id/current_song_playing_id',
+    requireCsrf,
+    ChatroomController.setCurrentSongPlaying
+)
 
 export default router

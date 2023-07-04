@@ -33,25 +33,31 @@ class ScoreboardController {
         }
     }
 
-    static async updateScoreboard(req: Request, res: Response): Promise<void> {
-        const { user_id, chatroom_id, points } = req.body
+    static async updateScoreboard(
+        user_id: number,
+        chatroom_id: string,
+        points: number,
+        io
+    ) {
+        // Check if the user's score exists in the scoreboard
+        let score = await Scoreboard.findOne({
+            where: { user_id: user_id, chatroom_id: chatroom_id },
+        })
 
-        try {
-            const existingScoreboard = await Scoreboard.findOne({
-                where: { user_id, chatroom_id },
-            })
-
-            if (existingScoreboard) {
-                existingScoreboard.points = points
-                await existingScoreboard.save()
-                res.json({ message: 'Scoreboard updated successfully' })
-            } else {
-                res.status(404).json({ error: 'Scoreboard not found' })
-            }
-        } catch (error) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
+        if (score) {
+            // Update the score
+            score.points += points
+            await score.save()
+        } else {
+            // Create a new score
+            score = await Scoreboard.create({ user_id, chatroom_id, points })
         }
+
+        if (score) {
+            // Emit the updated score
+            io.to(chatroom_id).emit('scoreUpdate', score)
+            return score
+        } else return null
     }
 }
 

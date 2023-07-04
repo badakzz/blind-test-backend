@@ -21,3 +21,16 @@ export const createDTOOmittingArtistAndSongNames = (obj: Song[]) => {
     })
     return songs
 }
+
+export const tempCreateDTOOmittingArtistAndSongNames = (obj: Song[]) => {
+    let songs: Partial<Song>[] = []
+    obj.forEach((song) => {
+        const {
+            playlist_id,
+            spotify_song_id,
+            ...songWithoutArtistAndSongNames
+        } = song
+        songs.push(songWithoutArtistAndSongNames)
+    })
+    return songs
+}

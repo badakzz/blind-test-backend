@@ -1,44 +1,51 @@
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
+import Song from './Song'
+import User from './User'
+import Chatroom from './Chatroom'
 
 class Guess extends Model {
     public guess_id!: number
-    public song_id!: number
-    public user_id!: string
     public chatroom_id!: string
-    public has_guessed_artist!: boolean
-    public has_guessed_song!: boolean
-    public timestamp!: Date
+    public song_id!: number
+    public song_guesser_id!: number
+    public artist_guesser_id!: number
 }
 
 Guess.init(
     {
         guess_id: {
             type: DataTypes.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
-        },
-        song_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'songs',
-                key: 'song_id',
-            },
-        },
-        user_id: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            autoIncrement: true,
         },
         chatroom_id: {
             type: DataTypes.STRING,
-            allowNull: false,
+            references: {
+                model: Chatroom,
+                key: 'chatroom_id',
+            },
         },
-        has_guessed_artist: {
-            type: DataTypes.BOOLEAN,
+        song_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: Song,
+                key: 'song_id',
+            },
         },
-        has_guessed_song: {
-            type: DataTypes.BOOLEAN,
+        song_guesser_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: User,
+                key: 'user_id',
+            },
+        },
+        artist_guesser_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: User,
+                key: 'user_id',
+            },
         },
     },
     {
