@@ -3,7 +3,7 @@ import sequelize from '../config/database'
 
 class Guess extends Model {
     public guess_id!: number
-    public song_id!: string
+    public song_id!: number
     public user_id!: string
     public chatroom_id!: string
     public has_guessed_artist!: boolean
@@ -19,11 +19,11 @@ Guess.init(
             primaryKey: true,
         },
         song_id: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'songs', // This is a reference to another model
-                key: 'spotify_song_id', // This is the column name of the referenced model
+                model: 'songs',
+                key: 'song_id',
             },
         },
         user_id: {
@@ -40,15 +40,12 @@ Guess.init(
         has_guessed_song: {
             type: DataTypes.BOOLEAN,
         },
-        timestamp: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
     },
     {
         tableName: 'guesses',
         sequelize,
-        timestamps: false,
+        timestamps: true,
+        underscored: true,
     }
 )
 

@@ -1,10 +1,14 @@
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
+import Guess from './Guess'
 
 class Playlist extends Model {
     public playlist_id!: number
-    public playlist_name!: string
-    public user_id!: number
+    public spotify_playlist_id!: string
+    public name!: string
+    public genre_id!: string
+    public readonly createdAt!: Date
+    public readonly updatedAt!: Date
 }
 
 Playlist.init(
@@ -14,18 +18,25 @@ Playlist.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        playlist_name: {
+        genre_id: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        user_id: {
-            type: DataTypes.INTEGER,
+        spotify_playlist_id: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
+        name: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
     },
     {
-        tableName: 'playlists',
         sequelize,
+        modelName: 'Playlist',
+        timestamps: true,
+        underscored: true,
     }
 )
 

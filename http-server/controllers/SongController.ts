@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import Song from '../models/Song'
 import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
+import sequelize from '../config/database'
 
 class SongController {
     static async getSongs(req: Request, res: Response): Promise<void> {
@@ -21,6 +22,18 @@ class SongController {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
+    }
+
+    static async getRandomSong(playlistId: number) {
+        const song = await Song.findOne({
+            where: { playlistId }, // Use the playlistId in the query
+            order: sequelize.random(), // sequelize.random() generates a random order
+        })
+        if (!song) {
+            throw new Error('No songs found')
+        }
+
+        return song
     }
 
     static async createSong(req: Request, res: Response): Promise<void> {

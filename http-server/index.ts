@@ -7,7 +7,7 @@ import userRoutes from './routes/userRoutes'
 import chatroomRoutes from './routes/chatroomRoutes'
 import chatMessageRoutes from './routes/chatMessageRoutes'
 import csrfRoute from './routes/csrfRoute'
-import guessedSongRoutes from './routes/guessedSongsRoutes'
+import gameRoutes from './routes/gameRoutes'
 import scoreboardRoutes from './routes/scoreboardRoutes'
 import spotifyRoutes from './routes/spotifyRoutes'
 
@@ -29,8 +29,8 @@ app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
 app.use(userRoutes)
 app.use(scoreboardRoutes)
-app.use(guessedSongRoutes)
 app.use(spotifyRoutes)
+app.use(gameRoutes)
 app.use(csrfRoute)
 
 // Middleware for verifying JWT tokens

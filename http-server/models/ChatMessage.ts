@@ -9,7 +9,7 @@ interface ChatMessageAttributes {
     content: string
     is_flagged: boolean
     reporter_id?: string
-    author: string // New field
+    author: string
 }
 
 interface ChatMessageCreationAttributes
