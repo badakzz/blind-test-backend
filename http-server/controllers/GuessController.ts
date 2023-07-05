@@ -32,8 +32,8 @@ class GuessController {
         const score = await ScoreboardController.updateScoreboard(
             userId,
             chatroomId,
-            scoreData.points
-            // io
+            scoreData.points,
+            io
         )
 
         return score

@@ -33,7 +33,7 @@ export default class GameService {
                 // Emit response back to the client
                 const username = UserController.getUserById(result.userId)
                 const correctGuessMessage = {
-                    content: `${username} guessed the ${result.correctGuessType} correctly!`,
+                    content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
                     author: "SYSTEM",
                 }
                 this.io
