@@ -13,7 +13,7 @@ class GuessController {
         songId: number,
         guess: string,
         io: Server
-    ): Promise<{ userId: number; correctGuessType: string }> {
+    ): Promise<{ userId: number; correctGuessType: string; points: number }> {
         // Fetch the current song from the database
         const song = await SongController.fetchSong(songId)
 
@@ -40,6 +40,7 @@ class GuessController {
             ? {
                   userId: scoreData.userId,
                   correctGuessType: scoreData.correctGuessType,
+                  points: score.points,
               }
             : null
     }

@@ -94,8 +94,13 @@ io.on("connection", async (socket) => {
     })
 
     socket.on("startGame", (gameData) => {
-        console.log(`Received game data in room ${gameData.chatroomId}`)
-        io.to(gameData.chatroomId).emit("gameStarted", gameData.trackPreviews)
+        console.log(
+            `Received game data in room ${gameData.chatroomId}: current song ${gameData.currentSongId}\n tracklist \n ${gameData.trackPreviewList}`
+        )
+        io.to(gameData.chatroomId).emit("gameStarted", {
+            currentSongId: gameData.currentSongId,
+            trackPreviewList: gameData.trackPreviewList,
+        })
     })
 
     socket.on("correctGuess", (guessData) => {

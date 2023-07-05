@@ -36,9 +36,13 @@ export default class GameService {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
                     author: "SYSTEM",
                 }
-                this.io
-                    .to(this.chatroomId)
-                    .emit("chatMessage", correctGuessMessage)
+                result.points > 1.5
+                    ? this.io
+                          .to(this.chatroomId)
+                          .emit("gameOver", message.author)
+                    : this.io
+                          .to(this.chatroomId)
+                          .emit("chatMessage", correctGuessMessage)
             } else {
                 this.io
                     .to(message.chatroom_id)
