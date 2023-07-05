@@ -1,23 +1,24 @@
-import { internalServerErrorHandler } from './utils/ErrorHandlers'
-import { Request, Response, NextFunction } from 'express'
-import cors from 'cors'
-import express from 'express'
-import cookieParser from 'cookie-parser'
-import userRoutes from './routes/userRoutes'
-import chatroomRoutes from './routes/chatroomRoutes'
-import chatMessageRoutes from './routes/chatMessageRoutes'
-import csrfRoute from './routes/csrfRoute'
-import guessRoutes from './routes/guessRoutes'
-import scoreboardRoutes from './routes/scoreboardRoutes'
-import spotifyRoutes from './routes/spotifyRoutes'
-import songRoutes from './routes/songRoutes'
+import { internalServerErrorHandler } from "./utils/ErrorHandlers"
+import { Request, Response, NextFunction } from "express"
+import cors from "cors"
+import express from "express"
+import cookieParser from "cookie-parser"
+import userRoutes from "./routes/userRoutes"
+import chatroomRoutes from "./routes/chatroomRoutes"
+import chatMessageRoutes from "./routes/chatMessageRoutes"
+import csrfRoute from "./routes/csrfRoute"
+import guessRoutes from "./routes/guessRoutes"
+import scoreboardRoutes from "./routes/scoreboardRoutes"
+import spotifyRoutes from "./routes/spotifyRoutes"
+import songRoutes from "./routes/songRoutes"
+import sequelize from "./config/database"
 
 const app = express()
 
 app.use(
     cors({
         // origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
-        origin: 'http://localhost:3000',
+        origin: "http://localhost:3000",
         credentials: true,
     })
 )
@@ -39,7 +40,7 @@ app.use(csrfRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack)
-    res.status(500).send('Something broke!')
+    res.status(500).send("Something broke!")
 })
 
 app.use(internalServerErrorHandler as any)
@@ -51,8 +52,16 @@ app.use(internalServerErrorHandler as any)
 // })
 
 const PORT = process.env.NODE_SERVER_PORT || 3002
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`)
-})
+sequelize
+    .sync()
+    .then(() => {
+        console.log("Database synced successfully.")
+
+        // We only start the server if the database sync is successful
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}.`)
+        })
+    })
+    .catch((error) => console.error("Failed to sync database:", error))
 
 export default app
