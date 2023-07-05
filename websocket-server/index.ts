@@ -107,8 +107,9 @@ io.on("connection", async (socket) => {
         io.to(guessData.chatroomId).emit("correctGuess", guessData)
     })
 
-    socket.on("gameOver", (gameData) => {
-        io.to(gameData.chatroomId).emit("gameOver", gameData)
+    socket.on("gameOver", (author, chatroomId) => {
+        console.log("Game is over")
+        io.to(chatroomId).emit("gameOver", author)
     })
 })
 

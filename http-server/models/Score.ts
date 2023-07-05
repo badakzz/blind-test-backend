@@ -1,13 +1,13 @@
-import { Model, DataTypes } from 'sequelize'
-import sequelize from '../config/database'
+import { Model, DataTypes } from "sequelize"
+import sequelize from "../config/database"
 
-class Scoreboard extends Model {
+class Score extends Model {
     public chatroom_id!: string
     public user_id!: number
     public points!: number
 }
 
-Scoreboard.init(
+Score.init(
     {
         chatroom_id: {
             type: DataTypes.STRING,
@@ -26,10 +26,10 @@ Scoreboard.init(
         },
     },
     {
-        tableName: 'scoreboards',
+        tableName: "scores",
         sequelize,
         timestamps: false,
     }
 )
 
-export default Scoreboard
+export default Score

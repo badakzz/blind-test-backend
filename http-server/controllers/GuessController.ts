@@ -1,8 +1,7 @@
 import { Request, Response } from "express"
-import Song from "../models/Song"
 import Guess from "../models/Guess"
 import { analyzeAnswerAndAttributeScore } from "../utils/helpers"
-import ScoreboardController from "./ScoreboardController"
+import ScoreController from "./ScoreController"
 import { Server } from "socket.io"
 import SongController from "./SongController"
 
@@ -28,8 +27,8 @@ class GuessController {
             normalizedGuessWords,
             song.artist_name.split(" ")
         )
-        // Update the Scoreboard
-        const score = await ScoreboardController.updateScoreboard(
+        // Update the Score
+        const score = await ScoreController.updateScore(
             userId,
             chatroomId,
             scoreData.points,

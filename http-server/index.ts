@@ -8,7 +8,7 @@ import chatroomRoutes from "./routes/chatroomRoutes"
 import chatMessageRoutes from "./routes/chatMessageRoutes"
 import csrfRoute from "./routes/csrfRoute"
 import guessRoutes from "./routes/guessRoutes"
-import scoreboardRoutes from "./routes/scoreboardRoutes"
+import scoreRoutes from "./routes/scoreRoutes"
 import spotifyRoutes from "./routes/spotifyRoutes"
 import songRoutes from "./routes/songRoutes"
 import sequelize from "./config/database"
@@ -30,7 +30,7 @@ app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
 app.use(userRoutes)
-app.use(scoreboardRoutes)
+app.use(scoreRoutes)
 app.use(spotifyRoutes)
 app.use(guessRoutes)
 app.use(songRoutes)
