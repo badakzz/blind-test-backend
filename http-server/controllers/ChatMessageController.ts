@@ -1,7 +1,7 @@
-import { Request, Response } from 'express'
-import ChatMessage from '../models/ChatMessage'
-import User from '../models/User'
-import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
+import { Request, Response } from "express"
+import ChatMessage from "../models/ChatMessage"
+import User from "../models/User"
+import { sequelizeErrorHandler } from "../utils/ErrorHandlers"
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
@@ -23,8 +23,8 @@ class ChatMessageController {
                 include: [
                     {
                         model: User,
-                        as: 'user',
-                        attributes: ['username'],
+                        as: "user",
+                        attributes: ["username"],
                     },
                 ],
             })
@@ -40,7 +40,7 @@ class ChatMessageController {
         try {
             const user = await User.findByPk(req.body.user_id)
             if (!user) {
-                res.status(400).send('User not found')
+                res.status(400).send("User not found")
                 return
             }
 
@@ -57,24 +57,11 @@ class ChatMessageController {
         }
     }
 
-    // async createMessage(req: Request, res: Response): Promise<void> {
-    //     try {
-    //         const newMessage = await ChatMessage.create({
-    //             ...req.body,
-    //             author: // Retrieve author (username) here. You may need another database call or middleware to get the username
-    //         })
-    //         res.json(newMessage)
-    //     } catch (error) {
-    //         sequelizeErrorHandler(error)
-    //         res.status(500).send(error.message)
-    //     }
-    // }
-
     static async updateMessage(req: Request, res: Response): Promise<void> {
         try {
             const chatMessageId = Number(req.params.id)
             if (isNaN(chatMessageId)) {
-                res.status(400).json({ error: 'Invalid chat_message_id' })
+                res.status(400).json({ error: "Invalid chat_message_id" })
                 return
             }
             await ChatMessage.update(req.body, {
@@ -93,7 +80,7 @@ class ChatMessageController {
             await ChatMessage.destroy({
                 where: { chat_message_id: Number(req.params.id) },
             })
-            res.json({ message: 'Message deleted' })
+            res.json({ message: "Message deleted" })
         } catch (error) {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)

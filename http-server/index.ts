@@ -45,12 +45,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.use(internalServerErrorHandler as any)
 
-// For development only
-// process.on('uncaughtException', (err) => {
-//     console.error('There was an uncaught error', err)
-//     process.exit(1)
-// })
-
 const PORT = process.env.NODE_SERVER_PORT || 3002
 sequelize
     .sync()

@@ -1,6 +1,6 @@
-import { Request, Response } from 'express'
-import Scoreboard from '../models/Scoreboard'
-import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
+import { Request, Response } from "express"
+import Scoreboard from "../models/Scoreboard"
+import { sequelizeErrorHandler } from "../utils/ErrorHandlers"
 
 class ScoreboardController {
     static async getScoreboards(req: Request, res: Response): Promise<void> {
@@ -36,8 +36,8 @@ class ScoreboardController {
     static async updateScoreboard(
         user_id: number,
         chatroom_id: string,
-        points: number,
-        io
+        points: number
+        // io
     ) {
         // Check if the user's score exists in the scoreboard
         let score = await Scoreboard.findOne({
@@ -55,7 +55,7 @@ class ScoreboardController {
 
         if (score) {
             // Emit the updated score
-            io.to(chatroom_id).emit('scoreUpdate', score)
+            // io.to(chatroom_id).emit('scoreUpdate', score)
             return score
         } else return null
     }
