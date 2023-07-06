@@ -1,8 +1,8 @@
-import axios from "axios"
-import { Server } from "socket.io"
-import GuessController from "../../controllers/GuessController"
-import UserController from "../../controllers/UserController"
-import ChatMessage from "../../models/ChatMessage"
+import axios from 'axios'
+import { Server } from 'socket.io'
+import GuessController from '../../controllers/GuessController'
+import UserController from '../../controllers/UserController'
+import ChatMessage from '../../models/ChatMessage'
 
 export default class GameService {
     constructor(private chatroomId: string, private io: Server) {}
@@ -29,32 +29,31 @@ export default class GameService {
                     guessData.guess,
                     this.io
                 )
-                console.log("result", result)
                 // Emit response back to the client
                 const username = UserController.getUserById(result.userId)
                 const correctGuessMessage = {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
-                    author: "SYSTEM",
+                    author: 'SYSTEM',
                 }
                 result.points > 1
                     ? this.io
                           .to(this.chatroomId)
-                          .emit("gameOver", message.author, message.chatroom_id)
+                          .emit('gameOver', message.author, message.chatroom_id)
                     : this.io
                           .to(this.chatroomId)
-                          .emit("chatMessage", correctGuessMessage)
+                          .emit('chatMessage', correctGuessMessage)
             } else {
                 this.io
                     .to(message.chatroom_id)
-                    .emit("error", "No song is currently playing.")
+                    .emit('error', 'No song is currently playing.')
             }
         } catch (error) {
             console.error(error)
             this.io
                 .to(message.chatroom_id)
                 .emit(
-                    "error",
-                    "An error occurred while processing your message."
+                    'error',
+                    'An error occurred while processing your message.'
                 )
         }
     }
