@@ -53,8 +53,13 @@ class ScoreController {
         user_id: number,
         chatroom_id: string,
         points: number,
+        correctGuessType: string,
         io: Server
-    ) {
+    ): Promise<{
+        userId: number
+        correctGuessType: string
+        points: number
+    } | null> {
         // Check if the user's score exists in the score
         let score = await Score.findOne({
             where: { user_id: user_id, chatroom_id: chatroom_id },
@@ -72,7 +77,11 @@ class ScoreController {
         if (score) {
             // Emit the updated score
             io.to(chatroom_id).emit("scoreUpdate", score)
-            return score
+            return {
+                userId: user_id,
+                correctGuessType: correctGuessType,
+                points: score.points,
+            }
         } else return null
     }
 }
