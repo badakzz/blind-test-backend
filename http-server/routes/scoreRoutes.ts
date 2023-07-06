@@ -6,7 +6,7 @@ import { requireAuth } from "../middlewares/authMiddleware"
 const router = Router()
 
 router.get(
-    "/api/v1/scoreboards/chatroom/:chatroomId",
+    "/api/v1/scores/chatroom/:chatroomId",
     ScoreController.getScoresByChatroom
 )
 

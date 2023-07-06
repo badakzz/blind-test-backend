@@ -95,10 +95,10 @@ io.on("connection", async (socket) => {
 
     socket.on("startGame", (gameData) => {
         console.log(
-            `Received game data in room ${gameData.chatroomId}: current song ${gameData.currentSongId}\n tracklist \n ${gameData.trackPreviewList}`
+            `Received game data in room ${gameData.chatroomId}: current song ${gameData.currentSong.preview_url}\n tracklist \n ${gameData.trackPreviewList[0]}`
         )
         io.to(gameData.chatroomId).emit("gameStarted", {
-            currentSongId: gameData.currentSongId,
+            currentSong: gameData.currentSong, // Send the whole song object, not just the ID
             trackPreviewList: gameData.trackPreviewList,
         })
     })
