@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import User from '../models/User'
-import { createDTOOmittingPassword } from '../../http-server/utils/helpers'
+import { Request, Response } from "express"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import User from "../models/User"
+import { createDTOOmittingPassword } from "../../http-server/utils/helpers"
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
@@ -11,13 +11,13 @@ class AuthController {
         try {
             const user = await User.findOne({ where: { email } })
             if (!user) {
-                res.status(401).json({ error: 'Invalid credentials' })
+                res.status(401).json({ error: "Invalid credentials" })
                 return
             }
 
             const passwordMatch = await bcrypt.compare(password, user.password)
             if (!passwordMatch) {
-                res.status(401).json({ error: 'Invalid credentials' })
+                res.status(401).json({ error: "Invalid credentials" })
                 return
             }
 
@@ -27,7 +27,7 @@ class AuthController {
             )
 
             const userDTO = createDTOOmittingPassword(user)
-            console.log('Server response:', { token, user: userDTO })
+            console.log("Server response:", { token, user: userDTO })
 
             res.json({ token, user: userDTO })
         } catch (error: any) {
@@ -45,12 +45,11 @@ class AuthController {
             // Check if the email is already registered
             const existingUser = await User.findOne({ where: { email } })
             if (existingUser) {
-                res.status(409).json({ error: 'Email already exists' })
+                res.status(409).json({ error: "Email already exists" })
                 return
             }
 
             const hashedPassword = await bcrypt.hash(password, 10)
-            console.log('y')
             const newUser = await User.create({
                 user_name,
                 email,
@@ -59,13 +58,11 @@ class AuthController {
                 is_active: true,
             })
 
-            console.log('yo')
             const token = jwt.sign(
                 { userId: newUser.user_id },
                 process.env.JWT_SECRET_KEY as string,
-                { expiresIn: '7d' }
+                { expiresIn: "7d" }
             )
-            console.log('yoo')
             const userDTO = createDTOOmittingPassword(newUser)
 
             res.json({ token, userDTO })
@@ -76,16 +73,16 @@ class AuthController {
     }
 
     static async logout(req: Request, res: Response): Promise<void> {
-        const authHeader = req.headers['authorization']
+        const authHeader = req.headers["authorization"]
 
-        const token = authHeader && authHeader.split(' ')[1]
+        const token = authHeader && authHeader.split(" ")[1]
 
         if (!token) {
-            res.status(401).json({ error: 'You must be logged in to logout' })
+            res.status(401).json({ error: "You must be logged in to logout" })
             return Promise.resolve()
         }
 
-        res.status(200).json({ message: 'Logout successful' })
+        res.status(200).json({ message: "Logout successful" })
         return Promise.resolve()
     }
 
@@ -94,13 +91,13 @@ class AuthController {
         res: Response
     ): Promise<void> {
         try {
-            const authHeader = req.headers['authorization']
-            const token = authHeader && authHeader.split(' ')[1] // Token is expected in the format: Bearer <token>
+            const authHeader = req.headers["authorization"]
+            const token = authHeader && authHeader.split(" ")[1] // Token is expected in the format: Bearer <token>
 
             if (!token) {
                 return res
                     .status(403)
-                    .json({ error: 'No token provided' }) as any
+                    .json({ error: "No token provided" }) as any
             }
 
             jwt.verify(
@@ -108,7 +105,7 @@ class AuthController {
                 process.env.SECRET_KEY as string,
                 async (err, decoded) => {
                     if (err) {
-                        return res.status(401).json({ error: 'Invalid token' })
+                        return res.status(401).json({ error: "Invalid token" })
                     } else {
                         const userId = (decoded as any).userId
                         const user = await User.findOne({
@@ -118,7 +115,7 @@ class AuthController {
                         if (!user) {
                             return res
                                 .status(404)
-                                .json({ error: 'User not found' })
+                                .json({ error: "User not found" })
                         }
 
                         const userDTO = createDTOOmittingPassword(user)

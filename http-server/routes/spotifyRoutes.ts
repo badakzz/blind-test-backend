@@ -1,28 +1,28 @@
-import axios from 'axios'
-import { Router } from 'express'
-import Guess from '../models/Guess'
-import Playlist from '../models/Playlist'
-import Song from '../models/Song'
+import axios from "axios"
+import { Router } from "express"
+import Guess from "../models/Guess"
+import Playlist from "../models/Playlist"
+import Song from "../models/Song"
 import {
     createDTOOmittingArtistAndSongNames,
     tempCreateDTOOmittingArtistAndSongNames,
-} from '../utils/helpers'
+} from "../utils/helpers"
 
-let accessToken = ''
+let accessToken = ""
 
 const getAccessToken = async () => {
     const response = await axios.post(
-        'https://accounts.spotify.com/api/token',
+        "https://accounts.spotify.com/api/token",
         null,
         {
             params: {
-                grant_type: 'client_credentials',
+                grant_type: "client_credentials",
             },
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/x-www-form-urlencoded",
                 Authorization: `Basic ${Buffer.from(
                     `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-                ).toString('base64')}`,
+                ).toString("base64")}`,
             },
         }
     )
@@ -32,21 +32,21 @@ const getAccessToken = async () => {
 
 const router = Router()
 
-router.get('/api/genres', async (req, res) => {
+router.get("/api/genres", async (req, res) => {
     try {
         if (!accessToken) {
             await getAccessToken()
         }
 
         const response = await axios.get(
-            'https://api.spotify.com/v1/browse/categories',
+            "https://api.spotify.com/v1/browse/categories",
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    country: req.query.country || 'US',
-                    locale: req.query.locale || 'en_US',
+                    country: req.query.country || "US",
+                    locale: req.query.locale || "en_US",
                 },
             }
         )
@@ -57,7 +57,7 @@ router.get('/api/genres', async (req, res) => {
     }
 })
 
-router.get('/api/playlists/:genreId', async (req, res) => {
+router.get("/api/playlists/:genreId", async (req, res) => {
     try {
         if (!accessToken) {
             await getAccessToken()
@@ -69,8 +69,8 @@ router.get('/api/playlists/:genreId', async (req, res) => {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    country: req.query.country || 'US',
-                    locale: req.query.locale || 'en_US',
+                    country: req.query.country || "US",
+                    locale: req.query.locale || "en_US",
                 },
             }
         )
@@ -100,7 +100,7 @@ router.get('/api/playlists/:genreId', async (req, res) => {
     }
 })
 
-router.get('/api/tracks/:playlistId', async (req, res) => {
+router.get("/api/tracks/:playlistId", async (req, res) => {
     try {
         if (!accessToken) {
             await getAccessToken()
@@ -108,9 +108,9 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
         const chatroomId = req.query.chatroomId
         if (!chatroomId) {
             // Handle the error case when chatroomId is not provided
-            console.log('Chatroom id is not provided')
+            console.log("Chatroom id is not provided")
         }
-        console.log('chatroomId', chatroomId)
+        console.log("chatroomId", chatroomId)
         // Fetch the playlist
         const responsePlaylist = await axios.get(
             `https://api.spotify.com/v1/playlists/${req.params.playlistId}`,
@@ -121,17 +121,31 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
             }
         )
 
-        // Upsert the playlist
         const newPlaylist = {
             spotify_playlist_id: responsePlaylist.data.id,
             name: responsePlaylist.data.name,
+            genre_id: null,
         }
+        // Fetch genre_id from your database
+        const playlistRecord = await Playlist.findOne({
+            where: { spotify_playlist_id: newPlaylist.spotify_playlist_id },
+        })
+        if (playlistRecord) {
+            newPlaylist.genre_id = playlistRecord.genre_id
+        } else {
+            console.log(
+                `Playlist ${newPlaylist.name} does not exist in the database.`
+            )
+            return
+        }
+
+        // Upsert the playlist
         const [playlist] = await Playlist.upsert(newPlaylist, {
             returning: true,
         })
 
         if (!playlist) {
-            console.log('Upserting the playlist returned null or undefined')
+            console.log("Upserting the playlist returned null or undefined")
         }
         // Fetch the tracks
         const responseTracks = await axios.get(
@@ -148,7 +162,7 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
         )
 
         if (tracksWithPreview.length === 0) {
-            throw new Error('No tracks with previews found in the playlist.')
+            throw new Error("No tracks with previews found in the playlist.")
         }
 
         const previews = []
@@ -171,23 +185,34 @@ router.get('/api/tracks/:playlistId', async (req, res) => {
                     playlist_id: playlist.playlist_id,
                     song_id: null,
                 }
-                // Insert the new song into the database
+
+                // Attempt the Song.upsert
+                let song, created
                 try {
-                    const [song, created] = await Song.upsert(newSong)
+                    ;[song, created] = await Song.findOrCreate({
+                        where: { spotify_song_id: newSong.spotify_song_id },
+                        defaults: newSong,
+                    })
                     newSong.song_id = song.song_id
                     previews.push(newSong)
+                } catch (error) {
+                    console.log(`Error during Song.upsert operation: ${error}`)
+                    throw error
+                }
+
+                // Attempt the Guess.create
+                try {
                     await Guess.create({
                         chatroom_id: chatroomId,
                         song_id: song.song_id,
                     })
                 } catch (error) {
-                    console.log(
-                        `Error during Song.upsert or Guess.create operation: ${error}`
-                    )
+                    console.log(`Error during Guess.create operation: ${error}`)
                     throw error
                 }
             }
         }
+
         // to change after tests
         res.json(tempCreateDTOOmittingArtistAndSongNames(previews as Song[]))
     } catch (error) {

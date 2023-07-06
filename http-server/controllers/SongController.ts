@@ -1,7 +1,7 @@
-import { Request, Response } from 'express'
-import Song from '../models/Song'
-import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
-import sequelize from '../config/database'
+import { Request, Response } from "express"
+import Song from "../models/Song"
+import { sequelizeErrorHandler } from "../../http-server/utils/ErrorHandlers"
+import sequelize from "../config/database"
 
 class SongController {
     static async getSongs(req: Request, res: Response): Promise<void> {
@@ -16,7 +16,7 @@ class SongController {
 
     static async getSong(req: Request, res: Response): Promise<void> {
         try {
-            const song = await SongController.fetchSong(req.params.id)
+            const song = await SongController.fetchSong(parseInt(req.params.id))
             res.send(song)
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -30,7 +30,7 @@ class SongController {
             order: sequelize.random(), // sequelize.random() generates a random order
         })
         if (!song) {
-            throw new Error('No songs found')
+            throw new Error("No songs found")
         }
 
         return song
@@ -52,9 +52,9 @@ class SongController {
 
             if (song) {
                 await song.destroy()
-                res.status(204).send('Song deleted')
+                res.status(204).send("Song deleted")
             } else {
-                res.status(404).send('Song not found')
+                res.status(404).send("Song not found")
             }
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -62,7 +62,7 @@ class SongController {
         }
     }
 
-    static async fetchSong(id: string): Promise<Song> {
+    static async fetchSong(id: number): Promise<Song> {
         return await Song.findByPk(id)
     }
 }

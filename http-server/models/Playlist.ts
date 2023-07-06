@@ -1,6 +1,6 @@
-import { Model, DataTypes } from 'sequelize'
-import sequelize from '../config/database'
-import Guess from './Guess'
+import { Model, DataTypes } from "sequelize"
+import sequelize from "../config/database"
+import Guess from "./Guess"
 
 class Playlist extends Model {
     public playlist_id!: number
@@ -34,7 +34,7 @@ Playlist.init(
     },
     {
         sequelize,
-        modelName: 'Playlist',
+        modelName: "Playlist",
         timestamps: true,
         underscored: true,
     }

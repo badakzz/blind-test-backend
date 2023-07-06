@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
-import Chatroom from '../models/Chatroom'
-import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
-import { generateUniqueId } from '../utils/helpers'
-import Song from '../models/Song'
+import { Request, Response } from "express"
+import Chatroom from "../models/Chatroom"
+import { sequelizeErrorHandler } from "../../http-server/utils/ErrorHandlers"
+import { generateUniqueId } from "../utils/helpers"
+import Song from "../models/Song"
 
 class ChatroomController {
     static async getChatrooms(req: Request, res: Response): Promise<void> {
@@ -45,9 +45,9 @@ class ChatroomController {
 
             if (chatroom) {
                 await chatroom.destroy()
-                res.status(204).send('Chatroom deleted')
+                res.status(204).send("Chatroom deleted")
             } else {
-                res.status(404).send('Chatroom not found')
+                res.status(404).send("Chatroom not found")
             }
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -66,7 +66,7 @@ class ChatroomController {
                     current_song_playing_id: chatroom.current_song_playing_id,
                 })
             } else {
-                res.status(404).send('Chatroom not found')
+                res.status(404).send("Chatroom not found")
             }
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -83,12 +83,8 @@ class ChatroomController {
             const songExists = await Song.findByPk(
                 req.body.chatroom_current_song_id
             )
-            console.log(
-                'chatroom_current_song_id',
-                req.body.chatroom_current_song_id
-            )
             if (!songExists) {
-                return res.status(400).json({ error: 'Invalid song id' })
+                return res.status(400).json({ error: "Invalid song id" })
             }
 
             // check if chatroom_id exists in the Chatrooms table
@@ -96,7 +92,7 @@ class ChatroomController {
                 req.params.chatroom_id
             )
             if (!chatroomExists) {
-                return res.status(400).json({ error: 'Invalid chatroom id' })
+                return res.status(400).json({ error: "Invalid chatroom id" })
             }
 
             const [updatedCount, updatedRows] = await Chatroom.update(
@@ -112,7 +108,7 @@ class ChatroomController {
             if (updatedCount === 0) {
                 return res
                     .status(400)
-                    .json({ error: 'Chatroom could not be updated.' })
+                    .json({ error: "Chatroom could not be updated." })
             }
             res.json(updatedRows[0])
         } catch (error) {
