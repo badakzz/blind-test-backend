@@ -13,3 +13,4 @@ blind-test-backend
 -   hash passwords instead of crypt ?
 -   change table names to singular
 -   validate input coming from client
+-   add created_at / updated_at in every table
