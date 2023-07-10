@@ -11,3 +11,4 @@ blind-test-backend
 -   songs are added duplicates in Songs
 -   add a job to delete entries from guesses and chatroom (id) when chatroom closes
 -   hash passwords instead of crypt ?
+-   change table names to singular
