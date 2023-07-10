@@ -12,3 +12,4 @@ blind-test-backend
 -   add a job to delete entries from guesses and chatroom (id) when chatroom closes
 -   hash passwords instead of crypt ?
 -   change table names to singular
+-   validate input coming from client
