@@ -16,24 +16,12 @@ class SongController {
 
     static async getSong(req: Request, res: Response): Promise<void> {
         try {
-            const song = await SongController.fetchSong(parseInt(req.params.id))
+            const song = await Song.findByPk(req.params.id)
             res.send(song)
         } catch (error: any) {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
-    }
-
-    static async getRandomSong(playlistId: number) {
-        const song = await Song.findOne({
-            where: { playlistId }, // Use the playlistId in the query
-            order: sequelize.random(), // sequelize.random() generates a random order
-        })
-        if (!song) {
-            throw new Error("No songs found")
-        }
-
-        return song
     }
 
     static async createSong(req: Request, res: Response): Promise<void> {
@@ -60,10 +48,6 @@ class SongController {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
-    }
-
-    static async fetchSong(id: number): Promise<Song> {
-        return await Song.findByPk(id)
     }
 }
 
