@@ -38,7 +38,7 @@ io.on("connection", async (socket) => {
         console.log(
             `User ${username} created and joined chatroom ${chatroomId}`
         )
-        chatMessageServices[chatroomId] = new ChatMessageService(chatroomId, io)
+        // chatMessageServices[chatroomId] = new ChatMessageService(chatroomId, io)
     })
 
     socket.on("joinRoom", (username, chatroomId) => {
@@ -82,14 +82,16 @@ io.on("connection", async (socket) => {
             `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
         )
         io.to(message.chatroomId).emit("chatMessage", message)
-        if (chatMessageServices[message.chatroomId]) {
-            chatMessageServices[message.chatroomId].processChatMessage({
+        ChatMessageService.processChatMessage(
+            {
                 chatroom_id: message.chatroomId,
                 author: message.author,
                 content: message.content,
                 user_id: message.userId,
-            } as ChatMessage)
-        }
+            } as ChatMessage,
+            message.chatroomId,
+            io
+        )
     })
 
     socket.on("startGame", (gameData) => {

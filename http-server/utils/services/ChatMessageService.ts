@@ -3,11 +3,19 @@ import { Server } from "socket.io"
 import UserController from "../../controllers/UserController"
 import ChatMessage from "../../models/ChatMessage"
 import GuessService from "./GuessService"
+import Song from "../../models/Song"
+import Chatroom from "../../models/Chatroom"
+import { generateUniqueId } from "../helpers"
+import { sequelizeErrorHandler } from "../ErrorHandlers"
+import { Request, Response } from "express"
+import User from "../../models/User"
 
 export default class ChatMessageService {
-    constructor(private chatroomId: string, private io: Server) {}
-
-    async processChatMessage(message: ChatMessage) {
+    static async processChatMessage(
+        message: ChatMessage,
+        chatroomId,
+        io: Server
+    ) {
         try {
             // Send request to get the current song
             const response = await axios.get(
@@ -19,15 +27,16 @@ export default class ChatMessageService {
                     userId: message.user_id,
                     songId: response.data.current_song_playing_id,
                     guess: message.content,
-                    io: this.io,
+                    io: io,
                 }
+                console.log("guessData", guessData)
                 // Call the createGuess method with these parameters and the io instance
                 const result = await GuessService.createGuess(
                     guessData.chatroomId,
                     guessData.userId,
                     guessData.songId,
                     guessData.guess,
-                    this.io
+                    io
                 )
                 // Emit response back to the client
                 const username = UserController.getUserById(result.userId)
@@ -36,25 +45,37 @@ export default class ChatMessageService {
                     author: "SYSTEM",
                 }
                 result.points > 1
-                    ? this.io
-                          .to(this.chatroomId)
+                    ? io
+                          .to(chatroomId)
                           .emit("gameOver", message.author, message.chatroom_id)
-                    : this.io
-                          .to(this.chatroomId)
-                          .emit("chatMessage", correctGuessMessage)
+                    : io.to(chatroomId).emit("chatMessage", correctGuessMessage)
             } else {
-                this.io
-                    .to(message.chatroom_id)
-                    .emit("error", "No song is currently playing.")
+                io.to(message.chatroom_id).emit(
+                    "error",
+                    "No song is currently playing."
+                )
             }
         } catch (error) {
             console.error(error)
-            this.io
-                .to(message.chatroom_id)
-                .emit(
-                    "error",
-                    "An error occurred while processing your message."
-                )
+            io.to(message.chatroom_id).emit(
+                "error",
+                "An error occurred while processing your message."
+            )
         }
+    }
+
+    static async createMessage(req: Request): Promise<ChatMessage> {
+        const user = await User.findByPk(req.body.user_id)
+        if (!user) {
+            throw new Error("User not found")
+        }
+
+        // Create new message with author field
+        const newMessage = await ChatMessage.create({
+            ...req.body,
+            author: user.user_name, // add the author field here
+        })
+
+        return newMessage
     }
 }

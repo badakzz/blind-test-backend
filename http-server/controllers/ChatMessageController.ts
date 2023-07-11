@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import ChatMessage from "../models/ChatMessage"
 import User from "../models/User"
 import { sequelizeErrorHandler } from "../utils/ErrorHandlers"
+import ChatMessageService from "../utils/services/ChatMessageService"
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
@@ -38,18 +39,7 @@ class ChatMessageController {
 
     static async createMessage(req: Request, res: Response): Promise<void> {
         try {
-            const user = await User.findByPk(req.body.user_id)
-            if (!user) {
-                res.status(400).send("User not found")
-                return
-            }
-
-            // Create new message with author field
-            const newMessage = await ChatMessage.create({
-                ...req.body,
-                author: user.user_name, // add the author field here
-            })
-
+            const newMessage = await ChatMessageService.createMessage(req)
             res.json(newMessage)
         } catch (error) {
             sequelizeErrorHandler(error)

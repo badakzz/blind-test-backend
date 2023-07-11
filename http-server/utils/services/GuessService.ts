@@ -4,9 +4,7 @@ import { analyzeAnswer } from "../helpers"
 import SongService from "./SongService"
 import ScoreService from "./ScoreService"
 
-export default class ChatMessageService {
-    constructor(private chatroomId: string, private io: Server) {}
-
+export default class GuessService {
     static async createGuess(
         chatroomId: string,
         userId: number,
@@ -24,6 +22,7 @@ export default class ChatMessageService {
         // Normalize the guess
         const normalizedGuessWords = guess.split(" ")
 
+        console.log({ chatroomId, userId, songId, guess, io: Server })
         // Analyze the answer and get the scoreData
         const { points, correctGuessType } = analyzeAnswer(
             song.song_name.split(" "),
@@ -35,6 +34,8 @@ export default class ChatMessageService {
         let existingGuess = await Guess.findOne({
             where: { chatroom_id: chatroomId, song_id: songId },
         })
+        console.log("points", points, correctGuessType)
+        console.log("existingGuess", existingGuess)
 
         // If the guess already exists and correct guess is found, don't update the score
         if (
@@ -54,6 +55,7 @@ export default class ChatMessageService {
                 song_id: songId,
             })
         }
+        console.log("aftercheckexistingGuess", existingGuess)
 
         // Update the correct guesser id based on the correctGuessType
         if (correctGuessType === "song name") {
@@ -72,6 +74,8 @@ export default class ChatMessageService {
             correctGuessType,
             io
         )
+
+        console.log("newScore", newScore)
 
         return {
             userId: newScore?.userId || userId,
