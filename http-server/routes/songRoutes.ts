@@ -11,10 +11,8 @@ router.delete("/api/v1/songs/:id", requireCsrf, SongController.deleteSong)
 // to ask /playlist/ :
 router.get("/api/v1/songs/playlist/:playlistId", async (req, res) => {
     try {
-        const songsList = await SongController.fetchSongsFromSpotifyPlaylist(
-            req,
-            res
-        )
+        const songsList =
+            await SongController.fetchAndStoreSongsFromSpotifyPlaylist(req, res)
         res.json(songsList)
     } catch (error) {
         console.log(

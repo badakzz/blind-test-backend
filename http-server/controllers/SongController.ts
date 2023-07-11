@@ -77,7 +77,7 @@ class SongController {
         return await Song.findByPk(id)
     }
 
-    static async fetchSongsFromSpotifyPlaylist(
+    static async fetchAndStoreSongsFromSpotifyPlaylist(
         req: Request,
         res: Response
     ): Promise<Partial<Song>[]> {
