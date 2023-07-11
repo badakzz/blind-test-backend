@@ -76,6 +76,33 @@ class ChatMessageController {
             res.status(500).send(error.message)
         }
     }
+
+    //     static async processChatMessage(
+    //         req: Request,
+    //         res: Response
+    //     ): Promise<void> {
+    //         try {
+    //             const chatroom_id = req.body.chatroom_id
+    //             const author = req.body.author
+    //             const content = req.body.content
+    //             const user_id = req.body.user_id
+    //             const io = req.body.io
+
+    //             const message = { chatroom_id, author, content, user_id }
+    //             const updated = await ChatMessageService.processChatMessage(
+    //                 //@ts-ignore
+    //                 message,
+    //                 chatroom_id,
+    //                 io
+    //             )
+
+    //             // We send the updated chat message back to the client
+    //             res.status(200).send(updated)
+    //         } catch (error) {
+    //             sequelizeErrorHandler(error)
+    //             res.status(500).send(error.message)
+    //         }
+    //     }
 }
 
 export default ChatMessageController

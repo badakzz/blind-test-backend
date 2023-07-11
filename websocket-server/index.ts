@@ -4,6 +4,8 @@ import { Server } from "socket.io"
 import ChatMessage from "../http-server/models/ChatMessage"
 import ChatMessageService from "../http-server/utils/services/ChatMessageService"
 import ChatroomService from "../http-server/utils/services/ChatroomService"
+import ChatMessageController from "../http-server/controllers/ChatMessageController"
+import httpMocks from "node-mocks-http"
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -81,7 +83,6 @@ io.on("connection", async (socket) => {
         console.log(
             `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
         )
-        io.to(message.chatroomId).emit("chatMessage", message)
         ChatMessageService.processChatMessage(
             {
                 chatroom_id: message.chatroomId,
@@ -92,7 +93,45 @@ io.on("connection", async (socket) => {
             message.chatroomId,
             io
         )
+        io.to(message.chatroomId).emit("chatMessage", message)
     })
+
+    // socket.on("chatMessage", (message) => {
+    //     console.log(
+    //         `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
+    //     )
+    //     io.to(message.chatroomId).emit("chatMessage", message)
+
+    //     const fakeRequest = httpMocks.createRequest({
+    //         method: "POST",
+    //         url: "/chatMessage",
+    //         body: {
+    //             chatroom_id: message.chatroomId,
+    //             author: message.author,
+    //             content: message.content,
+    //             user_id: message.userId,
+    //             io: io,
+    //         },
+    //     })
+
+    //     const fakeResponse = httpMocks.createResponse()
+
+    //     fakeResponse.on("end", function () {
+    //         if (
+    //             fakeResponse._getStatusCode() >= 200 &&
+    //             fakeResponse._getStatusCode() < 300
+    //         ) {
+    //             io.to(fakeRequest.body.chatroom_id).emit(
+    //                 "chatMessage",
+    //                 fakeResponse._getData()
+    //             )
+    //         } else {
+    //             console.error(fakeResponse._getData())
+    //         }
+    //     })
+
+    //     ChatMessageController.processChatMessage(fakeRequest, fakeResponse)
+    // })
 
     socket.on("startGame", (gameData) => {
         console.log(
