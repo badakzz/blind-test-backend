@@ -26,9 +26,10 @@ Score.init(
         },
     },
     {
-        tableName: "scores",
+        tableName: "score",
         sequelize,
-        timestamps: false,
+        timestamps: true,
+        underscored: true,
     }
 )
 

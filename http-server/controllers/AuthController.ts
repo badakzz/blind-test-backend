@@ -37,10 +37,10 @@ class AuthController {
 
     static async signup(req: Request, res: Response): Promise<void> {
         const {
-            user_name,
+            username,
             email,
             password,
-        }: { user_name: string; email: string; password: string } = req.body
+        }: { username: string; email: string; password: string } = req.body
         try {
             // Check if the email is already registered
             const existingUser = await User.findOne({ where: { email } })
@@ -51,7 +51,7 @@ class AuthController {
 
             const hashedPassword = await bcrypt.hash(password, 10)
             const newUser = await User.create({
-                user_name,
+                username,
                 email,
                 password: hashedPassword,
                 permissions: 1,

@@ -1,8 +1,8 @@
-import { Model, DataTypes } from 'sequelize'
-import sequelize from '../config/database'
-import Song from './Song'
-import User from './User'
-import Chatroom from './Chatroom'
+import { Model, DataTypes } from "sequelize"
+import sequelize from "../config/database"
+import Song from "./Song"
+import User from "./User"
+import Chatroom from "./Chatroom"
 
 class Guess extends Model {
     public guess_id!: number
@@ -23,33 +23,33 @@ Guess.init(
             type: DataTypes.STRING,
             references: {
                 model: Chatroom,
-                key: 'chatroom_id',
+                key: "chatroom_id",
             },
         },
         song_id: {
             type: DataTypes.INTEGER,
             references: {
                 model: Song,
-                key: 'song_id',
+                key: "song_id",
             },
         },
         song_guesser_id: {
             type: DataTypes.INTEGER,
             references: {
                 model: User,
-                key: 'user_id',
+                key: "user_id",
             },
         },
         artist_guesser_id: {
             type: DataTypes.INTEGER,
             references: {
                 model: User,
-                key: 'user_id',
+                key: "user_id",
             },
         },
     },
     {
-        tableName: 'guesses',
+        tableName: "guess",
         sequelize,
         timestamps: true,
         underscored: true,

@@ -2,9 +2,9 @@ import express from "express"
 import * as http from "http"
 import { Server } from "socket.io"
 import ChatMessage from "../http-server/models/ChatMessage"
-import ChatMessageService from "../http-server/utils/services/ChatMessageService"
-import ChatroomService from "../http-server/utils/services/ChatroomService"
 import ChatMessageController from "../http-server/controllers/ChatMessageController"
+import ChatroomController from "../http-server/controllers/ChatroomController"
+
 import httpMocks from "node-mocks-http"
 
 const app = express()
@@ -31,7 +31,6 @@ io.on("connection", async (socket) => {
     socket.on("createRoom", (username, chatroomId) => {
         socket.join(chatroomId)
         connectedUsers.push({ id: socket.id, username, chatroomId })
-        io.to(chatroomId).emit("userConnected", username)
         io.to(chatroomId).emit(
             "connectedUsers",
             connectedUsers.filter((user) => user.chatroomId === chatroomId)
@@ -83,7 +82,7 @@ io.on("connection", async (socket) => {
         console.log(
             `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
         )
-        ChatMessageService.processChatMessage(
+        ChatMessageController.processChatMessage(
             {
                 chatroom_id: message.chatroomId,
                 author: message.author,
@@ -152,7 +151,7 @@ io.on("connection", async (socket) => {
             try {
                 if (currentSongPlaying && chatroomId) {
                     const updatedChatroom =
-                        await ChatroomService.updateCurrentSong(
+                        await ChatroomController.updateCurrentSong(
                             chatroomId,
                             currentSongPlaying
                         )
