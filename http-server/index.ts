@@ -11,6 +11,7 @@ import guessRoutes from "./routes/guessRoutes"
 import scoreRoutes from "./routes/scoreRoutes"
 import spotifyRoutes from "./routes/spotifyRoutes"
 import songRoutes from "./routes/songRoutes"
+import playlistRoutes from "./routes/playlistRoutes"
 import sequelize from "./config/database"
 
 const app = express()
@@ -34,6 +35,7 @@ app.use(scoreRoutes)
 app.use(spotifyRoutes)
 app.use(guessRoutes)
 app.use(songRoutes)
+app.use(playlistRoutes)
 app.use(csrfRoute)
 
 // Middleware for verifying JWT tokens

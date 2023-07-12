@@ -7,8 +7,6 @@ class Playlist extends Model {
     public spotify_playlist_id!: string
     public name!: string
     public genre_id!: string
-    public readonly createdAt!: Date
-    public readonly updatedAt!: Date
 }
 
 Playlist.init(
@@ -34,7 +32,7 @@ Playlist.init(
     },
     {
         sequelize,
-        modelName: "Playlist",
+        tableName: "playlist",
         timestamps: true,
         underscored: true,
     }

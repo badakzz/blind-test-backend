@@ -1,19 +1,10 @@
-import { Request, Response } from "express"
-import Guess from "../models/Guess"
-import ScoreController from "./ScoreController"
-import { analyzeAnswer } from "../utils/helpers"
-import SongController from "./SongController"
 import { Server } from "socket.io"
+import Guess from "../../models/Guess"
+import { analyzeAnswer } from "../helpers"
+import SongService from "./SongService"
+import ScoreService from "./ScoreService"
 
-class GuessController {
-    static async getGuess(req: Request, res: Response) {
-        const guess = await Guess.findOne({
-            where: { chatroom_id: req.params.chatroomId },
-            include: ["song", "songGuesser", "artistGuesser"],
-        })
-        res.json(guess)
-    }
-
+export default class GuessService {
     static async createGuess(
         chatroomId: string,
         userId: number,
@@ -26,7 +17,7 @@ class GuessController {
         points: number
     } | null> {
         // Fetch the current song from the database
-        const song = await SongController.getSongById(songId)
+        const song = await SongService.getSongById(songId)
 
         // Normalize the guess
         const normalizedGuessWords = guess.split(" ")
@@ -76,7 +67,7 @@ class GuessController {
         await existingGuess.save()
 
         // Attribute score
-        const newScore = await ScoreController.updateScore(
+        const newScore = await ScoreService.updateScore(
             userId,
             chatroomId,
             points,
@@ -93,5 +84,3 @@ class GuessController {
         }
     }
 }
-
-export default GuessController
