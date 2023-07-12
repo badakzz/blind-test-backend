@@ -1,0 +1,15 @@
+{
+    "name": "@blind-test/websocket-server",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.18.2",
+        "socket.io": "^4.6.1"
+    },
+    "scripts": {
+        "start": "ts-node ./dist/index.ts",
+        "dev": "ts-node ./index.ts",
+        "build": "tsc"
+    }
+}

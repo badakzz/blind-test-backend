@@ -1,3 +1,4 @@
+websocket-server/node_modules
+http-server/node_modules
 /node_modules
-
 .env
