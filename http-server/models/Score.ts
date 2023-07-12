@@ -1,5 +1,5 @@
-import { Model, DataTypes } from "sequelize"
-import sequelize from "../config/database"
+import { Model, DataTypes } from 'sequelize'
+import sequelize from '../config/database'
 
 class Score extends Model {
     public chatroom_id!: string
@@ -13,11 +13,13 @@ Score.init(
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true,
+            references: { model: 'chatroom', key: 'id' }, // Add this line
         },
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
+            references: { model: 'user_table', key: 'user_id' }, // Add this line
         },
         points: {
             type: DataTypes.FLOAT,
@@ -26,7 +28,7 @@ Score.init(
         },
     },
     {
-        tableName: "score",
+        tableName: 'score',
         sequelize,
         timestamps: true,
         underscored: true,

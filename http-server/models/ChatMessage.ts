@@ -1,6 +1,6 @@
-import { DataTypes, Model, Optional } from "sequelize"
-import sequelize from "../config/database"
-import User from "./User"
+import { DataTypes, Model, Optional } from 'sequelize'
+import sequelize from '../config/database'
+import User from './User'
 
 interface ChatMessageAttributes {
     chat_message_id: number
@@ -13,7 +13,7 @@ interface ChatMessageAttributes {
 }
 
 interface ChatMessageCreationAttributes
-    extends Optional<ChatMessageAttributes, "chat_message_id"> {}
+    extends Optional<ChatMessageAttributes, 'chat_message_id'> {}
 
 class ChatMessage
     extends Model<ChatMessageAttributes, ChatMessageCreationAttributes>
@@ -45,7 +45,7 @@ ChatMessage.init(
             allowNull: false,
             references: {
                 model: User,
-                key: "user_id",
+                key: 'user_id',
             },
         },
         content: {
@@ -66,7 +66,7 @@ ChatMessage.init(
     },
     {
         sequelize,
-        tableName: "chat_message",
+        tableName: 'chat_message',
         timestamps: true,
         underscored: true,
     }

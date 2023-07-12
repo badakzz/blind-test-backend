@@ -1,7 +1,7 @@
-import { Request, Response } from "express"
-import Score from "../models/Score"
-import { sequelizeErrorHandler } from "../utils/ErrorHandlers"
-import { Server } from "socket.io"
+import { Request, Response } from 'express'
+import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
+import { Server } from 'socket.io'
+import { Score, User } from '../models'
 
 class ScoreController {
     // static async getScores(req: Request, res: Response): Promise<void> {
@@ -31,8 +31,17 @@ class ScoreController {
         try {
             const scores = await Score.findAll({
                 where: { chatroom_id: req.params.chatroomId },
+                include: {
+                    model: User,
+                    attributes: ['username'], // only fetch the username
+                },
             })
-            res.send(scores)
+            const formattedScores = scores.map((score) => ({
+                //@ts-ignore
+                username: score.User.username,
+                points: score.points,
+            }))
+            res.send(formattedScores)
         } catch (error) {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
@@ -76,7 +85,7 @@ class ScoreController {
 
         if (score) {
             // Emit the updated score
-            io.to(chatroom_id).emit("scoreUpdate", score)
+            io.to(chatroom_id).emit('scoreUpdate', score)
             return {
                 userId: user_id,
                 correctGuessType: correctGuessType,
