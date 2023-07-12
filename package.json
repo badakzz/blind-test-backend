@@ -10,7 +10,5 @@
     "devDependencies": {
         "concurrently": "^8.2.0"
     },
-    "dependencies": {
-        "node-mocks-http": "^1.12.2"
-    }
+    "dependencies": {}
 }

@@ -1,28 +1,28 @@
-import axios from "axios"
-import { Router } from "express"
-import Guess from "../models/Guess"
-import Playlist from "../models/Playlist"
-import Song from "../models/Song"
+import axios from 'axios'
+import { Router } from 'express'
+import Guess from '../models/Guess'
+import Playlist from '../models/Playlist'
+import Song from '../models/Song'
 import {
     createDTOOmittingArtistAndSongNames,
     tempCreateDTOOmittingArtistAndSongNames,
-} from "../utils/helpers"
+} from '../utils/helpers'
 
-let accessToken = ""
+let accessToken = ''
 
 const getAccessToken = async () => {
     const response = await axios.post(
-        "https://accounts.spotify.com/api/token",
+        'https://accounts.spotify.com/api/token',
         null,
         {
             params: {
-                grant_type: "client_credentials",
+                grant_type: 'client_credentials',
             },
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                'Content-Type': 'application/x-www-form-urlencoded',
                 Authorization: `Basic ${Buffer.from(
                     `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-                ).toString("base64")}`,
+                ).toString('base64')}`,
             },
         }
     )
@@ -32,21 +32,21 @@ const getAccessToken = async () => {
 
 const router = Router()
 
-router.get("/api/genres", async (req, res) => {
+router.get('/api/genres', async (req, res) => {
     try {
         if (!accessToken) {
             await getAccessToken()
         }
 
         const response = await axios.get(
-            "https://api.spotify.com/v1/browse/categories",
+            'https://api.spotify.com/v1/browse/categories',
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    country: req.query.country || "US",
-                    locale: req.query.locale || "en_US",
+                    country: req.query.country || 'US',
+                    locale: req.query.locale || 'en_US',
                 },
             }
         )
@@ -57,7 +57,7 @@ router.get("/api/genres", async (req, res) => {
     }
 })
 
-router.get("/api/playlists/:genreId", async (req, res) => {
+router.get('/api/playlists/:genreId', async (req, res) => {
     try {
         if (!accessToken) {
             await getAccessToken()
@@ -69,8 +69,8 @@ router.get("/api/playlists/:genreId", async (req, res) => {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    country: req.query.country || "US",
-                    locale: req.query.locale || "en_US",
+                    country: req.query.country || 'US',
+                    locale: req.query.locale || 'en_US',
                 },
             }
         )
@@ -100,7 +100,7 @@ router.get("/api/playlists/:genreId", async (req, res) => {
     }
 })
 
-router.get("/api/tracks/:playlistId", async (req, res) => {
+router.get('/api/tracks/:playlistId', async (req, res) => {
     try {
         if (!accessToken) {
             await getAccessToken()
@@ -108,9 +108,8 @@ router.get("/api/tracks/:playlistId", async (req, res) => {
         const chatroomId = req.query.chatroomId
         if (!chatroomId) {
             // Handle the error case when chatroomId is not provided
-            console.log("Chatroom id is not provided")
+            console.log('Chatroom id is not provided')
         }
-        console.log("chatroomId", chatroomId)
         // Fetch the playlist
         const responsePlaylist = await axios.get(
             `https://api.spotify.com/v1/playlists/${req.params.playlistId}`,
@@ -145,7 +144,7 @@ router.get("/api/tracks/:playlistId", async (req, res) => {
         })
 
         if (!playlist) {
-            console.log("Upserting the playlist returned null or undefined")
+            console.log('Upserting the playlist returned null or undefined')
         }
         // Fetch the tracks
         const responseTracks = await axios.get(
@@ -162,7 +161,7 @@ router.get("/api/tracks/:playlistId", async (req, res) => {
         )
 
         if (tracksWithPreview.length === 0) {
-            throw new Error("No tracks with previews found in the playlist.")
+            throw new Error('No tracks with previews found in the playlist.')
         }
 
         const previews = []

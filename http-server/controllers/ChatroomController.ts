@@ -1,8 +1,8 @@
-import { Request, Response } from "express"
-import Chatroom from "../models/Chatroom"
-import { sequelizeErrorHandler } from "../../http-server/utils/ErrorHandlers"
-import { generateUniqueId } from "../utils/helpers"
-import Song from "../models/Song"
+import { Request, Response } from 'express'
+import Chatroom from '../models/Chatroom'
+import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
+import { generateUniqueId } from '../utils/helpers'
+import Song from '../models/Song'
 
 class ChatroomController {
     static async getChatrooms(req: Request, res: Response): Promise<void> {
@@ -45,9 +45,9 @@ class ChatroomController {
 
             if (chatroom) {
                 await chatroom.destroy()
-                res.status(204).send("Chatroom deleted")
+                res.status(204).send('Chatroom deleted')
             } else {
-                res.status(404).send("Chatroom not found")
+                res.status(404).send('Chatroom not found')
             }
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -66,7 +66,7 @@ class ChatroomController {
                     current_song_playing_id: chatroom.current_song_playing_id,
                 })
             } else {
-                res.status(404).send("Chatroom not found")
+                res.status(404).send('Chatroom not found')
             }
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -79,7 +79,6 @@ class ChatroomController {
         currentSongId: string
     ): Promise<Chatroom | null> {
         const chatroom = await Chatroom.findByPk(chatroomId)
-        console.log("chatroom received in service", chatroom)
         if (chatroom) {
             chatroom.current_song_playing_id = currentSongId
             await chatroom.save()
@@ -97,13 +96,13 @@ class ChatroomController {
             // check if song_id exists in the Songs table
             const songExists = await Song.findByPk(chatroomCurrentPlayingSongId)
             if (!songExists) {
-                console.error({ error: "Invalid song id" })
+                console.error({ error: 'Invalid song id' })
             }
 
             // check if chatroom_id exists in the Chatrooms table
             const chatroomExists = await Chatroom.findByPk(chatroomId)
             if (!chatroomExists) {
-                return console.error({ error: "Invalid chatroom id" })
+                return console.error({ error: 'Invalid chatroom id' })
             }
 
             const [updatedCount, updatedRows] = await Chatroom.update(
@@ -118,7 +117,7 @@ class ChatroomController {
 
             if (updatedCount === 0) {
                 return console.error({
-                    error: "Chatroom could not be updated.",
+                    error: 'Chatroom could not be updated.',
                 })
             }
             return updatedRows[0]

@@ -1,11 +1,11 @@
-import { Request, Response } from "express"
-import ChatMessage from "../models/ChatMessage"
-import User from "../models/User"
-import { sequelizeErrorHandler } from "../utils/ErrorHandlers"
-import { Server } from "socket.io"
-import axios from "axios"
-import GuessController from "./GuessController"
-import UserController from "./UserController"
+import { Request, Response } from 'express'
+import ChatMessage from '../models/ChatMessage'
+import User from '../models/User'
+import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
+import { Server } from 'socket.io'
+import axios from 'axios'
+import GuessController from './GuessController'
+import UserController from './UserController'
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
@@ -27,8 +27,8 @@ class ChatMessageController {
                 include: [
                     {
                         model: User,
-                        as: "user",
-                        attributes: ["username"],
+                        as: 'user',
+                        attributes: ['username'],
                     },
                 ],
             })
@@ -54,7 +54,7 @@ class ChatMessageController {
         try {
             const chatMessageId = Number(req.params.id)
             if (isNaN(chatMessageId)) {
-                res.status(400).json({ error: "Invalid chat_message_id" })
+                res.status(400).json({ error: 'Invalid chat_message_id' })
                 return
             }
             await ChatMessage.update(req.body, {
@@ -73,7 +73,7 @@ class ChatMessageController {
             await ChatMessage.destroy({
                 where: { chat_message_id: Number(req.params.id) },
             })
-            res.json({ message: "Message deleted" })
+            res.json({ message: 'Message deleted' })
         } catch (error) {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
@@ -98,7 +98,6 @@ class ChatMessageController {
                     guess: message.content,
                     io: io,
                 }
-                console.log("guessData", guessData)
                 // Call the createGuess method with these parameters and the io instance
                 const result = await GuessController.createGuess(
                     guessData.chatroomId,
@@ -111,24 +110,23 @@ class ChatMessageController {
                 const username = UserController.getUserById(result.userId)
                 const correctGuessMessage = {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
-                    author: "SYSTEM",
+                    author: 'SYSTEM',
                 }
-                result.points > 1
-                    ? io
-                          .to(chatroomId)
-                          .emit("gameOver", message.author, message.chatroom_id)
-                    : io.to(chatroomId).emit("chatMessage", correctGuessMessage)
-            } else {
-                io.to(message.chatroom_id).emit(
-                    "error",
-                    "No song is currently playing."
-                )
+                if (result.points === 1) {
+                    io.to(chatroomId).emit('chatMessage', correctGuessMessage)
+                    io.to(chatroomId).emit('gameOver')
+                } else if (
+                    result.points > 0 &&
+                    result.correctGuessType.length > 0
+                ) {
+                    io.to(chatroomId).emit('chatMessage', correctGuessMessage)
+                }
             }
         } catch (error) {
             console.error(error)
             io.to(message.chatroom_id).emit(
-                "error",
-                "An error occurred while processing your message."
+                'error',
+                'An error occurred while processing your message.'
             )
         }
     }
@@ -136,7 +134,7 @@ class ChatMessageController {
     static async createMessage(req: Request): Promise<ChatMessage> {
         const user = await User.findByPk(req.body.user_id)
         if (!user) {
-            throw new Error("User not found")
+            throw new Error('User not found')
         }
 
         // Create new message with author field
