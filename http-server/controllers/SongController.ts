@@ -1,11 +1,11 @@
-import { Request, Response } from "express"
-import Song from "../models/Song"
-import { sequelizeErrorHandler } from "../../http-server/utils/ErrorHandlers"
-import sequelize from "../config/database"
-import axios from "axios"
-import { getAccessToken } from "../utils/helpers/spotifyHelper"
-import Guess from "../models/Guess"
-import Playlist from "../models/Playlist"
+import { Request, Response } from 'express'
+import Song from '../models/Song'
+import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
+import sequelize from '../config/database'
+import axios from 'axios'
+import { getAccessToken } from '../utils/helpers/spotifyHelper'
+import Guess from '../models/Guess'
+import Playlist from '../models/Playlist'
 
 class SongController {
     static async getSongs(req: Request, res: Response): Promise<void> {
@@ -44,9 +44,9 @@ class SongController {
 
             if (song) {
                 await song.destroy()
-                res.status(204).send("Song deleted")
+                res.status(204).send('Song deleted')
             } else {
-                res.status(404).send("Song not found")
+                res.status(404).send('Song not found')
             }
         } catch (error: any) {
             sequelizeErrorHandler(error)
@@ -67,7 +67,7 @@ class SongController {
             order: sequelize.random(),
         })
         if (!song) {
-            throw new Error("No songs found")
+            throw new Error('No songs found')
         }
 
         return song
@@ -86,42 +86,16 @@ class SongController {
             const numPreviews = parseInt(req.query.numPreviews as string) || 1
             const chatroomId = req.query.chatroomId
 
-            // Fetch the playlist
-            const responsePlaylist = await axios.get(
-                `https://api.spotify.com/v1/playlists/${req.params.playlistId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            )
-
-            // Upsert the Playlist in your database
-            const newPlaylist = {
-                spotify_playlist_id: responsePlaylist.data.id,
-                name: responsePlaylist.data.name,
-                genre_id: null, // Fetch genre_id from your database
-            }
-
-            const playlistRecord = await Playlist.findOne({
-                where: { spotify_playlist_id: newPlaylist.spotify_playlist_id },
-            })
-
-            if (playlistRecord) {
-                newPlaylist.genre_id = playlistRecord.genre_id
-            } else {
-                console.log(
-                    `Playlist ${newPlaylist.name} does not exist in the database.`
-                )
-                return
-            }
-
-            const [playlist] = await Playlist.upsert(newPlaylist, {
-                returning: true,
+            // Fetch the playlist from your database
+            const playlist = await Playlist.findOne({
+                where: { spotify_playlist_id: req.params.playlistId },
             })
 
             if (!playlist) {
-                console.log("Upserting the playlist returned null or undefined")
+                console.log(
+                    `Playlist ${req.params.playlistId} does not exist in the database.`
+                )
+                return
             }
 
             // Fetch the tracks
@@ -140,7 +114,7 @@ class SongController {
 
             if (tracksWithPreview.length === 0) {
                 throw new Error(
-                    "No tracks with previews found in the playlist."
+                    'No tracks with previews found in the playlist.'
                 )
             }
 

@@ -1,7 +1,7 @@
-import { Request, Response } from "express"
-import Playlist from "../models/Playlist"
-import { sequelizeErrorHandler } from "../utils/ErrorHandlers"
-import axios from "axios"
+import { Request, Response } from 'express'
+import Playlist from '../models/Playlist'
+import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
+import axios from 'axios'
 
 class PlaylistController {
     static async getPlaylists(req: Request, res: Response) {
@@ -25,7 +25,7 @@ class PlaylistController {
             if (playlist) {
                 res.send(playlist)
             } else {
-                res.status(404).send("Playlist not found")
+                res.status(404).send('Playlist not found')
             }
         } catch (error) {
             sequelizeErrorHandler(error)
@@ -44,18 +44,11 @@ class PlaylistController {
         return playlist
     }
 
-    static async findPlaylistsBySpotifyId(spotifyId) {
-        const playlists = await Playlist.findOne({
-            where: { spotify_playlist_id: spotifyId },
-        })
-        return playlists
-    }
-
-    static async fetchAndStorePlaylists(
+    static async fetchAndStorePlaylistsByGenre(
         accessToken,
         genreId,
-        country = "US",
-        locale = "en_US"
+        country = 'US',
+        locale = 'en_US'
     ) {
         const playlists = await axios.get(
             `https://api.spotify.com/v1/browse/categories/${genreId}/playlists`,
@@ -80,16 +73,13 @@ class PlaylistController {
 
             // Ensure playlists are saved in database and fetch from there
             if (validPlaylist) {
-                await PlaylistController.findOrCreatePlaylist(
-                    validPlaylist.id,
-                    validPlaylist.name,
-                    genreId
-                )
-                const fetchedPlaylist =
-                    await PlaylistController.findPlaylistsBySpotifyId(
-                        validPlaylist.id
+                const playlistFromDb =
+                    await PlaylistController.findOrCreatePlaylist(
+                        validPlaylist.id,
+                        validPlaylist.name,
+                        genreId
                     )
-                return fetchedPlaylist
+                return playlistFromDb
             }
         }
 
@@ -105,8 +95,8 @@ class PlaylistController {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    country: req.query.country || "US",
-                    locale: req.query.locale || "en_US",
+                    country: req.query.country || 'US',
+                    locale: req.query.locale || 'en_US',
                 },
             }
         )
@@ -116,11 +106,11 @@ class PlaylistController {
         // For each genre, fetch and store one playlist in database
         if (genres) {
             const promises = genres.map((genre) =>
-                PlaylistController.fetchAndStorePlaylists(
+                PlaylistController.fetchAndStorePlaylistsByGenre(
                     accessToken,
                     genre.id,
-                    req.query.country || "US",
-                    req.query.locale || "en_US"
+                    req.query.country || 'US',
+                    req.query.locale || 'en_US'
                 )
             )
 
