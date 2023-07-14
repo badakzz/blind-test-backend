@@ -24,6 +24,7 @@ class GuessController {
         userId: number
         correctGuessType: string
         points: number
+        guess: Guess
     } | null> {
         // Fetch the current song from the database
         const song = await SongController.getSongById(songId)
@@ -63,7 +64,6 @@ class GuessController {
                 song_id: songId,
             })
         }
-        console.log('aftercheckexistingGuess', existingGuess)
 
         // Update the correct guesser id based on the correctGuessType
         if (correctGuessType === 'song name') {
@@ -89,6 +89,7 @@ class GuessController {
             userId: newScore?.userId || userId,
             correctGuessType: correctGuessType,
             points: newScore?.points || 0,
+            guess: existingGuess,
         }
     }
 }

@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 import axios from 'axios'
 import GuessController from './GuessController'
 import UserController from './UserController'
+import { Guess } from '../models'
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
@@ -112,7 +113,7 @@ class ChatMessageController {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
                     author: 'SYSTEM',
                 }
-                if (result.points === 1) {
+                if (result.points === 2) {
                     io.to(chatroomId).emit('chatMessage', correctGuessMessage)
                     io.to(chatroomId).emit('gameOver')
                 } else if (
@@ -120,6 +121,16 @@ class ChatMessageController {
                     result.correctGuessType.length > 0
                 ) {
                     io.to(chatroomId).emit('chatMessage', correctGuessMessage)
+                    const guess = await Guess.findOne({
+                        where: {
+                            guessId: result.guess,
+                            artist_guesser_id: { [Op.ne]: null },
+                            song_guesser_id: { [Op.ne]: null },
+                        },
+                    })
+                    if (guess) {
+                        io.to(chatroomId).emit('artistAndSongNamesFound')
+                    }
                 }
             }
         } catch (error) {
