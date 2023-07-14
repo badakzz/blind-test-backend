@@ -3,6 +3,7 @@ import Chatroom from '../models/Chatroom'
 import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
 import { generateUniqueId } from '../utils/helpers'
 import Song from '../models/Song'
+import sequelize from '../config/database'
 
 class ChatroomController {
     static async getChatrooms(req: Request, res: Response): Promise<void> {
@@ -92,6 +93,7 @@ class ChatroomController {
         chatroomId: string,
         res: Response
     ): Promise<any> {
+        const transaction = await sequelize.transaction()
         try {
             // check if song_id exists in the Songs table
             const songExists = await Song.findByPk(chatroomCurrentPlayingSongId)
@@ -112,6 +114,7 @@ class ChatroomController {
                 {
                     where: { chatroom_id: chatroomId },
                     returning: true,
+                    transaction,
                 }
             )
 
@@ -120,8 +123,12 @@ class ChatroomController {
                     error: 'Chatroom could not be updated.',
                 })
             }
+            await transaction.commit()
+
             return updatedRows[0]
         } catch (error) {
+            await transaction.rollback()
+
             console.error(
                 `Error caught in PUT '/api/chatrooms/:chatroom_id/current_song_id' route: ${error}`
             )
