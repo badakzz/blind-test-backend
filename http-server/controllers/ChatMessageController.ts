@@ -7,6 +7,7 @@ import axios from 'axios'
 import GuessController from './GuessController'
 import UserController from './UserController'
 import { Guess } from '../models'
+const { Op } = require('sequelize')
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
@@ -123,7 +124,7 @@ class ChatMessageController {
                     io.to(chatroomId).emit('chatMessage', correctGuessMessage)
                     const guess = await Guess.findOne({
                         where: {
-                            guessId: result.guess,
+                            guess_id: result.guess.guess_id,
                             artist_guesser_id: { [Op.ne]: null },
                             song_guesser_id: { [Op.ne]: null },
                         },
