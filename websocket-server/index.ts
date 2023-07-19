@@ -170,8 +170,8 @@ io.on('connection', async (socket) => {
         io.to(guessData.chatroomId).emit('correctGuess', guessData)
     })
 
-    socket.on('syncTimeOut', (chatroomId) => {
-        console.log('Syncing audio in clients')
+    socket.on('audioEnded', (chatroomId) => {
+        console.log('Audio ended for chatroom', chatroomId)
         setTimeout(() => {
             io.to(chatroomId).emit('syncTimeOut')
         }, 5000)

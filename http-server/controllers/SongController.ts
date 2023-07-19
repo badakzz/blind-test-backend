@@ -28,6 +28,20 @@ class SongController {
         }
     }
 
+    static async getSongCredentialsById(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+        try {
+            const song = await Song.findByPk(req.params.id)
+            const { song_name, artist_name } = song
+            res.send({ songName: song_name, artistName: artist_name })
+        } catch (error: any) {
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
+        }
+    }
+
     static async createSong(req: Request, res: Response): Promise<void> {
         try {
             const newSong = await Song.create(req.body)
