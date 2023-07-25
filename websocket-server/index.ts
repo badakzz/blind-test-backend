@@ -21,7 +21,6 @@ const PORT = process.env.NODE_WEBSOCKET_PORT || 3001
 const connectedUsers: { id: string; username: string; chatroomId: string }[] =
     []
 const chatrooms = []
-const chatMessageServices = {}
 
 io.on('connection', async (socket) => {
     console.log(`User connected with ID: ${socket.id}`)
@@ -37,7 +36,6 @@ io.on('connection', async (socket) => {
         console.log(
             `User ${username} created and joined chatroom ${chatroomId}`
         )
-        // chatMessageServices[chatroomId] = new ChatMessageService(chatroomId, io)
     })
 
     socket.on('joinRoom', (username, chatroomId) => {
@@ -92,43 +90,6 @@ io.on('connection', async (socket) => {
         )
         io.to(message.chatroomId).emit('chatMessage', message)
     })
-
-    // socket.on("chatMessage", (message) => {
-    //     console.log(
-    //         `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
-    //     )
-    //     io.to(message.chatroomId).emit("chatMessage", message)
-
-    //     const fakeRequest = httpMocks.createRequest({
-    //         method: "POST",
-    //         url: "/chatMessage",
-    //         body: {
-    //             chatroom_id: message.chatroomId,
-    //             author: message.author,
-    //             content: message.content,
-    //             user_id: message.userId,
-    //             io: io,
-    //         },
-    //     })
-
-    //     const fakeResponse = httpMocks.createResponse()
-
-    //     fakeResponse.on("end", function () {
-    //         if (
-    //             fakeResponse._getStatusCode() >= 200 &&
-    //             fakeResponse._getStatusCode() < 300
-    //         ) {
-    //             io.to(fakeRequest.body.chatroom_id).emit(
-    //                 "chatMessage",
-    //                 fakeResponse._getData()
-    //             )
-    //         } else {
-    //             console.error(fakeResponse._getData())
-    //         }
-    //     })
-
-    //     ChatMessageController.processChatMessage(fakeRequest, fakeResponse)
-    // })
 
     socket.on('startGame', (gameData) => {
         console.log(
