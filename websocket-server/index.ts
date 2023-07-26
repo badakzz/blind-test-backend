@@ -164,11 +164,15 @@ io.on('connection', async (socket) => {
 
     let timeoutId
     socket.on('audioEnded', (chatroomId) => {
-        console.log(
-            'chatroomSongsIndex[chatroomId]',
-            chatroomSongsIndex[chatroomId]
-        )
-        if (chatroomSongsIndex[chatroomId] > 9) {
+        if (chatroomSongsIndex[chatroomId].hasOwnProperty('index'))
+            console.log(
+                'chatroomSongsIndex[chatroomId]',
+                chatroomSongsIndex[chatroomId].index
+            )
+        if (
+            chatroomSongsIndex[chatroomId] &&
+            chatroomSongsIndex[chatroomId].index > 10
+        ) {
             console.log('Game is over for chatroom', chatroomId)
             io.to(chatroomId).emit('gameOver')
         } else {
