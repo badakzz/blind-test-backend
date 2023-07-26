@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import Guess from '../models/Guess'
 import ScoreController from './ScoreController'
-import { analyzeAnswer } from '../utils/helpers'
+import { analyzeAnswer, normalizeAnswer } from '../utils/helpers'
 import SongController from './SongController'
 import { Server } from 'socket.io'
 import sequelize from '../config/database'
@@ -33,13 +33,20 @@ class GuessController {
             const song = await SongController.getSongById(songId, transaction)
 
             // Normalize the guess
-            const normalizedGuessWords = guess.split(' ')
+            const normalizedGuessWords = normalizeAnswer(guess)
+            const normalizedSongName = normalizeAnswer(song.song_name)
+            const normalizedArtistName = normalizeAnswer(song.artist_name)
+            console.log({
+                normalizedGuessWords,
+                normalizedSongName,
+                normalizedArtistName,
+            })
 
             // Analyze the answer and get the scoreData
             const { points, correctGuessType } = analyzeAnswer(
-                song.song_name.split(' '),
+                normalizedSongName,
                 normalizedGuessWords,
-                song.artist_name.split(' ')
+                normalizedArtistName
             )
 
             // Fetch the existing guess record for the song in the chat room
@@ -72,10 +79,16 @@ class GuessController {
             }
 
             // Update the correct guesser id based on the correctGuessType
-            if (correctGuessType.includes('song name')) {
+            if (
+                correctGuessType.includes('song name') ||
+                correctGuessType === 'artist and the song names'
+            ) {
                 existingGuess.song_guesser_id = userId
             }
-            if (correctGuessType.includes('artist name')) {
+            if (
+                correctGuessType.includes('artist name') ||
+                correctGuessType === 'artist and the song names'
+            ) {
                 existingGuess.artist_guesser_id = userId
             }
 
