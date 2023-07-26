@@ -21,6 +21,7 @@ const PORT = process.env.NODE_WEBSOCKET_PORT || 3001
 const connectedUsers: { id: string; username: string; chatroomId: string }[] =
     []
 const chatrooms = []
+const chatroomSongsIndex = {}
 
 io.on('connection', async (socket) => {
     console.log(`User connected with ID: ${socket.id}`)
@@ -107,6 +108,35 @@ io.on('connection', async (socket) => {
             console.log(
                 `Setting current song of id ${currentSongPlaying} in chatroom of id ${chatroomId}`
             )
+
+            if (!chatroomSongsIndex[chatroomId]) {
+                chatroomSongsIndex[chatroomId] = { lastSong: null, index: 0 }
+                console.log(
+                    `Initializing chatroomSongsIndex[${chatroomId}] to:`,
+                    chatroomSongsIndex[chatroomId]
+                )
+            }
+
+            console.log(
+                `Current chatroomSongsIndex[${chatroomId}] is:`,
+                chatroomSongsIndex[chatroomId]
+            )
+
+            if (
+                currentSongPlaying !== chatroomSongsIndex[chatroomId].lastSong
+            ) {
+                chatroomSongsIndex[chatroomId].index++
+                chatroomSongsIndex[chatroomId].lastSong = currentSongPlaying
+                console.log(
+                    'current song played',
+                    chatroomSongsIndex[chatroomId].index
+                )
+            } else {
+                console.log(
+                    'Received the same song again. Not incrementing the index.'
+                )
+            }
+
             try {
                 if (currentSongPlaying && chatroomId) {
                     const updatedChatroom =
@@ -127,17 +157,37 @@ io.on('connection', async (socket) => {
             }
         }
     )
+
     socket.on('correctGuess', (guessData) => {
         io.to(guessData.chatroomId).emit('correctGuess', guessData)
     })
 
     let timeoutId
     socket.on('audioEnded', (chatroomId) => {
-        clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => {
-            console.log('Audio ended for chatroom', chatroomId)
-            io.to(chatroomId).emit('syncTimeOut')
-        }, 5000)
+        console.log(
+            'chatroomSongsIndex[chatroomId]',
+            chatroomSongsIndex[chatroomId]
+        )
+        if (chatroomSongsIndex[chatroomId] > 9) {
+            console.log('Game is over for chatroom', chatroomId)
+            io.to(chatroomId).emit('gameOver')
+        } else {
+            clearTimeout(timeoutId)
+            timeoutId = setTimeout(() => {
+                console.log('Audio ended for chatroom', chatroomId)
+                io.to(chatroomId).emit('syncTimeOut')
+            }, 5000)
+        }
+    })
+
+    socket.on('resetGame', ({ chatroomId }) => {
+        // Reset the game-related states
+        chatroomSongsIndex[chatroomId] = { lastSong: null, index: 0 }
+
+        // Emit 'gameReset' event to all other clients in the same chatroom
+        io.to(chatroomId).emit('gameReset')
+
+        console.log(`Game reset in chatroom ${chatroomId}`)
     })
 
     // socket.on('gameOver', (author, chatroomId) => {
