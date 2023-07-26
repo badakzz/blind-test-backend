@@ -28,6 +28,20 @@ class SongController {
         }
     }
 
+    static async getSongCredentialsById(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+        try {
+            const song = await Song.findByPk(req.params.id)
+            const { song_name, artist_name } = song
+            res.send({ songName: song_name, artistName: artist_name })
+        } catch (error: any) {
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
+        }
+    }
+
     static async createSong(req: Request, res: Response): Promise<void> {
         try {
             const newSong = await Song.create(req.body)
@@ -73,14 +87,15 @@ class SongController {
         return song
     }
 
-    static async getSongById(id: number): Promise<Song> {
-        return await Song.findByPk(id)
+    static async getSongById(id: number, transaction: any): Promise<Song> {
+        return await Song.findByPk(id, { transaction })
     }
 
     static async fetchAndStoreSongsFromSpotifyPlaylist(
         req: Request,
         res: Response
     ): Promise<Partial<Song>[]> {
+        const transaction = await sequelize.transaction()
         try {
             const accessToken = await getAccessToken()
             const numPreviews = parseInt(req.query.numPreviews as string) || 1
@@ -117,13 +132,19 @@ class SongController {
                     'No tracks with previews found in the playlist.'
                 )
             }
+            let selectableTracks = [...tracksWithPreview]
 
             const previews = []
             for (let i = 0; i < numPreviews; i++) {
-                const randomTrack =
-                    tracksWithPreview[
-                        Math.floor(Math.random() * tracksWithPreview.length)
-                    ]
+                if (selectableTracks.length === 0) {
+                    break
+                }
+                // Randomly select a track and remove it from the selectableTracks array
+                const randomIndex = Math.floor(
+                    Math.random() * selectableTracks.length
+                )
+                const randomTrack = selectableTracks[randomIndex]
+                selectableTracks.splice(randomIndex, 1)
 
                 if (randomTrack && randomTrack.track && randomTrack.track.id) {
                     const newSong = {
@@ -141,6 +162,7 @@ class SongController {
                         ;[song, created] = await Song.findOrCreate({
                             where: { spotify_song_id: newSong.spotify_song_id },
                             defaults: newSong,
+                            transaction,
                         })
                         newSong.song_id = song.song_id
                     } catch (error) {
@@ -152,10 +174,13 @@ class SongController {
 
                     // Create the Guess in your database
                     try {
-                        await Guess.create({
-                            chatroom_id: chatroomId,
-                            song_id: song.song_id,
-                        })
+                        await Guess.create(
+                            {
+                                chatroom_id: chatroomId,
+                                song_id: song.song_id,
+                            },
+                            { transaction }
+                        )
                     } catch (error) {
                         console.log(
                             `Error during Guess.create operation: ${error}`
@@ -166,8 +191,11 @@ class SongController {
                     previews.push(newSong)
                 }
             }
+            await transaction.commit()
+
             return previews
         } catch (error) {
+            await transaction.rollback()
             console.log(
                 `Error caught in fetchSongsFromSpotifyPlaylist: ${error}`
             )

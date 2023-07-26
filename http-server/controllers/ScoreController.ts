@@ -63,7 +63,8 @@ class ScoreController {
         chatroom_id: string,
         points: number,
         correctGuessType: string,
-        io: Server
+        io: Server,
+        transaction: any
     ): Promise<{
         userId: number
         correctGuessType: string
@@ -72,15 +73,19 @@ class ScoreController {
         // Check if the user's score exists in the score
         let score = await Score.findOne({
             where: { user_id: user_id, chatroom_id: chatroom_id },
+            transaction,
         })
 
         if (score) {
             // Update the score
             score.points += points
-            await score.save()
+            await score.save({ transaction })
         } else {
             // Create a new score
-            score = await Score.create({ user_id, chatroom_id, points })
+            score = await Score.create(
+                { user_id, chatroom_id, points },
+                { transaction }
+            )
         }
 
         if (score) {

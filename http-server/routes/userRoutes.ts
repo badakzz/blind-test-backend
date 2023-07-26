@@ -28,6 +28,5 @@ router.delete(
 )
 router.post('/api/auth/login', AuthController.login)
 router.post('/api/auth/signup', AuthController.signup)
-router.post('/api/auth/logout', requireAuth, requireCsrf, AuthController.logout)
 
 export default router

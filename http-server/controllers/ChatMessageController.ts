@@ -6,6 +6,8 @@ import { Server } from 'socket.io'
 import axios from 'axios'
 import GuessController from './GuessController'
 import UserController from './UserController'
+import { Guess } from '../models'
+const { Op } = require('sequelize')
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
@@ -39,16 +41,6 @@ class ChatMessageController {
             res.status(500).send(error.message)
         }
     }
-
-    // static async createMessage(req: Request, res: Response): Promise<void> {
-    //     try {
-    //         const newMessage = await ChatMessageService.createMessage(req)
-    //         res.json(newMessage)
-    //     } catch (error) {
-    //         sequelizeErrorHandler(error)
-    //         res.status(500).send(error.message)
-    //     }
-    // }
 
     static async updateMessage(req: Request, res: Response): Promise<void> {
         try {
@@ -112,7 +104,7 @@ class ChatMessageController {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
                     author: 'SYSTEM',
                 }
-                if (result.points === 1) {
+                if (result.points === 2) {
                     io.to(chatroomId).emit('chatMessage', correctGuessMessage)
                     io.to(chatroomId).emit('gameOver')
                 } else if (
@@ -120,6 +112,16 @@ class ChatMessageController {
                     result.correctGuessType.length > 0
                 ) {
                     io.to(chatroomId).emit('chatMessage', correctGuessMessage)
+                    const guess = await Guess.findOne({
+                        where: {
+                            guess_id: result.guess.guess_id,
+                            artist_guesser_id: { [Op.ne]: null },
+                            song_guesser_id: { [Op.ne]: null },
+                        },
+                    })
+                    if (guess) {
+                        io.to(chatroomId).emit('artistAndSongNamesFound')
+                    }
                 }
             }
         } catch (error) {
@@ -145,33 +147,6 @@ class ChatMessageController {
 
         return newMessage
     }
-
-    //     static async processChatMessage(
-    //         req: Request,
-    //         res: Response
-    //     ): Promise<void> {
-    //         try {
-    //             const chatroom_id = req.body.chatroom_id
-    //             const author = req.body.author
-    //             const content = req.body.content
-    //             const user_id = req.body.user_id
-    //             const io = req.body.io
-
-    //             const message = { chatroom_id, author, content, user_id }
-    //             const updated = await ChatMessageService.processChatMessage(
-    //                 //@ts-ignore
-    //                 message,
-    //                 chatroom_id,
-    //                 io
-    //             )
-
-    //             // We send the updated chat message back to the client
-    //             res.status(200).send(updated)
-    //         } catch (error) {
-    //             sequelizeErrorHandler(error)
-    //             res.status(500).send(error.message)
-    //         }
-    //     }
 }
 
 export default ChatMessageController
