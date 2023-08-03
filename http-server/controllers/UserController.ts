@@ -69,6 +69,19 @@ class UserController {
             res.status(500).send(error.message)
         }
     }
+
+    static async grantPremium(req: Request, res: Response): Promise<void> {
+        try {
+            const { user_id } = req.body
+            await User.update({ permissions: 2 }, { where: { user_id } })
+            const updatedUser = await User.findByPk(user_id)
+            const userDTO = createDTOOmittingPassword(updatedUser)
+            res.json(userDTO)
+        } catch (error) {
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
+        }
+    }
 }
 
 export default UserController

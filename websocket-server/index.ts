@@ -9,7 +9,7 @@ const app = express()
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: ['http://localhost:3000', 'http://localhost:19006'],
         methods: ['GET', 'POST'],
         allowedHeaders: ['my-custom-header'],
         credentials: true,
@@ -171,7 +171,7 @@ io.on('connection', async (socket) => {
             )
         if (
             chatroomSongsIndex[chatroomId] &&
-            chatroomSongsIndex[chatroomId].index > 10
+            chatroomSongsIndex[chatroomId].index >= 10
         ) {
             console.log('Game is over for chatroom', chatroomId)
             io.to(chatroomId).emit('gameOver')

@@ -9,9 +9,9 @@ import chatMessageRoutes from './routes/chatMessageRoutes'
 import csrfRoute from './routes/csrfRoute'
 import guessRoutes from './routes/guessRoutes'
 import scoreRoutes from './routes/scoreRoutes'
-import spotifyRoutes from './routes/spotifyRoutes'
 import songRoutes from './routes/songRoutes'
 import playlistRoutes from './routes/playlistRoutes'
+import paymentRoutes from './routes/paymentRoutes'
 import sequelize from './config/database'
 
 const app = express()
@@ -19,7 +19,7 @@ const app = express()
 app.use(
     cors({
         // origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
-        origin: 'http://localhost:3000',
+        origin: ['http://localhost:3000', 'http://localhost:19006'],
         credentials: true,
     })
 )
@@ -32,10 +32,10 @@ app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
 app.use(userRoutes)
 app.use(scoreRoutes)
-app.use(spotifyRoutes)
 app.use(guessRoutes)
 app.use(songRoutes)
 app.use(playlistRoutes)
+app.use(paymentRoutes)
 app.use(csrfRoute)
 
 // Middleware for verifying JWT tokens
