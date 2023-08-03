@@ -28,5 +28,11 @@ router.delete(
 )
 router.post('/api/auth/login', AuthController.login)
 router.post('/api/auth/signup', AuthController.signup)
+router.put(
+    '/api/v1/users/premium/:user_id',
+    requireCsrf,
+    requireAuth,
+    UserController.grantPremium
+)
 
 export default router

@@ -26,6 +26,7 @@ export const requireAuth = (
             process.env.JWT_SECRET_KEY as string,
             (err: any, decoded: any) => {
                 if (err) {
+                    console.log('error on jwt validation', err)
                     return res.status(401).json({ error: 'Invalid token' })
                 } else {
                     req.userId = decoded.userId

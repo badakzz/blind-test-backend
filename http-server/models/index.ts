@@ -5,6 +5,7 @@ import Chatroom from './Chatroom'
 import Playlist from './Playlist'
 import Song from './Song'
 import Score from './Score'
+import Payment from './Payment'
 
 User.hasMany(ChatMessage, { foreignKey: 'user_id' })
 ChatMessage.belongsTo(User, { foreignKey: 'user_id' })
@@ -27,4 +28,7 @@ Song.belongsTo(Playlist, { foreignKey: 'playlist_id' })
 User.hasMany(Score, { foreignKey: 'user_id' })
 Score.belongsTo(User, { foreignKey: 'user_id' })
 
-export { User, ChatMessage, Guess, Chatroom, Playlist, Song, Score }
+User.hasMany(Payment, { foreignKey: 'user_id' })
+Payment.belongsTo(User, { foreignKey: 'user_id' })
+
+export { User, ChatMessage, Guess, Chatroom, Playlist, Song, Score, Payment }

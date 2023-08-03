@@ -10,5 +10,7 @@
     "devDependencies": {
         "concurrently": "^8.2.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "stripe": "^12.16.0"
+    }
 }

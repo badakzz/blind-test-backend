@@ -70,48 +70,6 @@ class AuthController {
             res.status(500).json({ error: error.message })
         }
     }
-
-    static async checkAuthentication(
-        req: Request,
-        res: Response
-    ): Promise<void> {
-        try {
-            const authHeader = req.headers['authorization']
-            const token = authHeader && authHeader.split(' ')[1] // Token is expected in the format: Bearer <token>
-
-            if (!token) {
-                return res
-                    .status(403)
-                    .json({ error: 'No token provided' }) as any
-            }
-
-            jwt.verify(
-                token,
-                process.env.SECRET_KEY as string,
-                async (err, decoded) => {
-                    if (err) {
-                        return res.status(401).json({ error: 'Invalid token' })
-                    } else {
-                        const userId = (decoded as any).userId
-                        const user = await User.findOne({
-                            where: { user_id: userId },
-                        })
-
-                        if (!user) {
-                            return res
-                                .status(404)
-                                .json({ error: 'User not found' })
-                        }
-
-                        const userDTO = createDTOOmittingPassword(user)
-                        res.status(200).json({ user: userDTO, token })
-                    }
-                }
-            )
-        } catch (error: any) {
-            res.status(500).json({ error: error.message })
-        }
-    }
 }
 
 export default AuthController
