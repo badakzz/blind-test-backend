@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+
 interface AuthRequest extends Request {
     userId?: string
 }
@@ -10,7 +11,7 @@ export const requireAuth = (
     next: NextFunction
 ) => {
     const token = req.headers.authorization?.split(' ')[1]
-    console.log('auth middleware triggered')
+    console.log('premium middleware triggered')
     if (
         req.path === '/api/auth/signup' ||
         req.path === '/api/auth/login' ||
@@ -20,7 +21,6 @@ export const requireAuth = (
         return
     }
     if (token) {
-        console.log('verifying token from server')
         jwt.verify(
             token,
             process.env.JWT_SECRET_KEY as string,
