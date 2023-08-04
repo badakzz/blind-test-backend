@@ -38,8 +38,6 @@ app.use(playlistRoutes)
 app.use(paymentRoutes)
 app.use(csrfRoute)
 
-// Middleware for verifying JWT tokens
-
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack)
     res.status(500).send('Error in http-server')

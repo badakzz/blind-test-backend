@@ -12,7 +12,6 @@ router.get(
 )
 router.post('/api/v1/songs/', requireCsrf, SongController.createSong)
 router.delete('/api/v1/songs/:id', requireCsrf, SongController.deleteSong)
-// to ask /playlist/ :
 router.get('/api/v1/songs/playlist/:playlistId', async (req, res) => {
     try {
         const songsList =

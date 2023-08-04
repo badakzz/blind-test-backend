@@ -33,7 +33,11 @@ class PlaylistController {
         }
     }
 
-    static async findOrCreatePlaylist(spotifyId, name, genreId) {
+    static async findOrCreatePlaylist(
+        spotifyId: string,
+        name: string,
+        genreId: string
+    ) {
         const [playlist, created] = await Playlist.findOrCreate({
             where: { spotify_playlist_id: spotifyId },
             defaults: {
@@ -86,7 +90,10 @@ class PlaylistController {
         return null
     }
 
-    static async fetchGenresAndStorePlaylists(req, accessToken) {
+    static async fetchGenresAndStorePlaylists(
+        req: Request,
+        accessToken: string
+    ) {
         // Fetch genres from Spotify
         const response = await axios.get(
             `https://api.spotify.com/v1/browse/categories`,
@@ -109,8 +116,8 @@ class PlaylistController {
                 PlaylistController.fetchAndStorePlaylistsByGenre(
                     accessToken,
                     genre.id,
-                    req.query.country || 'US',
-                    req.query.locale || 'en_US'
+                    (req.query.country as string) || 'US',
+                    (req.query.locale as string) || 'en_US'
                 )
             )
 
@@ -125,6 +132,33 @@ class PlaylistController {
         }
 
         return null
+    }
+
+    static async searchPlaylist(req: Request, accessToken: string) {
+        try {
+            const query = req.query.q
+            const response = await axios.get(
+                'https://api.spotify.com/v1/search',
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        q: encodeURIComponent(query as string),
+                        type: 'playlist',
+                        limit: 10,
+                    },
+                }
+            )
+
+            if (response.data && response.data.playlists) {
+                return response.data.playlists.items
+            } else {
+                throw new Error('No playlists found')
+            }
+        } catch (error) {
+            throw new Error(error.message)
+        }
     }
 }
 
