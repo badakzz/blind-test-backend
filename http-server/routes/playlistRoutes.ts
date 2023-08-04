@@ -67,20 +67,49 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
             await getAccessToken()
         }
         const playlistId = req.params.id
-        const response = await axios.get(
-            `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                params: {
-                    limit: 10, // Limit to 10 songs
-                },
+        let tracksWithPreviews = []
+        let offset = 0
+
+        while (tracksWithPreviews.length < 10) {
+            const response = await axios.get(
+                `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        limit: 100, // Spotify API's max limit
+                        offset: offset,
+                    },
+                }
+            )
+
+            const tracks = response.data.items
+            for (let i = 0; i < tracks.length; i++) {
+                if (tracks[i].track.preview_url) {
+                    tracksWithPreviews.push(tracks[i].track)
+                    if (tracksWithPreviews.length >= 10) {
+                        break
+                    }
+                }
             }
-        )
-        const tracks = response.data.items
-        const trackList = tracks.map((trackItem) => trackItem.track)
-        res.json(trackList)
+
+            // If all 100 tracks are traversed and still didn't get 10 preview urls
+            // increment the offset to fetch the next set of tracks
+            if (tracks.length === 100) {
+                offset += 100
+            } else {
+                // If there were less than 100 tracks in the response, it means that the playlist is exhausted
+                if (tracksWithPreviews.length < 10) {
+                    throw new Error(
+                        'Playlist does not have enough songs with previews. Please select a different playlist.'
+                    )
+                }
+                break
+            }
+        }
+
+        res.json(tracksWithPreviews)
     } catch (error) {
         console.log(
             `Error caught in '/api/v1/playlists/:id/tracks' route: ${error}`
