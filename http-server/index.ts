@@ -12,6 +12,7 @@ import scoreRoutes from './routes/scoreRoutes'
 import songRoutes from './routes/songRoutes'
 import playlistRoutes from './routes/playlistRoutes'
 import paymentRoutes from './routes/paymentRoutes'
+import roadmapTicketRoutes from './routes/roadmapTicketRoutes'
 import sequelize from './config/database'
 
 const app = express()
@@ -40,7 +41,9 @@ app.use(scoreRoutes)
 app.use(guessRoutes)
 app.use(songRoutes)
 app.use(playlistRoutes)
+app.use(roadmapTicketRoutes)
 app.use(paymentRoutes)
+
 app.use(csrfRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
