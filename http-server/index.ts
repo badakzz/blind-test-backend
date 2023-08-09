@@ -12,6 +12,7 @@ import scoreRoutes from './routes/scoreRoutes'
 import songRoutes from './routes/songRoutes'
 import playlistRoutes from './routes/playlistRoutes'
 import paymentRoutes from './routes/paymentRoutes'
+import roadmapTicketRoutes from './routes/roadmapTicketRoutes'
 import sequelize from './config/database'
 
 const app = express()
@@ -19,7 +20,12 @@ const app = express()
 app.use(
     cors({
         // origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
-        origin: ['http://localhost:3000', 'http://localhost:19006'],
+        origin: [
+            'http://localhost:3000',
+            'http://localhost:19006',
+            'exp://192.168.1.214:8081',
+            '192.168.1.214',
+        ],
         credentials: true,
     })
 )
@@ -35,7 +41,9 @@ app.use(scoreRoutes)
 app.use(guessRoutes)
 app.use(songRoutes)
 app.use(playlistRoutes)
+app.use(roadmapTicketRoutes)
 app.use(paymentRoutes)
+
 app.use(csrfRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -45,14 +53,14 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.use(internalServerErrorHandler as any)
 
-const PORT = process.env.NODE_SERVER_PORT || 3002
+const PORT = parseInt(process.env.NODE_SERVER_PORT) || 3002
 sequelize
     .sync()
     .then(() => {
         console.log('Database synced successfully.')
 
         // We only start the server if the database sync is successful
-        app.listen(PORT, () => {
+        app.listen(PORT, '0.0.0.0', () => {
             console.log(`Server is running on port ${PORT}.`)
         })
     })

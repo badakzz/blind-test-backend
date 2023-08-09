@@ -70,6 +70,28 @@ class AuthController {
             res.status(500).json({ error: error.message })
         }
     }
+
+    static async updateSettings(req: Request, res: Response): Promise<void> {
+        const userId = req.body.userId
+        const { email, password } = req.body
+
+        try {
+            const user = await User.findByPk(userId)
+            if (!user) {
+                res.status(404).json({ error: 'User not found' })
+                return
+            }
+
+            if (email) user.email = email
+            if (password) user.password = await bcrypt.hash(password, 10)
+
+            await user.save()
+
+            res.status(200).json({ success: true })
+        } catch (error: any) {
+            res.status(500).json({ error: error.message })
+        }
+    }
 }
 
 export default AuthController

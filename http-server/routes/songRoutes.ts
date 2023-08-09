@@ -10,8 +10,6 @@ router.get(
     '/api/v1/songs/credentials/:id',
     SongController.getSongCredentialsById
 )
-router.post('/api/v1/songs/', requireCsrf, SongController.createSong)
-router.delete('/api/v1/songs/:id', requireCsrf, SongController.deleteSong)
 router.get('/api/v1/songs/playlist/:playlistId', async (req, res) => {
     try {
         const songsList =

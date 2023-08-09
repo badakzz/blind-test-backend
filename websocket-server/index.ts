@@ -9,7 +9,11 @@ const app = express()
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
     cors: {
-        origin: ['http://localhost:3000', 'http://localhost:19006'],
+        origin: [
+            'http://localhost:3000',
+            'http://localhost:19006',
+            'exp://192.168.1.214:8081',
+        ],
         methods: ['GET', 'POST'],
         allowedHeaders: ['my-custom-header'],
         credentials: true,
