@@ -55,6 +55,25 @@ class PaymentController {
             res.status(500).send(error.message)
         }
     }
+
+    static async createPaymentIntentNative(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+        try {
+            // Create a PaymentIntent with the order amount and currency
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: req.body.amount, // In cents
+                currency: req.body.currency,
+                // Add additional information if needed
+            })
+
+            // Send the client secret to the client
+            res.json({ clientSecret: paymentIntent.client_secret })
+        } catch (error) {
+            res.status(500).json({ error: error.message })
+        }
+    }
 }
 
 export default PaymentController
