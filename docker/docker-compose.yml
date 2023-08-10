@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  multi-stage:
+    build:
+      context: ..
+      dockerfile: ./docker/multiStage.Dockerfile
+    ports:
+      - 3001:3001
+      - 3002:3002
+    environment:
+      - NODE_ENV=development
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=badak
+      - POSTGRES_PASSWORD=Blindtest123!
+      - POSTGRES_DB=blindtestdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
