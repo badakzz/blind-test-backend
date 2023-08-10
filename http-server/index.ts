@@ -17,18 +17,19 @@ import sequelize from './config/database'
 
 const app = express()
 
-app.use(
-    cors({
-        // origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
-        origin: [
-            'http://localhost:3000',
-            'http://localhost:19006',
-            'exp://192.168.1.214:8081',
-            '192.168.1.214',
-        ],
-        credentials: true,
-    })
-)
+// app.use(
+//     cors({
+//         // origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
+//         origin: [
+//             'http://localhost:3000',
+//             'http://localhost:19006',
+//             'exp://192.168.1.214:8081',
+//             '192.168.1.214',
+//         ],
+//         credentials: true,
+//     })
+// )
+app.use(cors({ origin: true, credentials: true }))
 
 app.use(express.json())
 
@@ -53,17 +54,26 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.use(internalServerErrorHandler as any)
 
-const PORT = parseInt(process.env.NODE_SERVER_PORT) || 3002
-sequelize
-    .sync()
-    .then(() => {
-        console.log('Database synced successfully.')
+// const PORT = parseInt(process.env.NODE_SERVER_PORT) || 3002
+// sequelize
+//     .sync()
+//     .then(() => {
+//         console.log('Database synced successfully.')
 
-        // We only start the server if the database sync is successful
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`Server is running on port ${PORT}.`)
-        })
-    })
-    .catch((error) => console.error('Failed to sync database:', error))
+// We only start the server if the database sync is successful
+const PORT = process.env.NODE_SERVER_PORT || 3002
+const server = app.listen(parseInt(PORT as string), '0.0.0.0', () => {
+    const addressInfo = server.address()
+    const address =
+        typeof addressInfo === 'string'
+            ? addressInfo
+            : addressInfo?.address || 'localhost'
+    const port =
+        typeof addressInfo === 'string' ? '' : addressInfo?.port || PORT
+
+    console.log(`Server is running on http://${address}:${port}`)
+})
+// })
+// .catch((error) => console.error('Failed to sync database:', error))
 
 export default app

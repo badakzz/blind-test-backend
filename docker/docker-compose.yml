@@ -1,31 +1,14 @@
 version: '3.8'
 services:
-  http-server:
+  multi-stage:
     build:
-      context: ../http-server
-      dockerfile: ../docker/buildHttp.Dockerfile
+      context: ..
+      dockerfile: ./docker/multiStage.Dockerfile
     ports:
       - 3001:3001
-    environment:
-      - NODE_ENV=production
-    env_file:
-      - ../.env
-    volumes:
-      - ../http-server:/app
-
-  websocket-server:
-    build:
-      context: ../websocket-server
-      dockerfile: ../docker/buildWebsocket.Dockerfile
-    ports:
       - 3002:3002
     environment:
-      - NODE_ENV=production
-    env_file:
-      - ../.env
-    volumes:
-      - ../websocket-server:/app
-
+      - NODE_ENV=development
   db:
     image: postgres
     environment:
