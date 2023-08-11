@@ -73,6 +73,7 @@ class UserController {
     static async grantPremium(req: Request, res: Response): Promise<void> {
         try {
             const { user_id } = req.body
+            console.log('userid', user_id)
             await User.update({ permissions: 2 }, { where: { user_id } })
             const updatedUser = await User.findByPk(user_id)
             const userDTO = createDTOOmittingPassword(updatedUser)
