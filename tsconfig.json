@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
-        "outDir": "dist-http",
+        "outDir": "dist",
         "esModuleInterop": true,
         "strict": false,
         "moduleResolution": "node",
