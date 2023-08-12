@@ -101,7 +101,6 @@ class SongController {
             const numPreviews = parseInt(req.query.numPreviews as string) || 1
             const chatroomId = req.query.chatroomId
 
-            // Fetch the playlist from your database
             const playlist = await Playlist.findOne({
                 where: { spotify_playlist_id: req.params.playlistId },
             })
@@ -113,7 +112,6 @@ class SongController {
                 return
             }
 
-            // Fetch the tracks
             const responseTracks = await axios.get(
                 `https://api.spotify.com/v1/playlists/${req.params.playlistId}/tracks`,
                 {
@@ -139,7 +137,6 @@ class SongController {
                 if (selectableTracks.length === 0) {
                     break
                 }
-                // Randomly select a track and remove it from the selectableTracks array
                 const randomIndex = Math.floor(
                     Math.random() * selectableTracks.length
                 )
@@ -156,7 +153,6 @@ class SongController {
                         song_id: null,
                     }
 
-                    // Upsert the Song in your database
                     let song, created
                     try {
                         ;[song, created] = await Song.findOrCreate({
@@ -172,7 +168,6 @@ class SongController {
                         throw error
                     }
 
-                    // Create the Guess in your database
                     try {
                         await Guess.create(
                             {

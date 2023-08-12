@@ -1,6 +1,6 @@
-import { Sequelize, DataTypes, Model } from "sequelize"
-import sequelize from "../config/database"
-import Playlist from "./Playlist"
+import { Sequelize, DataTypes, Model } from 'sequelize'
+import sequelize from '../config/database'
+import Playlist from './Playlist'
 
 class Song extends Model {
     public song_id!: number
@@ -35,14 +35,14 @@ Song.init(
         playlist_id: {
             type: DataTypes.INTEGER,
             references: {
-                model: Playlist, // refers to Playlist model
-                key: "playlist_id",
+                model: Playlist,
+                key: 'playlist_id',
             },
         },
     },
     {
         sequelize,
-        tableName: "song",
+        tableName: 'song',
         timestamps: true,
         underscored: true,
     }

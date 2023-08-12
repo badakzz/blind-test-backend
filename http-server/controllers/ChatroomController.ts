@@ -95,13 +95,11 @@ class ChatroomController {
     ): Promise<any> {
         const transaction = await sequelize.transaction()
         try {
-            // check if song_id exists in the Songs table
             const songExists = await Song.findByPk(chatroomCurrentPlayingSongId)
             if (!songExists) {
                 console.error({ error: 'Invalid song id' })
             }
 
-            // check if chatroom_id exists in the Chatrooms table
             const chatroomExists = await Chatroom.findByPk(chatroomId)
             if (!chatroomExists) {
                 return console.error({ error: 'Invalid chatroom id' })

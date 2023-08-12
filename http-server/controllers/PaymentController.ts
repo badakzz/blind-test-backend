@@ -63,18 +63,15 @@ class PaymentController {
         try {
             const { stripe_payment_intent_id } = req.body
 
-            // Retrieve the payment intent to check its status
             const paymentIntent = await stripe.paymentIntents.retrieve(
                 stripe_payment_intent_id
             )
 
-            // Update the payment status in your database
             await Payment.update(
                 { status: paymentIntent.status },
                 { where: { stripe_payment_intent_id } }
             )
 
-            // If the payment succeeded, grant the premium access
             if (paymentIntent.status === 'succeeded') {
                 await UserController.grantPremium(req, res)
             } else {
@@ -90,7 +87,6 @@ class PaymentController {
         req: Request,
         res: Response
     ): Promise<void> {
-        // Use an existing Customer ID if this is a returning customer.
         const customer = await stripe.customers.create()
         const ephemeralKey = await stripe.ephemeralKeys.create(
             { customer: customer.id },

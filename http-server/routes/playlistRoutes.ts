@@ -78,7 +78,7 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                     params: {
-                        limit: 100, // Spotify API's max limit
+                        limit: 100,
                         offset: offset,
                     },
                 }
@@ -94,12 +94,9 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
                 }
             }
 
-            // If all 100 tracks are traversed and still didn't get 10 preview urls
-            // increment the offset to fetch the next set of tracks
             if (tracks.length === 100) {
                 offset += 100
             } else {
-                // If there were less than 100 tracks in the response, it means that the playlist is exhausted
                 if (tracksWithPreviews.length < 10) {
                     throw new Error(
                         'Playlist does not have enough songs with previews. Please select a different playlist.'

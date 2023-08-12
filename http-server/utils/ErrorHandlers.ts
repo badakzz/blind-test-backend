@@ -1,6 +1,5 @@
 import { NextFunction } from 'express'
 
-// Error middlewares
 export const sequelizeErrorHandler = (error) => {
     if (error.name === 'SequelizeDatabaseError') {
         console.error(
