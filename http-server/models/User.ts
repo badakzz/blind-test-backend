@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize"
-import sequelize from "../config/database"
+import { DataTypes, Model, Optional } from 'sequelize'
+import sequelize from '../config/database'
 
 interface UserAttributes {
     user_id: number
@@ -10,7 +10,7 @@ interface UserAttributes {
     is_active: boolean
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, "user_id"> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'user_id'> {}
 
 class User
     extends Model<UserAttributes, UserCreationAttributes>
@@ -56,7 +56,7 @@ User.init(
     },
     {
         sequelize,
-        tableName: "user_table", // as "user" is reserved by postgresql
+        tableName: 'user_table',
         timestamps: true,
         underscored: true,
     }

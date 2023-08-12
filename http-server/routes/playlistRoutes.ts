@@ -6,24 +6,37 @@ import { requireCsrf } from '../middlewares/csrfMiddleware'
 
 let accessToken = ''
 
-const getAccessToken = async () => {
-    const response = await axios.post(
-        'https://accounts.spotify.com/api/token',
-        null,
-        {
-            params: {
-                grant_type: 'client_credentials',
-            },
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Authorization: `Basic ${Buffer.from(
-                    `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-                ).toString('base64')}`,
-            },
-        }
-    )
+let tokenExpirationTime = 0
 
-    accessToken = response.data.access_token
+const getAccessToken = async () => {
+    if (accessToken && Date.now() < tokenExpirationTime) {
+        return
+    }
+
+    try {
+        const response = await axios.post(
+            'https://accounts.spotify.com/api/token',
+            null,
+            {
+                params: {
+                    grant_type: 'client_credentials',
+                },
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Basic ${Buffer.from(
+                        `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+                    ).toString('base64')}`,
+                },
+            }
+        )
+
+        accessToken = response.data.access_token
+        tokenExpirationTime =
+            Date.now() + response.data.expires_in * 1000 - 60000
+    } catch (error) {
+        console.error('Error obtaining Spotify access token:', error)
+        throw error
+    }
 }
 
 const router = Router()
@@ -78,7 +91,7 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                     params: {
-                        limit: 100, // Spotify API's max limit
+                        limit: 100,
                         offset: offset,
                     },
                 }
@@ -94,12 +107,9 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
                 }
             }
 
-            // If all 100 tracks are traversed and still didn't get 10 preview urls
-            // increment the offset to fetch the next set of tracks
             if (tracks.length === 100) {
                 offset += 100
             } else {
-                // If there were less than 100 tracks in the response, it means that the playlist is exhausted
                 if (tracksWithPreviews.length < 10) {
                     throw new Error(
                         'Playlist does not have enough songs with previews. Please select a different playlist.'

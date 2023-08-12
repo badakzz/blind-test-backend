@@ -4,26 +4,6 @@ import { Server } from 'socket.io'
 import { Score, User } from '../models'
 
 class ScoreController {
-    // static async getScores(req: Request, res: Response): Promise<void> {
-    //     try {
-    //         const scores = await Score.findAll()
-    //         res.send(scores)
-    //     } catch (error) {
-    //         sequelizeErrorHandler(error)
-    //         res.status(500).send(error.message)
-    //     }
-    // }
-
-    // static async getScore(req: Request, res: Response): Promise<void> {
-    //     try {
-    //         const score = await Score.findByPk(req.params.id)
-    //         res.send(score)
-    //     } catch (error) {
-    //         sequelizeErrorHandler(error)
-    //         res.status(500).send(error.message)
-    //     }
-    // }
-
     static async getScoresByChatroom(
         req: Request,
         res: Response
@@ -33,7 +13,7 @@ class ScoreController {
                 where: { chatroom_id: req.params.chatroomId },
                 include: {
                     model: User,
-                    attributes: ['username'], // only fetch the username
+                    attributes: ['username'],
                 },
             })
             const formattedScores = scores.map((score) => ({
@@ -70,18 +50,15 @@ class ScoreController {
         correctGuessType: string
         points: number
     } | null> {
-        // Check if the user's score exists in the score
         let score = await Score.findOne({
             where: { user_id: user_id, chatroom_id: chatroom_id },
             transaction,
         })
 
         if (score) {
-            // Update the score
             score.points += points
             await score.save({ transaction })
         } else {
-            // Create a new score
             score = await Score.create(
                 { user_id, chatroom_id, points },
                 { transaction }
@@ -89,7 +66,6 @@ class ScoreController {
         }
 
         if (score) {
-            // Emit the updated score
             io.to(chatroom_id).emit('scoreUpdate', score)
             return {
                 userId: user_id,

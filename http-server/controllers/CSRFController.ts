@@ -9,7 +9,7 @@ const csrfProtection = csrf({
         sameSite: 'none',
         httpOnly: true,
         signed: true,
-        // secure: process.env.NODE_ENV === 'production'
+        secure: process.env.NODE_ENV === 'production',
     },
 })
 
@@ -20,7 +20,7 @@ const CSRFController = {
         res.cookie(process.env.CSRF_COOKIE_NAME, csrfToken, {
             sameSite: 'none',
             httpOnly: true,
-            // secure: process.env.NODE_ENV === 'production'
+            secure: process.env.NODE_ENV === 'production',
         })
         res.status(200).send()
     },

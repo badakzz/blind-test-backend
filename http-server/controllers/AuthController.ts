@@ -42,7 +42,6 @@ class AuthController {
             password,
         }: { username: string; email: string; password: string } = req.body
         try {
-            // Check if the email is already registered
             const existingUser = await User.findOne({ where: { email } })
             if (existingUser) {
                 res.status(409).json({ error: 'Email already exists' })

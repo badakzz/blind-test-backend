@@ -63,19 +63,17 @@ class PlaylistController {
                 params: {
                     country: country,
                     locale: locale,
-                    limit: 1, // limit the number of playlists to 1
+                    limit: 1,
                 },
             }
         )
-        // Check if playlists are defined before calling map
         if (
             playlists.data &&
             playlists.data.playlists &&
             playlists.data.playlists.items
         ) {
-            const validPlaylist = playlists.data.playlists.items[0] // take the first playlist
+            const validPlaylist = playlists.data.playlists.items[0]
 
-            // Ensure playlists are saved in database and fetch from there
             if (validPlaylist) {
                 const playlistFromDb =
                     await PlaylistController.findOrCreatePlaylist(
@@ -94,7 +92,6 @@ class PlaylistController {
         req: Request,
         accessToken: string
     ) {
-        // Fetch genres from Spotify
         const response = await axios.get(
             `https://api.spotify.com/v1/browse/categories`,
             {
@@ -110,7 +107,6 @@ class PlaylistController {
 
         const genres = response.data.categories.items
 
-        // For each genre, fetch and store one playlist in database
         if (genres) {
             const promises = genres.map((genre) =>
                 PlaylistController.fetchAndStorePlaylistsByGenre(
@@ -123,7 +119,6 @@ class PlaylistController {
 
             const playlistList = await Promise.all(promises)
 
-            // Remove null entries
             const validPlaylists = playlistList.filter(
                 (playlist) => playlist !== null
             )

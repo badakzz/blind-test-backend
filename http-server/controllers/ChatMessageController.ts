@@ -78,7 +78,6 @@ class ChatMessageController {
         io: Server
     ) {
         try {
-            // Send request to get the current song
             const response = await axios.get(
                 `${process.env.NODE_SERVER_DOMAIN}:${process.env.NODE_SERVER_PORT}/api/v1/chatrooms/${message.chatroom_id}`
             )
@@ -90,7 +89,7 @@ class ChatMessageController {
                     guess: message.content,
                     io: io,
                 }
-                // Call the createGuess method with these parameters and the io instance
+
                 const result = await GuessController.createGuess(
                     guessData.chatroomId,
                     guessData.userId,
@@ -98,7 +97,6 @@ class ChatMessageController {
                     guessData.guess,
                     io
                 )
-                // Emit response back to the client
                 const username = UserController.getUserById(result.userId)
                 const correctGuessMessage = {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
@@ -139,10 +137,9 @@ class ChatMessageController {
             throw new Error('User not found')
         }
 
-        // Create new message with author field
         const newMessage = await ChatMessage.create({
             ...req.body,
-            author: user.username, // add the author field here
+            author: user.username,
         })
 
         return newMessage

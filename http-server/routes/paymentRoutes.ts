@@ -22,7 +22,14 @@ router.post(
     '/api/v1/payment_intents_native',
     requireCsrf,
     requireAuth,
-    PaymentController.createPaymentIntentNative
+    PaymentController.createPaymentIntentReactNative
+)
+
+router.post(
+    '/api/v1/confirm_payment_native',
+    requireCsrf,
+    requireAuth,
+    PaymentController.confirmPaymentReactNative
 )
 
 export default router

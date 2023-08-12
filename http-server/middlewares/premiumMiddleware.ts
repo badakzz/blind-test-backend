@@ -8,23 +8,15 @@ export const requirePremium = (
     next: NextFunction
 ) => {
     const token = req.headers.authorization?.split(' ')[1]
-    console.log('auth middleware triggered')
-    if (
-        req.path === '/api/auth/signup' ||
-        req.path === '/api/auth/login' ||
-        req.path === '/api/auth/csrf'
-    ) {
-        next()
-        return
-    }
+    console.log('Premium middleware triggered')
     if (token) {
-        console.log('verifying token from server')
+        console.log('Verifying token from server', token)
         jwt.verify(
             token,
             process.env.JWT_SECRET_KEY as string,
             async (err: any, decoded: any) => {
                 if (err) {
-                    console.log('error on jwt validation', err)
+                    console.log('Error on jwt validation', err)
                     return res.status(401).json({ error: 'Invalid token' })
                 } else {
                     const user = await User.findByPk(decoded.userId)

@@ -13,13 +13,13 @@ Score.init(
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true,
-            references: { model: 'chatroom', key: 'id' }, // Add this line
+            references: { model: 'chatroom', key: 'id' },
         },
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
-            references: { model: 'user_table', key: 'user_id' }, // Add this line
+            references: { model: 'user_table', key: 'user_id' },
         },
         points: {
             type: DataTypes.FLOAT,

@@ -29,33 +29,23 @@ class GuessController {
     } | null> {
         const transaction = await sequelize.transaction()
         try {
-            // Fetch the current song from the database
             const song = await SongController.getSongById(songId, transaction)
 
-            // Normalize the guess
             const normalizedGuessWords = normalizeAnswer(guess)
             const normalizedSongName = normalizeAnswer(song.song_name)
             const normalizedArtistName = normalizeAnswer(song.artist_name)
-            console.log({
-                normalizedGuessWords,
-                normalizedSongName,
-                normalizedArtistName,
-            })
 
-            // Analyze the answer and get the scoreData
             const { points, correctGuessType } = analyzeAnswer(
                 normalizedSongName,
                 normalizedGuessWords,
                 normalizedArtistName
             )
 
-            // Fetch the existing guess record for the song in the chat room
             let existingGuess = await Guess.findOne({
                 where: { chatroom_id: chatroomId, song_id: songId },
                 transaction,
             })
 
-            // If the guess already exists and correct guess is found, don't update the score
             if (
                 existingGuess &&
                 ((correctGuessType === 'song name' &&
@@ -67,7 +57,6 @@ class GuessController {
                 return null
             }
 
-            // Update the guess record with the userId if it doesn't already exist
             if (!existingGuess) {
                 existingGuess = await Guess.create(
                     {
@@ -78,7 +67,6 @@ class GuessController {
                 )
             }
 
-            // Update the correct guesser id based on the correctGuessType
             if (
                 correctGuessType.includes('song name') ||
                 correctGuessType === 'artist and the song names'
@@ -94,7 +82,6 @@ class GuessController {
 
             await existingGuess.save({ transaction })
 
-            // Attribute score
             const newScore = await ScoreController.updateScore(
                 userId,
                 chatroomId,

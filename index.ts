@@ -1,9 +1,24 @@
 import express from 'express'
 import * as http from 'http'
 import { Server } from 'socket.io'
-import ChatMessage from '../http-server/models/ChatMessage'
-import ChatMessageController from '../http-server/controllers/ChatMessageController'
-import ChatroomController from '../http-server/controllers/ChatroomController'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import userRoutes from './http-server/routes/userRoutes'
+import chatroomRoutes from './http-server/routes/chatroomRoutes'
+import chatMessageRoutes from './http-server/routes/chatMessageRoutes'
+import csrfRoute from './http-server/routes/csrfRoute'
+import guessRoutes from './http-server/routes/guessRoutes'
+import scoreRoutes from './http-server/routes/scoreRoutes'
+import songRoutes from './http-server/routes/songRoutes'
+import playlistRoutes from './http-server/routes/playlistRoutes'
+import paymentRoutes from './http-server/routes/paymentRoutes'
+import roadmapTicketRoutes from './http-server/routes/roadmapTicketRoutes'
+import ChatMessageController from './http-server/controllers/ChatMessageController'
+import ChatroomController from './http-server/controllers/ChatroomController'
+import { Request, Response, NextFunction } from 'express'
+import ChatMessage from './http-server/models/ChatMessage'
+import { internalServerErrorHandler } from './http-server/utils/ErrorHandlers'
+import sequelize from './http-server/config/database'
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -19,8 +34,6 @@ const io = new Server(httpServer, {
         credentials: true,
     },
 })
-
-const PORT = process.env.NODE_WEBSOCKET_PORT || 3001
 
 const connectedUsers: { id: string; username: string; chatroomId: string }[] =
     []
@@ -46,10 +59,8 @@ io.on('connection', async (socket) => {
     socket.on('joinRoom', (username, chatroomId) => {
         const chatroom = chatrooms.find((c) => c === chatroomId)
         if (chatroom) {
-            // Add the user to the connectedUsers array here
             connectedUsers.push({ id: socket.id, username, chatroomId })
 
-            // Join the user to the chatroom
             socket.join(chatroomId)
 
             io.to(chatroomId).emit('userConnected', username)
@@ -101,7 +112,7 @@ io.on('connection', async (socket) => {
             `Received game data in room ${gameData.chatroomId}: current song ${gameData.firstSong.preview_url}\n tracklist \n ${gameData.trackPreviewList[0]}`
         )
         io.to(gameData.chatroomId).emit('gameStarted', {
-            firstSong: gameData.firstSong, // Send the whole song object, not just the ID
+            firstSong: gameData.firstSong,
             trackPreviewList: gameData.trackPreviewList,
         })
     })
@@ -152,12 +163,10 @@ io.on('connection', async (socket) => {
                         console.error(
                             `Chatroom with id ${chatroomId} not found`
                         )
-                        // handle error, e.g. send error message back to client
                     }
                 }
             } catch (error) {
                 console.error(error)
-                // handle error, e.g. send error message back to client
             }
         }
     )
@@ -189,21 +198,55 @@ io.on('connection', async (socket) => {
     })
 
     socket.on('resetGame', ({ chatroomId }) => {
-        // Reset the game-related states
         chatroomSongsIndex[chatroomId] = { lastSong: null, index: 0 }
 
-        // Emit 'gameReset' event to all other clients in the same chatroom
         io.to(chatroomId).emit('gameReset')
 
         console.log(`Game reset in chatroom ${chatroomId}`)
     })
-
-    // socket.on('gameOver', (author, chatroomId) => {
-    //     console.log('Game is over')
-    //     io.to(chatroomId).emit('gameOver', author)
-    // })
 })
 
-httpServer.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`)
+app.use(
+    cors({
+        origin: [
+            'http://localhost:3000',
+            'http://localhost:19006',
+            'exp://192.168.1.214:8081',
+            '192.168.1.214',
+        ],
+        credentials: true,
+    })
+)
+
+app.use(express.json())
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
+
+app.use(chatroomRoutes)
+app.use(chatMessageRoutes)
+app.use(userRoutes)
+app.use(scoreRoutes)
+app.use(guessRoutes)
+app.use(songRoutes)
+app.use(playlistRoutes)
+app.use(roadmapTicketRoutes)
+app.use(paymentRoutes)
+
+app.use(csrfRoute)
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack)
+    res.status(500).send('Error in http-server')
 })
+
+app.use(internalServerErrorHandler as any)
+
+const PORT = parseInt(process.env.NODE_SERVER_PORT) || 3002
+
+sequelize
+    .sync()
+    .then(() => {
+        httpServer.listen(PORT, '0.0.0.0', () => {
+            console.log(`Server is running on port ${PORT}.`)
+        })
+    })
+    .catch((error) => console.error('Failed to sync database:', error))

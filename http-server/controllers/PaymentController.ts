@@ -56,23 +56,57 @@ class PaymentController {
         }
     }
 
-    static async createPaymentIntentNative(
+    static async confirmPaymentReactNative(
         req: Request,
         res: Response
     ): Promise<void> {
         try {
-            // Create a PaymentIntent with the order amount and currency
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: req.body.amount, // In cents
-                currency: req.body.currency,
-                // Add additional information if needed
-            })
+            const { stripe_payment_intent_id } = req.body
 
-            // Send the client secret to the client
-            res.json({ clientSecret: paymentIntent.client_secret })
+            const paymentIntent = await stripe.paymentIntents.retrieve(
+                stripe_payment_intent_id
+            )
+
+            await Payment.update(
+                { status: paymentIntent.status },
+                { where: { stripe_payment_intent_id } }
+            )
+
+            if (paymentIntent.status === 'succeeded') {
+                await UserController.grantPremium(req, res)
+            } else {
+                res.status(400).send('Payment not successful.')
+            }
         } catch (error) {
-            res.status(500).json({ error: error.message })
+            sequelizeErrorHandler(error)
+            res.status(500).send(error.message)
         }
+    }
+
+    static async createPaymentIntentReactNative(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+        const customer = await stripe.customers.create()
+        const ephemeralKey = await stripe.ephemeralKeys.create(
+            { customer: customer.id },
+            { apiVersion: '2022-11-15' }
+        )
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: 500,
+            currency: 'eur',
+            customer: customer.id,
+            automatic_payment_methods: {
+                enabled: true,
+            },
+        })
+
+        res.json({
+            paymentIntent: paymentIntent.client_secret,
+            ephemeralKey: ephemeralKey.secret,
+            customer: customer.id,
+            publishableKey: `${process.env.STRIPE_SECRET_KEY}`,
+        })
     }
 }
 

@@ -7,7 +7,6 @@ class UserController {
     static async getUser(req: Request, res: Response): Promise<void> {
         try {
             const user = await User.findByPk(req.params.id)
-            // Transform the user object to a custom DTO
             const userDTO = createDTOOmittingPassword(user)
             res.json(userDTO)
         } catch (error) {
