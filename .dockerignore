@@ -230,3 +230,5 @@ README.MD
 gcloud-service-key.json
 /gcloud_conf
 
+!prod.env
+!.env

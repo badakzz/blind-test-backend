@@ -11,6 +11,6 @@ RUN export $(cat ./.env | xargs)
 
 # RUN ln -s /app/dist-http /app/http-server
 
-COPY ./docker_scripts/start.sh /app/start.sh
+# COPY ./docker_scripts/start.sh /app/start.sh
 
-CMD ["/app/start.sh"]
+CMD yarn start
