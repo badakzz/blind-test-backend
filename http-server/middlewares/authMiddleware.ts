@@ -10,7 +10,9 @@ export const requireAuth = (
     res: Response,
     next: NextFunction
 ) => {
-    const token = req.headers.authorization?.split(' ')[1]
+    console.log('requireAuth triggered')
+    const token = req.cookies[process.env.REACT_APP_JWT_COOKIE_NAME]
+    console.log('received token', token)
     if (
         req.path === '/api/auth/signup' ||
         req.path === '/api/auth/login' ||
@@ -19,6 +21,7 @@ export const requireAuth = (
         next()
         return
     }
+
     if (token) {
         jwt.verify(
             token,

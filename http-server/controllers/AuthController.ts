@@ -27,9 +27,15 @@ class AuthController {
             )
 
             const userDTO = createDTOOmittingPassword(user)
-            console.log('Server response:', { token, user: userDTO })
 
-            res.json({ token, user: userDTO })
+            res.cookie(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            })
+            res.json({ user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
         }
@@ -64,7 +70,14 @@ class AuthController {
             )
             const userDTO = createDTOOmittingPassword(newUser)
 
-            res.status(201).json({ token, user: userDTO })
+            res.cookie(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            })
+            res.status(201).json({ user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
         }
