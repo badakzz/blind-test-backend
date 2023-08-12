@@ -26,7 +26,10 @@ const app = express()
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
     cors: {
-        origin: 'https://react-blindtest-app-client-fd22ff01ce10.herokuapp.com/',
+        origin: [
+            'https://react-blindtest-app-client-fd22ff01ce10.herokuapp.com/',
+            'https://lucasderay.com',
+        ],
         methods: ['GET', 'POST'],
         credentials: true,
     },
@@ -205,7 +208,10 @@ io.on('connection', async (socket) => {
 
 app.use(
     cors({
-        origin: 'https://react-blindtest-app-client-fd22ff01ce10.herokuapp.com/',
+        origin: [
+            'https://react-blindtest-app-client-fd22ff01ce10.herokuapp.com/',
+            'https://lucasderay.com',
+        ],
         credentials: true,
     })
 )
