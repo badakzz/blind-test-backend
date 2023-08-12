@@ -20,7 +20,14 @@ const sequelize = new Sequelize(
         host: POSTGRES_HOST,
         port: Number(POSTGRES_PORT),
         dialect: 'postgres',
+        protocol: 'postgres',
         logging: false,
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false,
+            },
+        },
     }
 )
 
