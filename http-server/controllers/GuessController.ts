@@ -104,6 +104,20 @@ class GuessController {
             throw error
         }
     }
+
+    static async deleteGuessesByChatroom(chatroomId: string): Promise<void> {
+        try {
+            await Guess.destroy({
+                where: { chatroom_id: chatroomId },
+            })
+            console.log(`Guesses reset in chatroom ${chatroomId}`)
+        } catch (error: any) {
+            console.error(
+                `Failed to reset guesses in chatroom ${chatroomId}:`,
+                error.message
+            )
+        }
+    }
 }
 
 export default GuessController
