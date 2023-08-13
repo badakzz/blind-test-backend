@@ -11,7 +11,14 @@ export const requireAuth = (
     next: NextFunction
 ) => {
     console.log('requireAuth triggered')
-    const token = req.cookies[process.env.REACT_APP_JWT_COOKIE_NAME]
+    let token = req.cookies[process.env.JWT_COOKIE_NAME]
+    if (!token && req.headers.authorization) {
+        const parts = req.headers.authorization.split(' ')
+        if (parts.length === 2 && parts[0] === 'Bearer') {
+            token = parts[1]
+        }
+    }
+
     console.log('received token', token)
     if (
         req.path === '/api/auth/signup' ||
