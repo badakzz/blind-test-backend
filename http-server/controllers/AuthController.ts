@@ -2,7 +2,11 @@ import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
-import { createDTOOmittingPassword } from '../../http-server/utils/helpers'
+import {
+    createDTOOmittingPassword,
+    isEmailValid,
+    isPasswordValid,
+} from '../../http-server/utils/helpers'
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
@@ -47,6 +51,18 @@ class AuthController {
             password,
         }: { username: string; email: string; password: string } = req.body
         try {
+            if (!isEmailValid(email)) {
+                res.status(400).json({ error: 'Email format is invalid' })
+                return
+            }
+
+            if (!isPasswordValid(password)) {
+                res.status(400).json({
+                    error: 'Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be at least 12 characters long.',
+                })
+                return
+            }
+
             const existingUser = await User.findOne({ where: { email } })
             if (existingUser) {
                 res.status(409).json({ error: 'Email already exists' })
@@ -87,6 +103,18 @@ class AuthController {
         const { email, password } = req.body
 
         try {
+            if (!isEmailValid(email)) {
+                res.status(400).json({ error: 'Email format is invalid' })
+                return
+            }
+
+            if (!isPasswordValid(password)) {
+                res.status(400).json({
+                    error: 'Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be at least 12 characters long.',
+                })
+                return
+            }
+
             const user = await User.findByPk(userId)
             if (!user) {
                 res.status(404).json({ error: 'User not found' })
