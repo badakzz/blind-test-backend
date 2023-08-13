@@ -8,8 +8,13 @@ export const requirePremium = (
     next: NextFunction
 ) => {
     console.log('Premium middleware triggered')
-    const token = req.cookies[process.env.REACT_APP_JWT_COOKIE_NAME]
-    console.log('received token', token)
+    let token = req.cookies[process.env.JWT_COOKIE_NAME]
+    if (!token && req.headers.authorization) {
+        const parts = req.headers.authorization.split(' ')
+        if (parts.length === 2 && parts[0] === 'Bearer') {
+            token = parts[1]
+        }
+    }
 
     if (token) {
         console.log('Verifying token from server', token)
