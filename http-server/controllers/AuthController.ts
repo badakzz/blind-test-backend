@@ -28,7 +28,7 @@ class AuthController {
 
             const userDTO = createDTOOmittingPassword(user)
 
-            res.cookie(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
+            res.cookie(process.env.JWT_COOKIE_NAME, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',
@@ -69,7 +69,7 @@ class AuthController {
             )
             const userDTO = createDTOOmittingPassword(newUser)
 
-            res.cookie(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
+            res.cookie(process.env.JWT_COOKIE_NAME, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite:
