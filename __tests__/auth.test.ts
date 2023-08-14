@@ -160,7 +160,7 @@ describe('Auth Signup Route', () => {
         expect(response.body.user.is_active).toBe(true)
     })
 
-    it('should fail when login a user with wrong password on POST /api/auth/login', async () => {
+    it('should fail when trying to login a user with wrong password on POST /api/auth/login', async () => {
         const newUser = {
             email: 'test2@example.com',
             password: 'wrongpassword',
