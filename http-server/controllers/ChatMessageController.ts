@@ -102,7 +102,7 @@ class ChatMessageController {
                     content: `${message.author} guessed the ${result.correctGuessType} correctly!`,
                     author: 'SYSTEM',
                 }
-                if (result.points % 2 === 0) {
+                if (result.points && result.points % 2 === 0) {
                     io.to(chatroomId).emit('chatMessage', correctGuessMessage)
                     io.to(chatroomId).emit('gameOver')
                 } else if (
