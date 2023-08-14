@@ -22,6 +22,13 @@ class UserController {
         if (user) return user
     }
 
+    static async getUserByEmail(email: string) {
+        let user = await User.findOne({
+            where: { email: email },
+        })
+        if (user) return user
+    }
+
     static async createUser(req: Request, res: Response): Promise<void> {
         try {
             const newUser = await User.create(req.body)
@@ -59,13 +66,12 @@ class UserController {
         }
     }
 
-    static async deleteUser(req: Request, res: Response): Promise<void> {
+    static async deleteUser(email): Promise<void> {
         try {
-            await User.destroy({ where: { user_id: req.params.id } })
-            res.json({ message: 'User deleted' })
+            await User.destroy({ where: { email } })
         } catch (error) {
             sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
+            console.error('Error deleting user:', error)
         }
     }
 
