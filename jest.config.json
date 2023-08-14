@@ -1,0 +1,6 @@
+{
+    "transform": {
+        "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": ["<rootDir>/__tests__/**/*.test.ts"]
+}

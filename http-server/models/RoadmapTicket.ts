@@ -34,6 +34,10 @@ RoadmapTicket.init(
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: User,
+                key: 'user_id',
+            },
         },
         title: {
             type: DataTypes.STRING,
@@ -42,6 +46,10 @@ RoadmapTicket.init(
         author: {
             type: DataTypes.STRING,
             allowNull: false,
+            references: {
+                model: User,
+                key: 'username',
+            },
         },
         ticket_content: {
             type: DataTypes.TEXT,
@@ -55,9 +63,5 @@ RoadmapTicket.init(
         underscored: true,
     }
 )
-
-RoadmapTicket.belongsTo(User, {
-    foreignKey: 'user_id',
-})
 
 export default RoadmapTicket
