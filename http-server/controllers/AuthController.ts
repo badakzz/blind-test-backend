@@ -44,6 +44,34 @@ class AuthController {
         }
     }
 
+    static async loginNative(req: Request, res: Response): Promise<void> {
+        const { email, password } = req.body
+
+        try {
+            const user = await User.findOne({ where: { email } })
+            if (!user) {
+                res.status(401).json({ error: 'Invalid credentials' })
+                return
+            }
+
+            const passwordMatch = await bcrypt.compare(password, user.password)
+            if (!passwordMatch) {
+                res.status(401).json({ error: 'Invalid credentials' })
+                return
+            }
+
+            const token = jwt.sign(
+                { userId: user.user_id },
+                process.env.JWT_SECRET_KEY as string
+            )
+            const userDTO = createDTOOmittingPassword(user)
+
+            res.json({ user: userDTO, token })
+        } catch (error: any) {
+            res.status(500).json({ error: error.message })
+        }
+    }
+
     static async signup(req: Request, res: Response): Promise<void> {
         const {
             username,
