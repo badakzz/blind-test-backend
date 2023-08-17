@@ -1,4 +1,3 @@
-import { requireCsrf } from '../middlewares/csrfMiddleware'
 import express from 'express'
 import SongController from '../controllers/SongController'
 
