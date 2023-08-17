@@ -4,3 +4,4 @@ http-server/node_modules
 .env
 prod.env
 /dist
+httpd.conf

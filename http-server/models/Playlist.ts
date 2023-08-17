@@ -1,8 +1,21 @@
-import { Model, DataTypes } from "sequelize"
-import sequelize from "../config/database"
-import Guess from "./Guess"
+import { Model, DataTypes, Optional } from 'sequelize'
+import sequelize from '../config/database'
+import Guess from './Guess'
 
-class Playlist extends Model {
+interface PlaylistAttributes {
+    playlist_id: number
+    spotify_playlist_id: string
+    name: string
+    genre_id: string
+}
+
+interface PlaylistCreationAttributes
+    extends Optional<PlaylistAttributes, 'playlist_id'> {}
+
+class Playlist
+    extends Model<PlaylistAttributes, PlaylistCreationAttributes>
+    implements PlaylistAttributes
+{
     public playlist_id!: number
     public spotify_playlist_id!: string
     public name!: string
@@ -32,7 +45,7 @@ Playlist.init(
     },
     {
         sequelize,
-        tableName: "playlist",
+        tableName: 'playlist',
         timestamps: true,
         underscored: true,
     }

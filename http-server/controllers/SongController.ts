@@ -77,7 +77,7 @@ class SongController {
 
     static async getRandomSong(playlistId: number) {
         const song = await Song.findOne({
-            where: { playlistId },
+            where: { playlist_id: playlistId },
             order: sequelize.random(),
         })
         if (!song) {
@@ -171,7 +171,7 @@ class SongController {
                     try {
                         await Guess.create(
                             {
-                                chatroom_id: chatroomId,
+                                chatroom_id: chatroomId as string,
                                 song_id: song.song_id,
                             },
                             { transaction }
