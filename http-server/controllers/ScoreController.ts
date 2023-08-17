@@ -17,8 +17,7 @@ class ScoreController {
                 },
             })
             const formattedScores = scores.map((score) => ({
-                //@ts-ignore
-                username: score.User.username,
+                username: score.username,
                 points: score.points,
             }))
             res.send(formattedScores)
@@ -38,10 +37,11 @@ class ScoreController {
         }
     }
 
-    static async updateScore(
+    static async updateOrCreateScore(
         user_id: number,
         chatroom_id: string,
         points: number,
+        username: string,
         correctGuessType: string,
         io: Server,
         transaction: any
@@ -49,6 +49,7 @@ class ScoreController {
         userId: number
         correctGuessType: string
         points: number
+        username: string
     } | null> {
         let score = await Score.findOne({
             where: { user_id: user_id, chatroom_id: chatroom_id },
@@ -60,7 +61,7 @@ class ScoreController {
             await score.save({ transaction })
         } else {
             score = await Score.create(
-                { user_id, chatroom_id, points },
+                { user_id, chatroom_id, points, username },
                 { transaction }
             )
         }
@@ -71,32 +72,9 @@ class ScoreController {
                 userId: user_id,
                 correctGuessType: correctGuessType,
                 points: score.points,
+                username: username,
             }
         } else return null
-    }
-
-    static async updateScoreboardOld(
-        req: Request,
-        res: Response
-    ): Promise<void> {
-        const { user_id, chatroom_id, points } = req.body
-
-        try {
-            const existingScoreboard = await Score.findOne({
-                where: { user_id, chatroom_id },
-            })
-
-            if (existingScoreboard) {
-                existingScoreboard.points = points
-                await existingScoreboard.save()
-                res.json({ message: 'Score updated successfully' })
-            } else {
-                res.status(404).json({ error: 'Score not found' })
-            }
-        } catch (error) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
     }
 }
 

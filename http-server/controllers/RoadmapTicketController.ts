@@ -54,8 +54,7 @@ class RoadmapTicketController {
             })
             const formattedTickets = tickets.map((ticket) => ({
                 ticketId: ticket.ticket_id,
-                //@ts-ignore
-                author: ticket.User.username,
+                author: ticket.author,
                 title: ticket.title,
                 ticketContent: ticket.ticket_content,
             }))

@@ -1,8 +1,22 @@
-import { Sequelize, DataTypes, Model } from 'sequelize'
+import { Sequelize, DataTypes, Model, Optional } from 'sequelize'
 import sequelize from '../config/database'
 import Playlist from './Playlist'
 
-class Song extends Model {
+interface SongAttributes {
+    song_id: number
+    spotify_song_id: string
+    song_name: string
+    artist_name: string
+    preview_url: string
+    playlist_id: number
+}
+
+interface SongCreationAttributes extends Optional<SongAttributes, 'song_id'> {}
+
+class Song
+    extends Model<SongAttributes, SongCreationAttributes>
+    implements SongAttributes
+{
     public song_id!: number
     public spotify_song_id!: string
     public song_name!: string

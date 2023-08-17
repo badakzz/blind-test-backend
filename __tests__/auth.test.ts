@@ -61,17 +61,23 @@ describe('Auth Signup Route', () => {
     })
 
     afterAll(async () => {
-        const signupUser = await UserController.getUserByEmail(
+        const existingEmailUser = await UserController.getUserByEmail(
             'test2@example.com'
         )
-        if (signupUser) {
-            await UserController.deleteUser('test2@example.com')
+        if (existingEmailUser) {
+            await UserController.deleteUserByEmail('test2@example.com')
+        }
+        const existingUsernameUser = await UserController.getUserByUsername(
+            'testSignup'
+        )
+        if (existingUsernameUser) {
+            await UserController.deleteUserByUsername('testSignup')
         }
     })
 
     it('should successfully create a user on POST /api/auth/signup', async () => {
         const newUser = {
-            username: 'test',
+            username: 'testSignup',
             email: 'test2@example.com',
             password: 'ValidPassword123!',
         }
@@ -82,6 +88,8 @@ describe('Auth Signup Route', () => {
             .set('Cookie', csrfCookie)
             .send(newUser)
 
+        console.log('err', response.body.error)
+
         expect(response.status).toBe(201)
         expect(response.body.user.username).toBe(newUser.username)
         expect(response.body.user.email).toBe(newUser.email)
@@ -91,7 +99,7 @@ describe('Auth Signup Route', () => {
 
     it('should fail when email is already registered on POST /api/auth/signup', async () => {
         const existingUser = {
-            username: 'existing',
+            username: 'existingUser',
             email: 'test2@example.com',
             password: 'ValidPassword123!',
         }

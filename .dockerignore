@@ -229,4 +229,4 @@ README.MD
 /docker
 gcloud-service-key.json
 /gcloud_conf
-
+!httpd.conf
