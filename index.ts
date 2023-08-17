@@ -241,7 +241,7 @@ app.use(internalServerErrorHandler as any)
 const PORT = parseInt(process.env.PORT) || 3002
 
 console.log(
-    `Trying to synchronize the database with URL: ${process.env.DATABASE_URL}`
+    `Trying to synchronize the database: ${process.env.POSTGRES_DATABASE}`
 )
 
 sequelize
