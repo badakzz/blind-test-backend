@@ -36,7 +36,6 @@ describe('CSRF Route', () => {
 
         expect(tokenValue).toBeDefined()
         expect(typeof tokenValue).toBe('string')
-        console.log(tokenValue.length)
         expect(tokenValue.length).toBe(36)
     })
 })

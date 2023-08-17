@@ -63,15 +63,11 @@ class AuthController {
                 return
             }
 
-            console.log('1')
-
             const existingUser = await User.findOne({ where: { email } })
             if (existingUser) {
                 res.status(409).json({ error: 'Email already exists' })
                 return
             }
-
-            console.log('2')
 
             const hashedPassword = await bcrypt.hash(password, 10)
             const newUser = await User.create({
@@ -82,8 +78,6 @@ class AuthController {
                 is_active: true,
             })
 
-            console.log('3')
-
             const token = jwt.sign(
                 { userId: newUser.user_id },
                 process.env.JWT_SECRET_KEY as string,
@@ -91,7 +85,6 @@ class AuthController {
             )
             const userDTO = createDTOOmittingPassword(newUser)
 
-            console.log('4')
             res.cookie(process.env.JWT_COOKIE_NAME, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
@@ -100,7 +93,6 @@ class AuthController {
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             })
 
-            console.log('5')
             res.status(201).json({ user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
