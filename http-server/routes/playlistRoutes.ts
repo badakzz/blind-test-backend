@@ -2,7 +2,6 @@ import { requirePremium } from './../middlewares/premiumMiddleware'
 import { Router } from 'express'
 import axios from 'axios'
 import PlaylistController from '../controllers/PlaylistController'
-import { requireCsrf } from '../middlewares/csrfMiddleware'
 
 let accessToken = ''
 

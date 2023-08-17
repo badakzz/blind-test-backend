@@ -88,8 +88,6 @@ describe('Auth Signup Route', () => {
             .set('Cookie', csrfCookie)
             .send(newUser)
 
-        console.log('err', response.body.error)
-
         expect(response.status).toBe(201)
         expect(response.body.user.username).toBe(newUser.username)
         expect(response.body.user.email).toBe(newUser.email)
