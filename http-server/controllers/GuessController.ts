@@ -5,6 +5,7 @@ import { analyzeAnswer, normalizeAnswer } from '../utils/helpers'
 import SongController from './SongController'
 import { Server } from 'socket.io'
 import sequelize from '../config/database'
+import { User } from '../models'
 
 class GuessController {
     static async getGuess(req: Request, res: Response) {
@@ -46,6 +47,9 @@ class GuessController {
                 transaction,
             })
 
+            const user = await User.findByPk(userId)
+            const username = user.username
+
             if (
                 existingGuess &&
                 ((correctGuessType === 'song name' &&
@@ -82,10 +86,11 @@ class GuessController {
 
             await existingGuess.save({ transaction })
 
-            const newScore = await ScoreController.updateScore(
+            const newScore = await ScoreController.updateOrCreateScore(
                 userId,
                 chatroomId,
                 points,
+                username,
                 correctGuessType,
                 io,
                 transaction

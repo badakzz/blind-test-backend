@@ -1,8 +1,24 @@
-import { Model, DataTypes } from 'sequelize'
+import { Model, DataTypes, Optional } from 'sequelize'
 import sequelize from '../config/database'
+import Chatroom from './Chatroom'
+import User from './User'
 
-class Score extends Model {
+interface ScoreAttributes {
+    chatroom_id: string
+    username: string
+    user_id: number
+    points: number
+}
+
+interface ScoreCreationAttributes
+    extends Optional<ScoreAttributes, 'chatroom_id' | 'user_id'> {}
+
+class Score
+    extends Model<ScoreAttributes, ScoreCreationAttributes>
+    implements ScoreAttributes
+{
     public chatroom_id!: string
+    public username!: string
     public user_id!: number
     public points!: number
 }
@@ -13,13 +29,21 @@ Score.init(
             type: DataTypes.STRING,
             allowNull: false,
             primaryKey: true,
-            references: { model: 'chatroom', key: 'id' },
+            references: { model: Chatroom, key: 'id' },
         },
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
-            references: { model: 'user_table', key: 'user_id' },
+            references: { model: User, key: 'user_id' },
+        },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            references: {
+                model: User,
+                key: 'username',
+            },
         },
         points: {
             type: DataTypes.FLOAT,

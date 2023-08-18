@@ -15,16 +15,23 @@ class UserController {
         }
     }
 
-    static async getUserById(user_id: number) {
+    static async getUserById(userId: number) {
         let user = await User.findOne({
-            where: { user_id: user_id },
+            where: { user_id: userId },
         })
         if (user) return user
     }
 
     static async getUserByEmail(email: string) {
         let user = await User.findOne({
-            where: { email: email },
+            where: { email },
+        })
+        if (user) return user
+    }
+
+    static async getUserByUsername(username: string) {
+        let user = await User.findOne({
+            where: { username },
         })
         if (user) return user
     }
@@ -66,9 +73,18 @@ class UserController {
         }
     }
 
-    static async deleteUser(email): Promise<void> {
+    static async deleteUserByEmail(email): Promise<void> {
         try {
             await User.destroy({ where: { email } })
+        } catch (error) {
+            sequelizeErrorHandler(error)
+            console.error('Error deleting user:', error)
+        }
+    }
+
+    static async deleteUserByUsername(username): Promise<void> {
+        try {
+            await User.destroy({ where: { username } })
         } catch (error) {
             sequelizeErrorHandler(error)
             console.error('Error deleting user:', error)

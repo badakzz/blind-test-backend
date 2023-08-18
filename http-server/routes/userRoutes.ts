@@ -20,12 +20,7 @@ router.patch(
     requireAuth,
     UserController.partialUpdateUser
 )
-router.delete(
-    'api/v1/users/:id',
-    requireCsrf,
-    requireAuth,
-    UserController.deleteUser
-)
+
 router.post('/api/auth/login', requireCsrf, AuthController.login)
 router.post('/api/auth/signup', requireCsrf, AuthController.signup)
 router.put(

@@ -79,7 +79,7 @@ class ChatMessageController {
     ) {
         try {
             const response = await axios.get(
-                `${process.env.NODE_SERVER_DOMAIN}:${process.env.NODE_SERVER_PORT}/api/v1/chatrooms/${message.chatroom_id}`
+                `https://react-blindtest-app-7601e8f52e82.herokuapp.com/api/v1/chatrooms/${message.chatroom_id}`
             )
             if (response.data.current_song_playing_id) {
                 const guessData = {
@@ -131,10 +131,11 @@ class ChatMessageController {
         }
     }
 
-    static async createMessage(req: Request): Promise<ChatMessage> {
+    static async createMessage(req: Request, res: Response): Promise<void> {
         const user = await User.findByPk(req.body.user_id)
         if (!user) {
-            throw new Error('User not found')
+            res.status(404).send('User not found')
+            return
         }
 
         const newMessage = await ChatMessage.create({
@@ -142,7 +143,7 @@ class ChatMessageController {
             author: user.username,
         })
 
-        return newMessage
+        res.json(newMessage)
     }
 }
 

@@ -2,7 +2,6 @@ import { requirePremium } from './../middlewares/premiumMiddleware'
 import { Router } from 'express'
 import axios from 'axios'
 import PlaylistController from '../controllers/PlaylistController'
-import { requireCsrf } from '../middlewares/csrfMiddleware'
 
 let accessToken = ''
 
@@ -16,11 +15,8 @@ const getAccessToken = async () => {
     try {
         const response = await axios.post(
             'https://accounts.spotify.com/api/token',
-            null,
+            'grant_type=client_credentials',
             {
-                params: {
-                    grant_type: 'client_credentials',
-                },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     Authorization: `Basic ${Buffer.from(
@@ -34,7 +30,10 @@ const getAccessToken = async () => {
         tokenExpirationTime =
             Date.now() + response.data.expires_in * 1000 - 60000
     } catch (error) {
-        console.error('Error obtaining Spotify access token:', error)
+        console.error(
+            'Error obtaining Spotify access token:',
+            error.response?.data || error
+        )
         throw error
     }
 }

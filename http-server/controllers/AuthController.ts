@@ -35,7 +35,8 @@ class AuthController {
             res.cookie(process.env.JWT_COOKIE_NAME, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             })
             res.json({ user: userDTO })
@@ -88,10 +89,10 @@ class AuthController {
             res.cookie(process.env.JWT_COOKIE_NAME, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite:
-                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                sameSite: 'lax',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             })
+
             res.status(201).json({ user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
