@@ -20,6 +20,7 @@ import ChatMessage from './http-server/models/ChatMessage'
 import { internalServerErrorHandler } from './http-server/utils/ErrorHandlers'
 import sequelize from './http-server/config/database'
 import GuessController from './http-server/controllers/GuessController'
+import ScoreController from './http-server/controllers/ScoreController'
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -202,6 +203,7 @@ io.on('connection', async (socket) => {
         chatroomSongsIndex[chatroomId] = { lastSong: null, index: 0 }
 
         GuessController.deleteGuessesByChatroom(chatroomId)
+        ScoreController.deleteScoresByChatroom(chatroomId)
 
         io.to(chatroomId).emit('gameReset')
 

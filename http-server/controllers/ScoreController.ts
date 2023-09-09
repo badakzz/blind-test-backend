@@ -98,6 +98,20 @@ class ScoreController {
             res.status(500).send(error.message)
         }
     }
+
+    static async deleteScoresByChatroom(chatroomId: string): Promise<void> {
+        try {
+            await Score.destroy({
+                where: { chatroom_id: chatroomId },
+            })
+            console.log(`Scores reset in chatroom ${chatroomId}`)
+        } catch (error: any) {
+            console.error(
+                `Failed to reset scores in chatroom ${chatroomId}:`,
+                error.message
+            )
+        }
+    }
 }
 
 export default ScoreController
