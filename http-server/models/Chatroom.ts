@@ -1,10 +1,10 @@
-import { Model, DataTypes } from "sequelize"
-import sequelize from "../config/database"
-import Song from "./Song"
+import { Model, DataTypes } from 'sequelize'
+import sequelize from '../config/database'
+import Song from './Song'
 
 class Chatroom extends Model {
     public chatroom_id!: string
-    public current_song_playing_id!: string | null
+    public current_song_playing_id!: number | null
 }
 
 Chatroom.init(
@@ -17,13 +17,13 @@ Chatroom.init(
             type: DataTypes.INTEGER,
             references: {
                 model: Song,
-                key: "song_id",
+                key: 'song_id',
             },
             allowNull: true,
         },
     },
     {
-        tableName: "chatroom",
+        tableName: 'chatroom',
         sequelize,
         timestamps: true,
         underscored: true,

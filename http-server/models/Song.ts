@@ -8,7 +8,7 @@ class Song extends Model {
     public song_name!: string
     public artist_name!: string
     public preview_url!: string
-    public playlist_id!: number
+    public playlist_id!: number | string
 }
 
 Song.init(
@@ -33,7 +33,7 @@ Song.init(
             type: DataTypes.STRING,
         },
         playlist_id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             references: {
                 model: Playlist,
                 key: 'playlist_id',

@@ -77,7 +77,7 @@ class ChatroomController {
 
     static async updateCurrentSong(
         chatroomId: string,
-        currentSongId: string
+        currentSongId: number
     ): Promise<Chatroom | null> {
         const chatroom = await Chatroom.findByPk(chatroomId)
         if (chatroom) {

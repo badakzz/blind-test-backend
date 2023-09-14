@@ -39,7 +39,7 @@ class PlaylistController {
         genreId: string
     ) {
         const [playlist, created] = await Playlist.findOrCreate({
-            where: { spotify_playlist_id: spotifyId },
+            where: { spotify_playlist_id: spotifyId, playlist_id: spotifyId },
             defaults: {
                 name: name,
                 genre_id: genreId,

@@ -4,6 +4,8 @@ import axios from 'axios'
 import PlaylistController from '../controllers/PlaylistController'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
 import { requireNativePremium } from '../middlewares/premiumNativeMiddleware'
+import sequelize from '../config/database'
+import { Guess, Song } from '../models'
 
 let accessToken = ''
 
@@ -76,13 +78,34 @@ router.get('/api/v1/playlists/search', requirePremium, async (req, res) => {
 })
 
 router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
+    const transaction = await sequelize.transaction()
     try {
         if (!accessToken) {
             await getAccessToken()
         }
+
         const playlistId = req.params.id
+        const chatroomId = req.query.chatroomId
+
         let tracksWithPreviews = []
         let offset = 0
+
+        const playlistDetails = await axios.get(
+            `https://api.spotify.com/v1/playlists/${playlistId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        )
+
+        const spotifyPlaylist = playlistDetails.data
+
+        const playlist = await PlaylistController.findOrCreatePlaylist(
+            playlistId,
+            spotifyPlaylist.name,
+            spotifyPlaylist.genres ? spotifyPlaylist.genres[0] : null
+        )
 
         while (tracksWithPreviews.length < 10) {
             const response = await axios.get(
@@ -99,9 +122,45 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
             )
 
             const tracks = response.data.items
-            for (let i = 0; i < tracks.length; i++) {
-                if (tracks[i].track.preview_url) {
-                    tracksWithPreviews.push(tracks[i].track)
+
+            for (let track of tracks) {
+                if (track.track.preview_url) {
+                    const newSong = {
+                        spotify_song_id: track.track.id,
+                        preview_url: track.track.preview_url,
+                        song_name: track.track.name,
+                        artist_name: track.track.artists[0].name,
+                        playlist_id: playlist.playlist_id,
+                        song_id: null,
+                    }
+
+                    let song, created
+                    try {
+                        ;[song, created] = await Song.findOrCreate({
+                            where: { spotify_song_id: newSong.spotify_song_id },
+                            defaults: newSong,
+                            transaction,
+                        })
+
+                        newSong.song_id = song.song_id
+                        tracksWithPreviews.push(newSong)
+
+                        await Guess.create(
+                            {
+                                chatroom_id: chatroomId,
+                                song_id: song.song_id,
+                            },
+                            {
+                                transaction,
+                            }
+                        )
+                    } catch (error) {
+                        console.log(
+                            `Error during Song/Guess operations: ${error}`
+                        )
+                        throw error
+                    }
+
                     if (tracksWithPreviews.length >= 10) {
                         break
                     }
@@ -120,8 +179,10 @@ router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
             }
         }
 
+        await transaction.commit()
         res.json(tracksWithPreviews)
     } catch (error) {
+        await transaction.rollback()
         console.log(
             `Error caught in '/api/v1/playlists/:id/tracks' route: ${error}`
         )

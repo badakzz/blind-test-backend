@@ -1,9 +1,9 @@
-import { Model, DataTypes } from "sequelize"
-import sequelize from "../config/database"
-import Guess from "./Guess"
+import { Model, DataTypes } from 'sequelize'
+import sequelize from '../config/database'
+import Guess from './Guess'
 
 class Playlist extends Model {
-    public playlist_id!: number
+    public playlist_id!: number | string
     public spotify_playlist_id!: string
     public name!: string
     public genre_id!: string
@@ -12,13 +12,12 @@ class Playlist extends Model {
 Playlist.init(
     {
         playlist_id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
+            type: DataTypes.STRING,
             primaryKey: true,
         },
         genre_id: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         spotify_playlist_id: {
             type: DataTypes.STRING,
@@ -32,7 +31,7 @@ Playlist.init(
     },
     {
         sequelize,
-        tableName: "playlist",
+        tableName: 'playlist',
         timestamps: true,
         underscored: true,
     }

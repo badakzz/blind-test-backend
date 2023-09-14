@@ -187,7 +187,6 @@ class SongController {
                 }
             }
             await transaction.commit()
-
             return previews
         } catch (error) {
             await transaction.rollback()

@@ -62,6 +62,10 @@ ChatMessage.init(
         author: {
             type: DataTypes.STRING,
             allowNull: false,
+            references: {
+                model: User,
+                key: 'username',
+            },
         },
     },
     {

@@ -21,7 +21,7 @@ Chatroom.hasMany(ChatMessage, { foreignKey: 'chatroom_id' })
 ChatMessage.belongsTo(Chatroom, { foreignKey: 'chatroom_id' })
 
 Chatroom.hasOne(Song, { foreignKey: 'current_song_playing_id' })
-Song.belongsTo(Chatroom, { foreignKey: 'current_song_playing_id' })
+Song.hasMany(Chatroom, { foreignKey: 'current_song_playing_id' })
 
 Playlist.hasMany(Song, { foreignKey: 'playlist_id' })
 Song.hasMany(Playlist, { foreignKey: 'playlist_id' })
