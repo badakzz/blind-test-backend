@@ -12,30 +12,46 @@ import { sanitizeInput } from '../utils/sanitize'
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
-        const sanitizedQuery = sanitizeInput(req.body)
-        const { email, password, captchaValue } = sanitizedQuery
-
-        // if (!captchaValue) {
-        //     res.status(401).json({ error: 'Captcha verification failed' })
-        //     return
-        // }
-
-        // const googleVerificationURL = process.env.GOOGLE_RECAPTCHA_URL
-        // const secretKey = process.env.GOOGLE_RECAPTCHA_SECRET
-
-        // const response = await axios.post(googleVerificationURL, null, {
-        //     params: {
-        //         secret: secretKey,
-        //         response: captchaValue,
-        //     },
-        // })
-
-        // if (!response.data.success) {
-        //     res.status(401).json({ error: 'Captcha verification failed' })
-        //     return
-        // }
-
         try {
+            const sanitizedQuery = sanitizeInput(req.body)
+            const { email, password, captchaValue } = sanitizedQuery
+
+            const token = req.cookies[process.env.JWT_COOKIE_NAME]
+            let decodedToken = null
+
+            if (token) {
+                decodedToken = jwt.verify(
+                    token,
+                    process.env.JWT_SECRET_KEY as string
+                ) as any
+            }
+
+            if (!decodedToken?.bypassCaptcha) {
+                if (!captchaValue) {
+                    res.status(401).json({
+                        error: 'Captcha verification failed',
+                    })
+                    return
+                }
+
+                const googleVerificationURL = process.env.GOOGLE_RECAPTCHA_URL
+                const secretKey = process.env.GOOGLE_RECAPTCHA_SECRET
+
+                const response = await axios.post(googleVerificationURL, null, {
+                    params: {
+                        secret: secretKey,
+                        response: captchaValue,
+                    },
+                })
+
+                if (!response.data.success) {
+                    res.status(401).json({
+                        error: 'Captcha verification failed',
+                    })
+                    return
+                }
+            }
+
             const user = await User.findOne({ where: { email } })
             if (!user) {
                 res.status(401).json({ error: 'Invalid credentials' })
@@ -48,19 +64,22 @@ class AuthController {
                 return
             }
 
-            const token = jwt.sign(
+            const newToken = jwt.sign(
                 { userId: user.user_id },
-                process.env.JWT_SECRET_KEY as string
+                process.env.JWT_SECRET_KEY as string,
+                { expiresIn: '7d' }
             )
 
             const userDTO = createDTOOmittingPassword(user)
 
-            res.cookie(process.env.JWT_COOKIE_NAME, token, {
+            res.cookie(process.env.JWT_COOKIE_NAME, newToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             })
+
             res.json({ user: userDTO })
         } catch (error: any) {
             res.status(500).json({ error: error.message })
@@ -97,14 +116,29 @@ class AuthController {
     }
 
     static async signup(req: Request, res: Response): Promise<void> {
-        const {
-            username,
-            email,
-            password,
-        }: { username: string; email: string; password: string } = req.body
         try {
             const sanitizedQuery = sanitizeInput(req.body)
-            const { email, password } = sanitizedQuery
+            const { username, email, password, captchaValue } = sanitizedQuery
+
+            if (!captchaValue) {
+                res.status(401).json({ error: 'Captcha verification failed' })
+                return
+            }
+
+            const googleVerificationURL = process.env.GOOGLE_RECAPTCHA_URL
+            const secretKey = process.env.GOOGLE_RECAPTCHA_SECRET
+
+            const response = await axios.post(googleVerificationURL, null, {
+                params: {
+                    secret: secretKey,
+                    response: captchaValue,
+                },
+            })
+
+            if (!response.data.success) {
+                res.status(401).json({ error: 'Captcha verification failed' })
+                return
+            }
 
             if (!isEmailValid(email)) {
                 res.status(400).json({ error: 'Email format is invalid' })
@@ -134,10 +168,14 @@ class AuthController {
             })
 
             const token = jwt.sign(
-                { userId: newUser.user_id },
+                {
+                    userId: newUser.user_id,
+                    bypassCaptcha: true,
+                },
                 process.env.JWT_SECRET_KEY as string,
                 { expiresIn: '7d' }
             )
+
             const userDTO = createDTOOmittingPassword(newUser)
 
             res.cookie(process.env.JWT_COOKIE_NAME, token, {
