@@ -6,34 +6,39 @@ import axios from 'axios'
 import { getAccessToken } from '../utils/helpers/spotifyHelper'
 import Guess from '../models/Guess'
 import Playlist from '../models/Playlist'
+import { sanitizeInput } from '../utils/sanitize'
 
 class SongController {
-    static async getSongs(req: Request, res: Response): Promise<void> {
-        try {
-            const songs = await Song.findAll()
-            res.send(songs)
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    // static async getSongs(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         const songs = await Song.findAll()
+    //         res.send(songs)
+    //     } catch (error: any) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
-    static async getSong(req: Request, res: Response): Promise<void> {
-        try {
-            const song = await Song.findByPk(req.params.id)
-            res.send(song)
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    // static async getSong(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         const sanitizedQuery = sanitizeInput(req.params)
+
+    //         const song = await Song.findByPk(sanitizedQuery.id)
+    //         res.send(song)
+    //     } catch (error: any) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
     static async getSongCredentialsById(
         req: Request,
         res: Response
     ): Promise<void> {
         try {
-            const song = await Song.findByPk(req.params.id)
+            const sanitizedQuery = sanitizeInput(req.params)
+
+            const song = await Song.findByPk(sanitizedQuery.id)
             const { song_name, artist_name } = song
             res.send({ songName: song_name, artistName: artist_name })
         } catch (error: any) {
@@ -42,31 +47,35 @@ class SongController {
         }
     }
 
-    static async createSong(req: Request, res: Response): Promise<void> {
-        try {
-            const newSong = await Song.create(req.body)
-            res.status(201).send(newSong)
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    // static async createSong(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         const sanitizedQuery = sanitizeInput(req.body)
 
-    static async deleteSong(req: Request, res: Response): Promise<void> {
-        try {
-            const song = await Song.findByPk(req.params.id)
+    //         const newSong = await Song.create(sanitizedQuery)
+    //         res.status(201).send(newSong)
+    //     } catch (error: any) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
-            if (song) {
-                await song.destroy()
-                res.status(204).send('Song deleted')
-            } else {
-                res.status(404).send('Song not found')
-            }
-        } catch (error: any) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    // static async deleteSong(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         const sanitizedQuery = sanitizeInput(req.params)
+
+    //         const song = await Song.findByPk(sanitizedQuery.id)
+
+    //         if (song) {
+    //             await song.destroy()
+    //             res.status(204).send('Song deleted')
+    //         } else {
+    //             res.status(404).send('Song not found')
+    //         }
+    //     } catch (error: any) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
     static async getCurrentSong(chatroomId) {
         const response = await axios.get(
@@ -97,23 +106,27 @@ class SongController {
     ): Promise<Partial<Song>[]> {
         const transaction = await sequelize.transaction()
         try {
+            const sanitizedQuery = sanitizeInput(req.query)
+            const sanitizedParams = sanitizeInput(req.params)
+
             const accessToken = await getAccessToken()
-            const numPreviews = parseInt(req.query.numPreviews as string) || 1
-            const chatroomId = req.query.chatroomId
+            const numPreviews =
+                parseInt(sanitizedQuery.numPreviews as string) || 1
+            const chatroomId = sanitizedQuery.chatroomId
 
             const playlist = await Playlist.findOne({
-                where: { spotify_playlist_id: req.params.playlistId },
+                where: { spotify_playlist_id: sanitizedParams.playlistId },
             })
 
             if (!playlist) {
                 console.log(
-                    `Playlist ${req.params.playlistId} does not exist in the database.`
+                    `Playlist ${sanitizedParams.playlistId} does not exist in the database.`
                 )
                 return
             }
 
             const responseTracks = await axios.get(
-                `https://api.spotify.com/v1/playlists/${req.params.playlistId}/tracks`,
+                `https://api.spotify.com/v1/playlists/${sanitizedParams.playlistId}/tracks`,
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,

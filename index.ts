@@ -7,7 +7,6 @@ import userRoutes from './http-server/routes/userRoutes'
 import chatroomRoutes from './http-server/routes/chatroomRoutes'
 import chatMessageRoutes from './http-server/routes/chatMessageRoutes'
 import csrfRoute from './http-server/routes/csrfRoute'
-import guessRoutes from './http-server/routes/guessRoutes'
 import scoreRoutes from './http-server/routes/scoreRoutes'
 import songRoutes from './http-server/routes/songRoutes'
 import playlistRoutes from './http-server/routes/playlistRoutes'
@@ -21,6 +20,7 @@ import { internalServerErrorHandler } from './http-server/utils/ErrorHandlers'
 import sequelize from './http-server/config/database'
 import GuessController from './http-server/controllers/GuessController'
 import ScoreController from './http-server/controllers/ScoreController'
+import helmet from 'helmet'
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -36,6 +36,22 @@ const io = new Server(httpServer, {
         credentials: true,
     },
 })
+
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", 'localhost:3000'],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:'],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+        },
+    })
+)
 
 const connectedUsers: { id: string; username: string; chatroomId: string }[] =
     []
@@ -230,7 +246,6 @@ app.use(chatroomRoutes)
 app.use(chatMessageRoutes)
 app.use(userRoutes)
 app.use(scoreRoutes)
-app.use(guessRoutes)
 app.use(songRoutes)
 app.use(playlistRoutes)
 app.use(roadmapTicketRoutes)

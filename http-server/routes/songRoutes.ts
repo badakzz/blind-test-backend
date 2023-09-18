@@ -4,8 +4,8 @@ import SongController from '../controllers/SongController'
 
 const router = express.Router()
 
-router.get('/api/v1/songs/', SongController.getSongs)
-router.get('/api/v1/songs/:id', SongController.getSong)
+// router.get('/api/v1/songs/', SongController.getSongs)
+// router.get('/api/v1/songs/:id', SongController.getSong)
 router.get(
     '/api/v1/songs/credentials/:id',
     SongController.getSongCredentialsById

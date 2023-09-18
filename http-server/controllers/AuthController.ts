@@ -7,10 +7,33 @@ import {
     isEmailValid,
     isPasswordValid,
 } from '../../http-server/utils/helpers'
+import axios from 'axios'
+import { sanitizeInput } from '../utils/sanitize'
 
 class AuthController {
     static async login(req: Request, res: Response): Promise<void> {
-        const { email, password } = req.body
+        const sanitizedQuery = sanitizeInput(req.body)
+        const { email, password, captchaValue } = sanitizedQuery
+
+        // if (!captchaValue) {
+        //     res.status(401).json({ error: 'Captcha verification failed' })
+        //     return
+        // }
+
+        // const googleVerificationURL = process.env.GOOGLE_RECAPTCHA_URL
+        // const secretKey = process.env.GOOGLE_RECAPTCHA_SECRET
+
+        // const response = await axios.post(googleVerificationURL, null, {
+        //     params: {
+        //         secret: secretKey,
+        //         response: captchaValue,
+        //     },
+        // })
+
+        // if (!response.data.success) {
+        //     res.status(401).json({ error: 'Captcha verification failed' })
+        //     return
+        // }
 
         try {
             const user = await User.findOne({ where: { email } })
@@ -45,7 +68,8 @@ class AuthController {
     }
 
     static async loginNative(req: Request, res: Response): Promise<void> {
-        const { email, password } = req.body
+        const sanitizedQuery = sanitizeInput(req.body)
+        const { email, password } = sanitizedQuery
 
         try {
             const user = await User.findOne({ where: { email } })
@@ -79,6 +103,9 @@ class AuthController {
             password,
         }: { username: string; email: string; password: string } = req.body
         try {
+            const sanitizedQuery = sanitizeInput(req.body)
+            const { email, password } = sanitizedQuery
+
             if (!isEmailValid(email)) {
                 res.status(400).json({ error: 'Email format is invalid' })
                 return
@@ -127,8 +154,8 @@ class AuthController {
     }
 
     static async updateSettings(req: Request, res: Response): Promise<void> {
-        const userId = req.body.userId
-        const { email, password } = req.body
+        const sanitizedQuery = sanitizeInput(req.body)
+        const { email, password, userId } = sanitizedQuery
 
         try {
             if (!isEmailValid(email)) {

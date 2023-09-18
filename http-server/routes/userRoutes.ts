@@ -6,7 +6,7 @@ import { requireCsrf } from '../middlewares/csrfMiddleware'
 
 const router = Router()
 
-router.get('/api/v1/users/:id', UserController.getUser)
+// router.get('/api/v1/users/:id', UserController.getUser)
 router.post('/api/v1/users', requireCsrf, UserController.createUser)
 router.put(
     '/api/v1/users/:id',
@@ -20,12 +20,12 @@ router.patch(
     requireAuth,
     UserController.partialUpdateUser
 )
-router.delete(
-    'api/v1/users/:id',
-    requireCsrf,
-    requireAuth,
-    UserController.deleteUser
-)
+// router.delete(
+//     'api/v1/users/:id',
+//     requireCsrf,
+//     requireAuth,
+//     UserController.deleteUser
+// )
 router.post('/api/auth/login', requireCsrf, AuthController.login)
 router.post('/api/auth/login_native', requireCsrf, AuthController.loginNative)
 router.post('/api/auth/signup', requireCsrf, AuthController.signup)

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import Playlist from '../models/Playlist'
 import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 import axios from 'axios'
+import { sanitizeInput } from '../utils/sanitize'
 
 class PlaylistController {
     static async getPlaylists(req: Request, res: Response) {
@@ -16,9 +17,11 @@ class PlaylistController {
 
     static async getPlaylist(req: Request, res: Response) {
         try {
+            const sanitizedQuery = sanitizeInput(req.params)
+
             const playlist = await Playlist.findOne({
                 where: {
-                    genre_id: req.params.id,
+                    genre_id: sanitizedQuery.id,
                 },
             })
 
@@ -92,6 +95,9 @@ class PlaylistController {
         req: Request,
         accessToken: string
     ) {
+        const sanitizedQuery = sanitizeInput(req.query)
+        const { country, locale } = sanitizedQuery
+
         const response = await axios.get(
             `https://api.spotify.com/v1/browse/categories`,
             {
@@ -112,8 +118,8 @@ class PlaylistController {
                 PlaylistController.fetchAndStorePlaylistsByGenre(
                     accessToken,
                     genre.id,
-                    (req.query.country as string) || 'US',
-                    (req.query.locale as string) || 'en_US'
+                    (country as string) || 'US',
+                    (locale as string) || 'en_US'
                 )
             )
 
@@ -131,7 +137,9 @@ class PlaylistController {
 
     static async searchPlaylist(req: Request, accessToken: string) {
         try {
-            const query = req.query.q
+            const sanitizedQuery = sanitizeInput(req.query)
+
+            const query = sanitizedQuery.q
             const response = await axios.get(
                 'https://api.spotify.com/v1/search',
                 {

@@ -3,6 +3,7 @@ import Payment from '../models/Payment'
 import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
 import Stripe from 'stripe'
 import UserController from './UserController'
+import { sanitizeInput } from '../utils/sanitize'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: '2022-11-15',
@@ -14,7 +15,9 @@ class PaymentController {
         res: Response
     ): Promise<void> {
         try {
-            const { amount } = req.body
+            const sanitizedQuery = sanitizeInput(req.body)
+            const { amount } = sanitizedQuery
+
             const paymentIntent = await stripe.paymentIntents.create({
                 amount,
                 currency: 'eur',
@@ -36,7 +39,9 @@ class PaymentController {
 
     static async confirmPayment(req: Request, res: Response): Promise<void> {
         try {
-            const { stripe_payment_intent_id, payment_method } = req.body
+            const sanitizedQuery = sanitizeInput(req.body)
+            const { stripe_payment_intent_id, payment_method } = sanitizedQuery
+
             const confirmedPaymentIntent = await stripe.paymentIntents.confirm(
                 stripe_payment_intent_id,
                 { payment_method: payment_method }
@@ -61,7 +66,8 @@ class PaymentController {
         res: Response
     ): Promise<void> {
         try {
-            const { stripe_payment_intent_id } = req.body
+            const sanitizedQuery = sanitizeInput(req.body)
+            const { stripe_payment_intent_id } = sanitizedQuery
 
             const paymentIntent = await stripe.paymentIntents.retrieve(
                 stripe_payment_intent_id

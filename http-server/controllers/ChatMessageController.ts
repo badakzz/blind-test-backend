@@ -7,12 +7,15 @@ import axios from 'axios'
 import GuessController from './GuessController'
 import UserController from './UserController'
 import { Guess } from '../models'
+import { sanitizeInput } from '../utils/sanitize'
+
 const { Op } = require('sequelize')
 
 class ChatMessageController {
     static async getMessage(req: Request, res: Response): Promise<void> {
         try {
-            const message = await ChatMessage.findByPk(req.params.id)
+            const sanitizedQuery = sanitizeInput(req.params)
+            const message = await ChatMessage.findByPk(sanitizedQuery.id)
             res.json(message)
         } catch (error) {
             sequelizeErrorHandler(error)
@@ -20,57 +23,59 @@ class ChatMessageController {
         }
     }
 
-    static async getMessagesFromUser(
-        req: Request,
-        res: Response
-    ): Promise<void> {
-        try {
-            const messages = await ChatMessage.findAll({
-                include: [
-                    {
-                        model: User,
-                        as: 'user',
-                        attributes: ['username'],
-                    },
-                ],
-            })
+    // static async getMessagesFromUser(
+    //     req: Request,
+    //     res: Response
+    // ): Promise<void> {
+    //     try {
+    //         const sanitizedQuery = sanitizeInput(req.params)
+    //         sanitizedQuery
+    //         const messages = await ChatMessage.findAll({
+    //             include: [
+    //                 {
+    //                     model: User,
+    //                     as: 'user',
+    //                     attributes: ['username'],
+    //                 },
+    //             ],
+    //         })
 
-            res.json(messages)
-        } catch (error) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    //         res.json(messages)
+    //     } catch (error) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
-    static async updateMessage(req: Request, res: Response): Promise<void> {
-        try {
-            const chatMessageId = Number(req.params.id)
-            if (isNaN(chatMessageId)) {
-                res.status(400).json({ error: 'Invalid chat_message_id' })
-                return
-            }
-            await ChatMessage.update(req.body, {
-                where: { chat_message_id: chatMessageId },
-            })
-            const updatedMessage = await ChatMessage.findByPk(chatMessageId)
-            res.json(updatedMessage)
-        } catch (error) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    // static async updateMessage(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         const chatMessageId = Number(req.params.id)
+    //         if (isNaN(chatMessageId)) {
+    //             res.status(400).json({ error: 'Invalid chat_message_id' })
+    //             return
+    //         }
+    //         await ChatMessage.update(req.body, {
+    //             where: { chat_message_id: chatMessageId },
+    //         })
+    //         const updatedMessage = await ChatMessage.findByPk(chatMessageId)
+    //         res.json(updatedMessage)
+    //     } catch (error) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
-    static async deleteMessage(req: Request, res: Response): Promise<void> {
-        try {
-            await ChatMessage.destroy({
-                where: { chat_message_id: Number(req.params.id) },
-            })
-            res.json({ message: 'Message deleted' })
-        } catch (error) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    // static async deleteMessage(req: Request, res: Response): Promise<void> {
+    //     try {
+    //         await ChatMessage.destroy({
+    //             where: { chat_message_id: Number(req.params.id) },
+    //         })
+    //         res.json({ message: 'Message deleted' })
+    //     } catch (error) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
     static async processChatMessage(
         message: ChatMessage,
@@ -132,14 +137,15 @@ class ChatMessageController {
     }
 
     static async createMessage(req: Request, res: Response): Promise<void> {
-        const user = await User.findByPk(req.body.user_id)
+        const sanitizedQuery = sanitizeInput(req.body)
+        const user = await User.findByPk(sanitizedQuery.user_id)
         if (!user) {
             res.status(404).send('User not found')
             return
         }
 
         const newMessage = await ChatMessage.create({
-            ...req.body,
+            ...sanitizedQuery,
             author: user.username,
         })
 

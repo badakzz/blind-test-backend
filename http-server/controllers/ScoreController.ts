@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 import { Server } from 'socket.io'
 import { Score, User } from '../models'
+import { sanitizeInput } from '../utils/sanitize'
 
 class ScoreController {
     static async getScoresByChatroom(
@@ -9,8 +10,10 @@ class ScoreController {
         res: Response
     ): Promise<void> {
         try {
+            const sanitizedQuery = sanitizeInput(req.params)
+
             const scores = await Score.findAll({
-                where: { chatroom_id: req.params.chatroomId },
+                where: { chatroom_id: sanitizedQuery.chatroomId },
                 include: {
                     model: User,
                     attributes: ['username'],
@@ -30,7 +33,9 @@ class ScoreController {
 
     static async createScore(req: Request, res: Response): Promise<void> {
         try {
-            const newScore = await Score.create(req.body)
+            const sanitizedQuery = sanitizeInput(req.body)
+
+            const newScore = await Score.create(sanitizedQuery.body)
             res.status(201).send(newScore)
         } catch (error) {
             sequelizeErrorHandler(error)
@@ -75,29 +80,29 @@ class ScoreController {
         } else return null
     }
 
-    static async updateScoreboardOld(
-        req: Request,
-        res: Response
-    ): Promise<void> {
-        const { user_id, chatroom_id, points } = req.body
+    // static async updateScoreboardOld(
+    //     req: Request,
+    //     res: Response
+    // ): Promise<void> {
+    //     const { user_id, chatroom_id, points } = req.body
 
-        try {
-            const existingScoreboard = await Score.findOne({
-                where: { user_id, chatroom_id },
-            })
+    //     try {
+    //         const existingScoreboard = await Score.findOne({
+    //             where: { user_id, chatroom_id },
+    //         })
 
-            if (existingScoreboard) {
-                existingScoreboard.points = points
-                await existingScoreboard.save()
-                res.json({ message: 'Score updated successfully' })
-            } else {
-                res.status(404).json({ error: 'Score not found' })
-            }
-        } catch (error) {
-            sequelizeErrorHandler(error)
-            res.status(500).send(error.message)
-        }
-    }
+    //         if (existingScoreboard) {
+    //             existingScoreboard.points = points
+    //             await existingScoreboard.save()
+    //             res.json({ message: 'Score updated successfully' })
+    //         } else {
+    //             res.status(404).json({ error: 'Score not found' })
+    //         }
+    //     } catch (error) {
+    //         sequelizeErrorHandler(error)
+    //         res.status(500).send(error.message)
+    //     }
+    // }
 
     static async deleteScoresByChatroom(chatroomId: string): Promise<void> {
         try {

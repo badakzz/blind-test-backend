@@ -12,17 +12,17 @@ router.post(
     requireAuth,
     ChatMessageController.createMessage
 )
-router.put(
-    '/api/v1/chat_messages/:id',
-    requireCsrf,
-    requireAuth,
-    ChatMessageController.updateMessage
-)
-router.delete(
-    '/api/v1/chat_messages/:id',
-    // require adm
-    requireCsrf,
-    ChatMessageController.deleteMessage
-)
+// router.put(
+//     '/api/v1/chat_messages/:id',
+//     requireCsrf,
+//     requireAuth,
+//     ChatMessageController.updateMessage
+// )
+// router.delete(
+//     '/api/v1/chat_messages/:id',
+//     // require adm
+//     requireCsrf,
+//     ChatMessageController.deleteMessage
+// )
 
 export default router

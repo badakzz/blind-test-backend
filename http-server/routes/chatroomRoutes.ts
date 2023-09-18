@@ -5,7 +5,7 @@ import { requireCsrf } from '../middlewares/csrfMiddleware'
 
 const router = Router()
 
-router.get('/api/v1/chatrooms', ChatroomController.getChatrooms)
+// router.get('/api/v1/chatrooms', ChatroomController.getChatrooms)
 router.get('/api/v1/chatrooms/:id', ChatroomController.getChatroom)
 router.post(
     '/api/v1/chatrooms',
@@ -13,10 +13,11 @@ router.post(
     requireAuth,
     ChatroomController.createChatroom
 )
-router.delete(
-    '/api/v1/chatrooms/:id',
-    requireCsrf,
-    requireAuth,
-    ChatroomController.deleteChatroom
-)
+// router.delete(
+//     '/api/v1/chatrooms/:id',
+//     requireCsrf,
+//     requireAuth,
+//     ChatroomController.deleteChatroom
+// )
+
 export default router
