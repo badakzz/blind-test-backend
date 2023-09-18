@@ -152,8 +152,14 @@ class AuthController {
                 return
             }
 
-            const existingUser = await User.findOne({ where: { email } })
-            if (existingUser) {
+            const existingUsername = await User.findOne({ where: { username } })
+            if (existingUsername) {
+                res.status(409).json({ error: 'Username already in use' })
+                return
+            }
+
+            const existingEmail = await User.findOne({ where: { email } })
+            if (existingEmail) {
                 res.status(409).json({ error: 'Email already exists' })
                 return
             }
@@ -176,6 +182,71 @@ class AuthController {
                 { expiresIn: '7d' }
             )
 
+            const userDTO = createDTOOmittingPassword(newUser)
+
+            res.cookie(process.env.JWT_COOKIE_NAME, token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            })
+            res.status(201).json({ user: userDTO })
+        } catch (error: any) {
+            console.log('Signup Error:', error.message)
+            console.log(error.stack)
+            res.status(500).json({ error: error.message })
+        }
+    }
+
+    static async signupNative(req: Request, res: Response): Promise<void> {
+        const {
+            username,
+            email,
+            password,
+        }: { username: string; email: string; password: string } = req.body
+        try {
+            const sanitizedQuery = sanitizeInput(req.body)
+            const { email, password } = sanitizedQuery
+
+            if (!isEmailValid(email)) {
+                res.status(400).json({ error: 'Email format is invalid' })
+                return
+            }
+
+            if (!isPasswordValid(password)) {
+                res.status(400).json({
+                    error: 'Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be at least 12 characters long.',
+                })
+                return
+            }
+
+            const existingUsername = await User.findOne({ where: { username } })
+            if (existingUsername) {
+                res.status(409).json({ error: 'Username already in use' })
+                return
+            }
+
+            const existingEmail = await User.findOne({ where: { email } })
+            if (existingEmail) {
+                res.status(409).json({ error: 'Email already exists' })
+                return
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10)
+            const newUser = await User.create({
+                username,
+                email,
+                password: hashedPassword,
+                permissions: 1,
+                is_active: true,
+            })
+
+            const token = jwt.sign(
+                { userId: newUser.user_id },
+                process.env.JWT_SECRET_KEY as string,
+                { expiresIn: '7d' }
+            )
             const userDTO = createDTOOmittingPassword(newUser)
 
             res.cookie(process.env.JWT_COOKIE_NAME, token, {
@@ -211,6 +282,12 @@ class AuthController {
             const user = await User.findByPk(userId)
             if (!user) {
                 res.status(404).json({ error: 'User not found' })
+                return
+            }
+
+            const existingEmail = await User.findOne({ where: { email } })
+            if (existingEmail && user.email !== existingEmail.email) {
+                res.status(409).json({ error: 'Email already exists' })
                 return
             }
 

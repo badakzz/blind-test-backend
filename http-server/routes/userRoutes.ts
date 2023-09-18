@@ -29,6 +29,7 @@ router.patch(
 router.post('/api/auth/login', requireCsrf, AuthController.login)
 router.post('/api/auth/login_native', requireCsrf, AuthController.loginNative)
 router.post('/api/auth/signup', requireCsrf, AuthController.signup)
+router.post('/api/auth/signupNative', requireCsrf, AuthController.signupNative)
 router.put(
     '/api/v1/users/premium/:user_id',
     requireCsrf,
