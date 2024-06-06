@@ -79,7 +79,7 @@ class ChatMessageController {
     ) {
         try {
             const response = await axios.get(
-                `${process.env.NODE_SERVER_DOMAIN}/api/v1/chatrooms/${message.chatroom_id}`
+                `${process.env.NODE_SERVER_DOMAIN}:${process.env.NODE_SERVER_PORT}/api/v1/chatrooms/${message.chatroom_id}`
             )
             if (response.data.current_song_playing_id) {
                 const guessData = {

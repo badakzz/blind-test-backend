@@ -27,10 +27,12 @@ const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
     cors: {
         origin: [
-            'https://blindtest.lucasderay.com',
-            'https://api-blindtest.lucasderay.com',
+            'http://localhost:3000',
+            'http://localhost:19006',
+            'exp://192.168.1.214:8081',
         ],
         methods: ['GET', 'POST'],
+        allowedHeaders: ['my-custom-header'],
         credentials: true,
     },
 })

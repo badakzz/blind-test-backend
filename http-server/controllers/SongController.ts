@@ -70,7 +70,7 @@ class SongController {
 
     static async getCurrentSong(chatroomId) {
         const response = await axios.get(
-            `${process.env.NODE_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`
+            `${process.env.NODE_SERVER_DOMAIN}:${process.env.NODE_SERVER_PORT}/api/v1/chatrooms/${chatroomId}`
         )
         return response.data.current_song_playing_id
     }
