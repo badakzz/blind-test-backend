@@ -1,0 +1,11 @@
+common_tags:
+  Origin: Terraform
+accounts:
+  main:
+    name: blind-test
+    id: "637423496590"
+    region: eu-west-3
+    role: admin
+    profile: main_admin
+    common_tags:
+      account: main

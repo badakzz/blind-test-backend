@@ -13,6 +13,7 @@ import songRoutes from './http-server/routes/songRoutes'
 import playlistRoutes from './http-server/routes/playlistRoutes'
 import paymentRoutes from './http-server/routes/paymentRoutes'
 import roadmapTicketRoutes from './http-server/routes/roadmapTicketRoutes'
+import healthRoute from './http-server/routes/healthRoute'
 import ChatMessageController from './http-server/controllers/ChatMessageController'
 import ChatroomController from './http-server/controllers/ChatroomController'
 import { Request, Response, NextFunction } from 'express'
@@ -26,12 +27,10 @@ const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
     cors: {
         origin: [
-            'http://localhost:3000',
-            'http://localhost:19006',
-            'exp://192.168.1.214:8081',
+            'https://blindtest.lucasderay.com',
+            'https://api-blindtest.lucasderay.com',
         ],
         methods: ['GET', 'POST'],
-        allowedHeaders: ['my-custom-header'],
         credentials: true,
     },
 })
@@ -233,6 +232,7 @@ app.use(songRoutes)
 app.use(playlistRoutes)
 app.use(roadmapTicketRoutes)
 app.use(paymentRoutes)
+app.use(healthRoute)
 
 app.use(csrfRoute)
 

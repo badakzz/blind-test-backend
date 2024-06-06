@@ -1,19 +1,21 @@
-version: '3.8'
 services:
-  multi-stage:
+  app:
+    image: blind
     build:
-      context: ..
-      dockerfile: ./docker/build.Dockerfile
+      context: ../
+      dockerfile: docker/Dockerfile.dev
     ports:
-      - 3001:3001
-      - 3002:3002
+      - "3002:3002"
     environment:
       - NODE_ENV=development
+      - NODE_SERVER_PORT=3002
+    depends_on:
+      - db
+
   db:
     image: postgres
     environment:
       - POSTGRES_USER=badak
-      - POSTGRES_PASSWORD=Blindtest123!
       - POSTGRES_DB=blindtestdb
     volumes:
       - postgres_data:/var/lib/postgresql/data/

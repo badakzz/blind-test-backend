@@ -2,4 +2,24 @@ websocket-server/node_modules
 http-server/node_modules
 /node_modules
 .env
-httpd.conf
+docker.env
+/dist
+
+# aws
+aws/
+
+# terraform
+#  Local .terraform directories
+**/.terraform/*
+**/.terraform.lock.hcl
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# terragrunt
+.terragrunt-cache/
+*_generated.tf
+
+# secrets
+**/secrets.dec.yaml

@@ -1,0 +1,6 @@
+creation_rules:
+  - path_regex: secrets\.(dec|enc)\.yaml$
+    key_groups:
+      - kms:
+          - arn: arn:aws:kms:eu-west-3:637423496590:key/641d5158-1b97-4e60-afd1-c1ee102227dc
+            role: arn:aws:iam::637423496590:role/admin
