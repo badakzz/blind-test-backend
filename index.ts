@@ -27,12 +27,10 @@ const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
     cors: {
         origin: [
-            'http://localhost:3000',
-            'http://localhost:19006',
-            'exp://192.168.1.214:8081',
+            'https://blindtest.lucasderay.com',
+            'https://api-blindtest.lucasderay.com',
         ],
         methods: ['GET', 'POST'],
-        allowedHeaders: ['my-custom-header'],
         credentials: true,
     },
 })
@@ -103,11 +101,6 @@ io.on('connection', async (socket) => {
                 )
             )
             console.log(`User ${user.username} left the chatroom`)
-
-            if (user.isHost) {
-                io.to(user.chatroomId).emit('hostLeft')
-                console.log(`Host left the chatroom ${user.chatroomId}`)
-            }
         }
     })
 
@@ -232,10 +225,8 @@ io.on('connection', async (socket) => {
 app.use(
     cors({
         origin: [
-            'http://localhost:3000',
-            'http://localhost:19006',
-            'exp://192.168.1.214:8081',
-            '192.168.1.214',
+            'https://blindtest.lucasderay.com',
+            'https://api-blindtest.lucasderay.com',
         ],
         credentials: true,
     })
