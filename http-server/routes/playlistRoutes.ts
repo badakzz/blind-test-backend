@@ -68,60 +68,8 @@ router.get('/api/v1/playlists/search', requirePremium, async (req, res) => {
         )
         res.json(playlistList)
     } catch (error) {
-        console.log(`Error caught in '/api/v1/playlists' route: ${error}`)
-        res.status(500).json({ error: error.toString() })
-    }
-})
-
-router.get('/api/v1/playlists/:id/tracks', requirePremium, async (req, res) => {
-    try {
-        if (!accessToken) {
-            await getAccessToken()
-        }
-        const playlistId = req.params.id
-        let tracksWithPreviews = []
-        let offset = 0
-
-        while (tracksWithPreviews.length < 10) {
-            const response = await axios.get(
-                `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    params: {
-                        limit: 100,
-                        offset: offset,
-                    },
-                }
-            )
-
-            const tracks = response.data.items
-            for (let i = 0; i < tracks.length; i++) {
-                if (tracks[i].track.preview_url) {
-                    tracksWithPreviews.push(tracks[i].track)
-                    if (tracksWithPreviews.length >= 10) {
-                        break
-                    }
-                }
-            }
-
-            if (tracks.length === 100) {
-                offset += 100
-            } else {
-                if (tracksWithPreviews.length < 10) {
-                    throw new Error(
-                        'Playlist does not have enough songs with previews. Please select a different playlist.'
-                    )
-                }
-                break
-            }
-        }
-
-        res.json(tracksWithPreviews)
-    } catch (error) {
-        console.log(
-            `Error caught in '/api/v1/playlists/:id/tracks' route: ${error}`
+        console.error(
+            `Error caught in '/api/v1/playlists/search' route: ${error}`
         )
         res.status(500).json({ error: error.toString() })
     }

@@ -38,14 +38,30 @@ class PlaylistController {
         name: string,
         genreId: string
     ) {
-        const [playlist, created] = await Playlist.findOrCreate({
-            where: { spotify_playlist_id: spotifyId },
-            defaults: {
-                name: name,
-                genre_id: genreId,
-            },
-        })
-        return playlist
+        try {
+            console.log(
+                `Attempting to find or create playlist with Spotify ID ${spotifyId}`
+            )
+            const [playlist, created] = await Playlist.findOrCreate({
+                where: { spotify_playlist_id: spotifyId },
+                defaults: {
+                    name: name,
+                    genre_id: genreId,
+                },
+            })
+            console.log(
+                `Playlist ${spotifyId} ${created ? 'created' : 'found'}`
+            )
+            return playlist
+        } catch (error) {
+            console.error(
+                `Error in findOrCreate for Spotify ID ${spotifyId}:`,
+                error
+            )
+            throw new Error(
+                `Error in findOrCreate for Spotify ID ${spotifyId}: ${error.message}`
+            )
+        }
     }
 
     static async fetchAndStorePlaylistsByGenre(
@@ -54,35 +70,59 @@ class PlaylistController {
         country = 'US',
         locale = 'en_US'
     ) {
-        const playlists = await axios.get(
-            `https://api.spotify.com/v1/browse/categories/${genreId}/playlists`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                params: {
-                    country: country,
-                    locale: locale,
-                    limit: 1,
-                },
-            }
+        console.log(
+            `Fetching playlists for genre ${genreId} with accessToken: ${accessToken}`
         )
-        if (
-            playlists.data &&
-            playlists.data.playlists &&
-            playlists.data.playlists.items
-        ) {
-            const validPlaylist = playlists.data.playlists.items[0]
+        try {
+            const playlists = await axios.get(
+                `https://api.spotify.com/v1/browse/categories/${genreId}/playlists`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        country: country,
+                        locale: locale,
+                        limit: 1,
+                    },
+                }
+            )
 
-            if (validPlaylist) {
-                const playlistFromDb =
-                    await PlaylistController.findOrCreatePlaylist(
-                        validPlaylist.id,
-                        validPlaylist.name,
-                        genreId
-                    )
-                return playlistFromDb
+            if (
+                playlists.data &&
+                playlists.data.playlists &&
+                playlists.data.playlists.items
+            ) {
+                const validPlaylist = playlists.data.playlists.items[0]
+                console.log(
+                    `Processing playlist ${
+                        validPlaylist ? validPlaylist.id : 'not found'
+                    }`
+                )
+
+                if (validPlaylist) {
+                    const playlistFromDb =
+                        await PlaylistController.findOrCreatePlaylist(
+                            validPlaylist.id,
+                            validPlaylist.name,
+                            genreId
+                        )
+                    return playlistFromDb
+                }
             }
+        } catch (error) {
+            console.error(
+                `Failed to fetch playlists for genre ${genreId}:`,
+                error
+            )
+            // Check if the error is related to network issues
+            if (error.code === 'ETIMEDOUT' || error.code === 'ENETUNREACH') {
+                console.log(
+                    `Network error encountered, skipping genre ${genreId}`
+                )
+                return null // Return null to skip this playlist
+            }
+            throw error // Rethrow other types of errors to be handled by the caller
         }
 
         return null
@@ -92,9 +132,9 @@ class PlaylistController {
         req: Request,
         accessToken: string
     ) {
-        const response = await axios.get(
-            `https://api.spotify.com/v1/browse/categories`,
-            {
+        console.log('Starting to fetch genres with accessToken:', accessToken)
+        const response = await axios
+            .get(`https://api.spotify.com/v1/browse/categories`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -102,10 +142,14 @@ class PlaylistController {
                     country: req.query.country || 'US',
                     locale: req.query.locale || 'en_US',
                 },
-            }
-        )
+            })
+            .catch((e) => {
+                console.error('Failed to fetch genres:', e)
+                throw e // Rethrow to handle this error in the calling function
+            })
 
         const genres = response.data.categories.items
+        console.log(`Fetched genres: ${genres.length} found`)
 
         if (genres) {
             const promises = genres.map((genre) =>
@@ -117,10 +161,16 @@ class PlaylistController {
                 )
             )
 
-            const playlistList = await Promise.all(promises)
+            const playlistList = await Promise.all(promises).catch((e) => {
+                console.error('Error processing genre playlists:', e)
+                throw e // Rethrow to handle this error in the calling function
+            })
 
             const validPlaylists = playlistList.filter(
                 (playlist) => playlist !== null
+            )
+            console.log(
+                `Valid playlists filtered, count: ${validPlaylists.length}`
             )
 
             return validPlaylists
@@ -146,13 +196,27 @@ class PlaylistController {
                 }
             )
 
-            if (response.data && response.data.playlists) {
+            if (
+                response.data &&
+                response.data.playlists &&
+                response.data.playlists.items
+            ) {
+                const playlistPromises = response.data.playlists.items.map(
+                    (playlist: any) =>
+                        PlaylistController.findOrCreatePlaylist(
+                            playlist.id,
+                            playlist.name,
+                            null
+                        )
+                )
+                await Promise.all(playlistPromises)
                 return response.data.playlists.items
             } else {
                 throw new Error('No playlists found')
             }
         } catch (error) {
-            throw new Error(error.message)
+            console.error(`Error searching playlists: ${error.message}`)
+            throw new Error(`Error searching playlists: ${error.message}`)
         }
     }
 }

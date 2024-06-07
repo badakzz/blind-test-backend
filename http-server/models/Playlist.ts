@@ -1,6 +1,5 @@
 import { Model, DataTypes, Optional } from 'sequelize'
 import sequelize from '../config/database'
-import Guess from './Guess'
 
 interface PlaylistAttributes {
     playlist_id: number
@@ -31,7 +30,7 @@ Playlist.init(
         },
         genre_id: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         spotify_playlist_id: {
             type: DataTypes.STRING,
