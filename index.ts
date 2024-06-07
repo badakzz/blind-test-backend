@@ -37,8 +37,12 @@ const io = new Server(httpServer, {
     },
 })
 
-const connectedUsers: { id: string; username: string; chatroomId: string }[] =
-    []
+const connectedUsers: {
+    id: string
+    username: string
+    chatroomId: string
+    isHost: boolean
+}[] = []
 const chatrooms = []
 const chatroomSongsIndex = {}
 
@@ -47,7 +51,12 @@ io.on('connection', async (socket) => {
 
     socket.on('createRoom', (username, chatroomId) => {
         socket.join(chatroomId)
-        connectedUsers.push({ id: socket.id, username, chatroomId })
+        connectedUsers.push({
+            id: socket.id,
+            username,
+            chatroomId,
+            isHost: true,
+        })
         io.to(chatroomId).emit(
             'connectedUsers',
             connectedUsers.filter((user) => user.chatroomId === chatroomId)
@@ -61,7 +70,12 @@ io.on('connection', async (socket) => {
     socket.on('joinRoom', (username, chatroomId) => {
         const chatroom = chatrooms.find((c) => c === chatroomId)
         if (chatroom) {
-            connectedUsers.push({ id: socket.id, username, chatroomId })
+            connectedUsers.push({
+                id: socket.id,
+                username,
+                chatroomId,
+                isHost: false,
+            })
 
             socket.join(chatroomId)
 
@@ -89,6 +103,11 @@ io.on('connection', async (socket) => {
                 )
             )
             console.log(`User ${user.username} left the chatroom`)
+
+            if (user.isHost) {
+                io.to(user.chatroomId).emit('hostLeft')
+                console.log(`Host left the chatroom ${user.chatroomId}`)
+            }
         }
     })
 
@@ -168,7 +187,7 @@ io.on('connection', async (socket) => {
                     }
                 }
             } catch (error) {
-                console.error(error)
+                console.error('Error updating current song for chatroom', error)
             }
         }
     )

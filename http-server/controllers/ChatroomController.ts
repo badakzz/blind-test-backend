@@ -11,6 +11,7 @@ class ChatroomController {
             const chatrooms = await Chatroom.findAll()
             res.send(chatrooms)
         } catch (error: any) {
+            console.error('Error getting chatrooms')
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
@@ -21,6 +22,7 @@ class ChatroomController {
             const chatroom = await Chatroom.findByPk(req.params.id)
             res.send(chatroom)
         } catch (error: any) {
+            console.error('Error getting chatroom')
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
@@ -35,6 +37,7 @@ class ChatroomController {
             const newChatroom = await Chatroom.create(chatroom)
             res.status(201).send(newChatroom)
         } catch (error: any) {
+            console.error('Error creating chatroom')
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
@@ -51,6 +54,7 @@ class ChatroomController {
                 res.status(404).send('Chatroom not found')
             }
         } catch (error: any) {
+            console.error('Error deleting chatroom')
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
@@ -70,6 +74,7 @@ class ChatroomController {
                 res.status(404).send('Chatroom not found')
             }
         } catch (error: any) {
+            console.error('Error getting current song playing in chatroom')
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)
         }
