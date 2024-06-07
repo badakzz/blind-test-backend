@@ -36,6 +36,7 @@ resource "aws_ecs_task_definition" "blindtest_backend_task" {
         { name = "JWT_SECRET_KEY", value = "${data.sops_file.secrets.data["jwtSecretKey"]}" },
         { name = "JWT_COOKIE_NAME", value = "${data.sops_file.secrets.data["jwtCookieName"]}" },
         { name = "COOKIE_PARSER_SECRET", value = "${data.sops_file.secrets.data["cookieParserSecret"]}" },
+        { name = "NODE_SERVER_DOMAIN", value = "${data.sops_file.secrets.data["apiBaseUrl"]}" },
       ]
       logConfiguration = {
         logDriver = "awslogs"
