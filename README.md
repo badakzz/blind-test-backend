@@ -1,7 +1,8 @@
 # Back-end for the blind test app
 
-Uses the ORM Sequelize.
-It runs on an Express server on port 3002, and the websocket runs on port 3001.
+The app allows user to participate in a blind test game in which they submit their answers by typing them. The users select the wished playlist from the Spotify API.
+
+It Uses the ORM Sequelize, and runs on an Express server on port 3002, while the websocket runs on port 3001.
 The database runs on PostgreSQL.
 
 https://blindtest.lucasderay.com
