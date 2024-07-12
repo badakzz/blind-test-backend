@@ -1,16 +1,45 @@
-# blind-test-backend
+# Back-end for the blind test app
 
-blind-test-backend
+Uses the ORM Sequelize.
+It runs on an Express server on port 3002, and the websocket runs on port 3001.
+The database runs on PostgreSQL.
 
-## TODOS
+https://blindtest.lucasderay.com
 
--   add a withAdm controller to protect certain routes
--   check spotify terms of service to store data in db
--   fix on signup -> login : [0] Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
--   check everywhere if params / body is PK of tables (like in ChatroomController.setCurrentSongPlaying)
--   songs are added duplicates in Songs
--   add a job to delete entries from guesses and chatroom (id) when chatroom closes
--   hash passwords instead of crypt ?
--   change table names to singular
--   validate input coming from client
--   add created_at / updated_at in every table
+## Setup
+
+### Database
+
+Create a PostgreSQL database and user :
+```shell
+sudo -u postgres createuser -s -P -e blindtestadm
+sudo -u postgres createdb --encoding=UTF8 --owner=blindtestadm blindtestdb
+```
+
+You will then need to create a `.env` file at the root level and specify
+```
+POSTGRES_HOST=localhost
+POSTGRES_DATABASE=blindtestdb
+POSTGRES_USER=blindtestadm
+POSTGRES_PASSWORD=
+POSTGRES_PORT=5432
+```
+
+For the app to be fully functional, you'll also need to specify :
+```
+NODE_SERVER_DOMAIN=localhost
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+JWT_SECRET_KEY=
+JWT_COOKIE_NAME=
+COOKIE_PARSER_SECRET=
+STRIPE_PUBLIC_KEY=
+STRIPE_SECRET_KEY=
+```
+
+## Running the app
+
+```shell
+yarn install
+yarn dev
+```
