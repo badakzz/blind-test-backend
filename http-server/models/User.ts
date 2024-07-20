@@ -4,10 +4,11 @@ import sequelize from '../config/database'
 interface UserAttributes {
     user_id: number
     username: string
-    email: string
-    password: string
+    email?: string
+    password?: string
     permissions: number
     is_active: boolean
+    is_guest: boolean
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'user_id'> {}
@@ -18,10 +19,11 @@ class User
 {
     public user_id!: number
     public username!: string
-    public email!: string
-    public password!: string
+    public email?: string
+    public password?: string
     public permissions!: number
     public is_active!: boolean
+    public is_guest!: boolean
 }
 
 User.init(
@@ -38,12 +40,12 @@ User.init(
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: true,
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         permissions: {
             type: DataTypes.INTEGER,
@@ -53,6 +55,11 @@ User.init(
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
+        },
+        is_guest: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
         },
     },
     {

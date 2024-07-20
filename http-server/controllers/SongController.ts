@@ -121,8 +121,6 @@ class SongController {
                 }
             )
 
-            console.log({ res: responseTracks.data.items })
-
             const tracksWithPreview = responseTracks.data.items.filter(
                 (item) => item.track && item.track.preview_url
             )

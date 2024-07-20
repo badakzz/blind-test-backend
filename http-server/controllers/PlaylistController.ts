@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import Playlist from '../models/Playlist'
 import { sequelizeErrorHandler } from '../utils/ErrorHandlers'
 import axios from 'axios'
+import { getAccessToken } from '../utils/helpers/spotifyHelper'
 
 class PlaylistController {
     static async getPlaylists(req: Request, res: Response) {
@@ -39,9 +40,6 @@ class PlaylistController {
         genreId: string
     ) {
         try {
-            console.log(
-                `Attempting to find or create playlist with Spotify ID ${spotifyId}`
-            )
             const [playlist, created] = await Playlist.findOrCreate({
                 where: { spotify_playlist_id: spotifyId },
                 defaults: {
@@ -49,9 +47,6 @@ class PlaylistController {
                     genre_id: genreId,
                 },
             })
-            console.log(
-                `Playlist ${spotifyId} ${created ? 'created' : 'found'}`
-            )
             return playlist
         } catch (error) {
             console.error(
@@ -70,9 +65,6 @@ class PlaylistController {
         country = 'US',
         locale = 'en_US'
     ) {
-        console.log(
-            `Fetching playlists for genre ${genreId} with accessToken: ${accessToken}`
-        )
         try {
             const playlists = await axios.get(
                 `https://api.spotify.com/v1/browse/categories/${genreId}/playlists`,
@@ -94,11 +86,6 @@ class PlaylistController {
                 playlists.data.playlists.items
             ) {
                 const validPlaylist = playlists.data.playlists.items[0]
-                console.log(
-                    `Processing playlist ${
-                        validPlaylist ? validPlaylist.id : 'not found'
-                    }`
-                )
 
                 if (validPlaylist) {
                     const playlistFromDb =
@@ -115,71 +102,73 @@ class PlaylistController {
                 `Failed to fetch playlists for genre ${genreId}:`,
                 error
             )
-            // Check if the error is related to network issues
             if (error.code === 'ETIMEDOUT' || error.code === 'ENETUNREACH') {
                 console.log(
                     `Network error encountered, skipping genre ${genreId}`
                 )
-                return null // Return null to skip this playlist
+                return null
             }
-            throw error // Rethrow other types of errors to be handled by the caller
+            throw error
         }
 
         return null
     }
 
-    static async fetchGenresAndStorePlaylists(
-        req: Request,
-        accessToken: string
-    ) {
-        console.log('Starting to fetch genres with accessToken:', accessToken)
-        const response = await axios
-            .get(`https://api.spotify.com/v1/browse/categories`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                params: {
-                    country: req.query.country || 'US',
-                    locale: req.query.locale || 'en_US',
-                },
-            })
-            .catch((e) => {
-                console.error('Failed to fetch genres:', e)
-                throw e // Rethrow to handle this error in the calling function
-            })
+    static async fetchGenresAndStorePlaylists(req: Request) {
+        let accessToken = await getAccessToken()
 
-        const genres = response.data.categories.items
-        console.log(`Fetched genres: ${genres.length} found`)
+        try {
+            const response = await axios.get(
+                'https://api.spotify.com/v1/browse/categories',
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        country: req.query.country || 'US',
+                        locale: req.query.locale || 'en_US',
+                    },
+                }
+            )
 
-        if (genres) {
-            const promises = genres.map((genre) =>
-                PlaylistController.fetchAndStorePlaylistsByGenre(
-                    accessToken,
-                    genre.id,
-                    (req.query.country as string) || 'US',
-                    (req.query.locale as string) || 'en_US'
+            const genres = response.data.categories.items
+
+            if (genres) {
+                const promises = genres.map((genre) =>
+                    PlaylistController.fetchAndStorePlaylistsByGenre(
+                        accessToken,
+                        genre.id,
+                        req.query.country as string,
+                        req.query.locale as string
+                    )
                 )
-            )
 
-            const playlistList = await Promise.all(promises).catch((e) => {
-                console.error('Error processing genre playlists:', e)
-                throw e // Rethrow to handle this error in the calling function
-            })
+                const playlistList = await Promise.all(promises)
 
-            const validPlaylists = playlistList.filter(
-                (playlist) => playlist !== null
-            )
-            console.log(
-                `Valid playlists filtered, count: ${validPlaylists.length}`
-            )
+                const validPlaylists = playlistList.filter(
+                    (playlist) => playlist !== null
+                )
 
-            return validPlaylists
+                return validPlaylists
+            }
+
+            return null
+        } catch (error) {
+            console.error('Failed to fetch genres:', error)
+
+            if (error.response && error.response.status === 401) {
+                accessToken = await getAccessToken()
+                return await PlaylistController.fetchGenresAndStorePlaylists(
+                    req
+                )
+            }
+
+            throw error
         }
-
-        return null
     }
 
-    static async searchPlaylist(req: Request, accessToken: string) {
+    static async searchPlaylist(req: Request) {
+        let accessToken = await getAccessToken()
         try {
             const query = req.query.q
             const response = await axios.get(
@@ -216,6 +205,12 @@ class PlaylistController {
             }
         } catch (error) {
             console.error(`Error searching playlists: ${error.message}`)
+
+            if (error.response && error.response.status === 401) {
+                accessToken = await getAccessToken()
+                return await PlaylistController.searchPlaylist(req)
+            }
+
             throw new Error(`Error searching playlists: ${error.message}`)
         }
     }

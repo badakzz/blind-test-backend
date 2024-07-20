@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import User from '../models/User'
 import { sequelizeErrorHandler } from '../../http-server/utils/ErrorHandlers'
 import { createDTOOmittingPassword } from '../../http-server/utils/helpers'
+import { v4 as uuidv4 } from 'uuid'
 
 class UserController {
     static async getUser(req: Request, res: Response): Promise<void> {
@@ -38,9 +39,23 @@ class UserController {
 
     static async createUser(req: Request, res: Response): Promise<void> {
         try {
-            const newUser = await User.create(req.body)
+            let newUser
+            if (req.body.is_guest) {
+                const guestUsername = 'Guest_' + uuidv4().slice(0, 8)
+                newUser = await User.create({
+                    username: guestUsername,
+                    is_guest: true,
+                    email: null,
+                    password: null,
+                    permissions: 0,
+                    is_active: true,
+                })
+            } else {
+                newUser = await User.create(req.body)
+            }
+
             const userDTO = createDTOOmittingPassword(newUser)
-            res.json(userDTO)
+            res.json({ user: userDTO })
         } catch (error) {
             sequelizeErrorHandler(error)
             res.status(500).send(error.message)

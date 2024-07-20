@@ -1,4 +1,3 @@
-import { requireAuth } from './../middlewares/authMiddleware'
 import { requireCsrf } from '../middlewares/csrfMiddleware'
 import { Router } from 'express'
 import ChatMessageController from '../controllers/ChatMessageController'
@@ -9,13 +8,11 @@ router.get('/api/v1/chat_messages/:id', ChatMessageController.getMessage)
 router.post(
     '/api/v1/chat_messages',
     requireCsrf,
-    requireAuth,
     ChatMessageController.createMessage
 )
 router.put(
     '/api/v1/chat_messages/:id',
     requireCsrf,
-    requireAuth,
     ChatMessageController.updateMessage
 )
 router.delete(
