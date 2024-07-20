@@ -7,12 +7,7 @@ const router = Router()
 
 router.get('/api/v1/chatrooms', ChatroomController.getChatrooms)
 router.get('/api/v1/chatrooms/:id', ChatroomController.getChatroom)
-router.post(
-    '/api/v1/chatrooms',
-    requireCsrf,
-    requireAuth,
-    ChatroomController.createChatroom
-)
+router.post('/api/v1/chatrooms', requireCsrf, ChatroomController.createChatroom)
 router.delete(
     '/api/v1/chatrooms/:id',
     requireCsrf,

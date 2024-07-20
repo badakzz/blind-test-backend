@@ -57,6 +57,7 @@ io.on('connection', async (socket) => {
             chatroomId,
             isHost: true,
         })
+        console.log(connectedUsers)
         io.to(chatroomId).emit(
             'connectedUsers',
             connectedUsers.filter((user) => user.chatroomId === chatroomId)
@@ -113,7 +114,7 @@ io.on('connection', async (socket) => {
 
     socket.on('chatMessage', (message) => {
         console.log(
-            `Received message ${message.content} from ${message.author} in chatroom ${message.chatroomId}`
+            `Received message ${message.content} from ${message.author} (ID ${message.userId}) in chatroom ${message.chatroomId}`
         )
         ChatMessageController.processChatMessage(
             {
